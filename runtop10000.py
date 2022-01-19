@@ -4,7 +4,7 @@ import sys
 
 def controller(opt):
     if opt == "preprocess":
-        command = "python preprocess.py -train_src data/top10000/merged/cleaned_train.diff \
+        command = "python scripts/preprocess.py -train_src data/top10000/merged/cleaned_train.diff \
                         -train_tgt data/top10000/merged/cleaned_train.msg \
                         -valid_src data/top10000/merged/cleaned_valid.diff \
                         -valid_tgt data/top10000/merged/cleaned_valid.msg \
@@ -17,7 +17,7 @@ def controller(opt):
         os.system(command)
 
     elif opt == "train":
-        command = "python train.py -word_vec_size 512 \
+        command = "python scripts/train.py -word_vec_size 512 \
                                 -enc_layers 2 \
                                 -dec_layers 2 \
                                 -rnn_size 512 \
@@ -39,7 +39,7 @@ def controller(opt):
         print("done.")
     elif opt == "translate":
         print("Retrieve similar commits...")
-        command = "python translate.py -model models/CoRec_10000_step_400000.pt \
+        command = "python scripts/translate.py -model models/CoRec_10000_step_400000.pt \
                                         -src data/top10000/merged/cleaned_test.diff \
                                         -train_diff  data/top10000/merged/cleaned_train.diff \
                                         -train_msg data/top10000/merged/cleaned_train.msg \
@@ -53,7 +53,7 @@ def controller(opt):
 
         os.system(command)
         print("Begin translation...")
-        command = "python translate.py -model models/CoRec_10000_step_400000.pt \
+        command = "python scripts/translate.py -model models/CoRec_10000_step_400000.pt \
                             -src data/top10000/merged/cleaned_test.diff \
                             -output data/output/10000test.out \
                             -sem_path data/top10000/merged/new_10000.sem.diff \

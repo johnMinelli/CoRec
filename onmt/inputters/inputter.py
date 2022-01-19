@@ -1,3 +1,4 @@
+import glob
 from collections import defaultdict, Counter, OrderedDict
 from itertools import count
 import torch, os, codecs, gc, torchtext
@@ -30,20 +31,6 @@ def get_fields(data_type, n_src_features, n_tgt_features):
         raise ValueError("Data type not implemented")
 
 
-def collect_features(fields, side="src"):
-    """
-    Collect features from Field object.
-    """
-    assert side in ["src", "tgt", "syn", "sem"]
-    feats = []
-    for j in count():
-        key = side + "_feat_" + str(j)
-        if key not in fields:
-            break
-        feats.append(key)
-    return feats
-
-
 def load_fields_from_vocab(vocab, data_type="text"):
     """
     Load Field objects from `vocab.pt` file.
@@ -57,6 +44,32 @@ def load_fields_from_vocab(vocab, data_type="text"):
         v.stoi = defaultdict(lambda: 0, v.stoi)
         fields[k].vocab = v
     return fields
+
+
+def save_fields_to_vocab(fields):
+    """
+    Save Vocab objects in Field objects to `vocab.pt` file.
+    """
+    vocab = []
+    for k, f in fields.items():
+        if f is not None and 'vocab' in f.__dict__:
+            f.vocab.stoi = f.vocab.stoi
+            vocab.append((k, f.vocab))
+    return vocab
+
+
+def collect_features(fields, side="src"):
+    """
+    Collect features from Field object.
+    """
+    assert side in ["src", "tgt", "syn", "sem"]
+    feats = []
+    for j in count():
+        key = side + "_feat_" + str(j)
+        if key not in fields:
+            break
+        feats.append(key)
+    return feats
 
 
 def get_num_features(data_type, corpus_file, side):
@@ -374,13 +387,44 @@ def build_dataset(fields, data_type, src_data_iter=None, src_path=None,
     return dataset
 
 
-def save_fields_to_vocab(fields):
+def lazily_load_dataset(corpus_type, opt):
     """
-    Save Vocab objects in Field objects to `vocab.pt` file.
+    Dataset generator. Don't do extra stuff here, like printing,
+    because they will be postponed to the first loading time.
+
+    Args:
+        corpus_type: 'train' or 'valid'
+    Returns:
+        A list of dataset, the dataset(s) are lazily loaded.
     """
-    vocab = []
-    for k, f in fields.items():
-        if f is not None and 'vocab' in f.__dict__:
-            f.vocab.stoi = f.vocab.stoi
-            vocab.append((k, f.vocab))
-    return vocab
+    assert corpus_type in ["train", "valid"]
+
+    def _lazy_dataset_loader(pt_file, corpus_type):
+        dataset = torch.load(pt_file)
+        logger.info('Loading %s dataset from %s, number of examples: %d' %
+                    (corpus_type, pt_file, len(dataset)))
+        return dataset
+
+    # Sort the glob output by file name (by increasing indexes).
+    pts = sorted(glob.glob(opt.data + '.' + corpus_type + '.[0-9]*.pt'))
+    if pts:
+        for pt in pts:
+            yield _lazy_dataset_loader(pt, corpus_type)
+    else:
+        # Only one inputters.*Dataset, simple!
+        pt = opt.data + '.' + corpus_type + '.pt'
+        yield _lazy_dataset_loader(pt, corpus_type)
+
+
+def _load_fields(dataset, opt, checkpoint):
+    if checkpoint is not None:
+        logger.info('Loading vocab from checkpoint at %s.' % opt.train_from)
+        fields = load_fields_from_vocab(
+            checkpoint['vocab'])
+    else:
+        fields = load_fields_from_vocab(
+            torch.load(opt.data + '.vocab.pt'))
+    fields = dict([(k, f) for (k, f) in fields.items()
+                   if k in dataset.examples[0].__dict__])
+
+    return fields
