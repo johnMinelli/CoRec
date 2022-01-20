@@ -11,8 +11,9 @@ import torch
 
 import onmt.opts as opts
 from onmt.helpers.model_saver import build_model_saver
+from onmt.helpers.trainer import build_trainer
 
-from onmt.inputters.inputter import lazily_load_dataset, _load_fields
+from onmt.inputters.inputter import lazily_load_dataset, _load_fields, build_dataset_iter, load_vocab
 # from onmt.inputters.inputter import build_dataset_iter
 # from onmt.model_builder import build_model
 # from onmt.utils.optimizers import build_optim
@@ -91,11 +92,11 @@ def main(opt, device_id):
         model_opt = opt
 
     # Load fields generated from preprocess phase.
-    fields = _load_fields(next(lazily_load_dataset("train", opt)), opt, checkpoint)
-    logger.info(' * vocabulary size. source = %d; target = %d' % (len(fields['src'].vocab), len(fields['tgt'].vocab)))
+    vocab = load_vocab(opt, checkpoint)
+    logger.info(' * vocabulary size. source = %d' % len(vocab))
 
     # Build model.
-    model = build_model(model_opt, fields, checkpoint)  # TODO
+    model = build_model(model_opt, vocab, checkpoint)  # TODO
     n_params, enc, dec = _count_parameters(model)
     logger.info('encoder: %d' % enc)
     logger.info('decoder: %d' % dec)
@@ -105,15 +106,17 @@ def main(opt, device_id):
     optim = build_optim(model, opt, checkpoint)  # TODO
 
     # Build model saver
-    model_saver = build_model_saver(model_opt, model, fields, optim)
+    model_saver = build_model_saver(model_opt, model, vocab, optim)
 
-    trainer = build_trainer(opt, device_id, model, fields, optim, model_saver)  # TODO
+    trainer = build_trainer(opt, device_id, model, optim, model_saver)  # TODO
 
     def train_iter_fct():
-        return build_dataset_iter(lazily_load_dataset("train", opt), fields, opt)  # TODO
+        return build_dataset_iter(lazily_load_dataset("train", opt), vocab, opt.batch_size)
 
     def valid_iter_fct():
-        return build_dataset_iter(lazily_load_dataset("valid", opt), fields, opt, is_train=False)  # TODO
+        return build_dataset_iter(lazily_load_dataset("valid", opt), vocab, opt.valid_batch_size)
+
+    # maybe it's needed:  next(iter(legacy_train_iterator))
 
     # Do training.
     if len(opt.gpu_ranks):

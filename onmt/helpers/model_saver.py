@@ -8,7 +8,7 @@ from collections import deque
 from onmt.utils.logging import logger
 
 
-def build_model_saver(model_opt, model, fields, optim):
+def build_model_saver(model_opt, model, vocab, optim):
     # init
     save_model_path = os.path.abspath(model_opt.save_model)
     model_dirname = os.path.dirname(save_model_path)
@@ -18,7 +18,7 @@ def build_model_saver(model_opt, model, fields, optim):
     model_saver = ModelSaver(model_opt.save_model,
                              model,
                              model_opt,
-                             fields,
+                             vocab,
                              optim,
                              model_opt.save_checkpoint_steps,
                              model_opt.keep_checkpoint)
@@ -33,12 +33,12 @@ class ModelSaverBase(object):
             * `_rm_checkpoint
     """
 
-    def __init__(self, base_path, model, model_opt, fields, optim,
+    def __init__(self, base_path, model, model_opt, vocab, optim,
                  save_checkpoint_steps, keep_checkpoint=-1):
         self.base_path = base_path
         self.model = model
         self.model_opt = model_opt
-        self.fields = fields
+        self.vocab = vocab
         self.optim = optim
         self.keep_checkpoint = keep_checkpoint
         self.save_checkpoint_steps = save_checkpoint_steps
@@ -94,10 +94,10 @@ class ModelSaver(ModelSaverBase):
         Simple model saver to filesystem
     """
 
-    def __init__(self, base_path, model, model_opt, fields, optim,
+    def __init__(self, base_path, model, model_opt, vocab, optim,
                  save_checkpoint_steps, keep_checkpoint=0):
         super(ModelSaver, self).__init__(
-            base_path, model, model_opt, fields, optim,
+            base_path, model, model_opt, vocab, optim,
             save_checkpoint_steps, keep_checkpoint)
 
     def _save(self, step):
@@ -115,7 +115,7 @@ class ModelSaver(ModelSaverBase):
         checkpoint = {
             'model': model_state_dict,
             'generator': generator_state_dict,
-            'vocab': onmt.inputters.save_fields_to_vocab(self.fields),
+            'vocab': self.vocab,
             'opt': self.model_opt,
             'optim': self.optim,
         }

@@ -15,22 +15,22 @@ import onmt.utils
 from onmt.utils.logging import logger
 
 
-def build_trainer(opt, device_id, model, fields, optim, data_type, model_saver):
+def build_trainer(opt, device_id, model, vocab, optim, data_type, model_saver):
     """
     Simplify `Trainer` creation based on user `opt`s*
 
     Args:
         opt (:obj:`Namespace`): user options (usually from argument parsing)
         model (:obj:`onmt.models.NMTModel`): the model to train
-        fields (dict): dict of fields
+        vocab (dict): dictionary with embedding all tokens
         optim (:obj:`onmt.utils.Optimizer`): optimizer used during training
         data_type (str): string describing the type of data
             e.g. "text", "img", "audio"
         model_saver(:obj:`onmt.models.ModelSaverBase`): the utility object
             used to save the model
     """
-    train_loss = onmt.utils.loss.build_loss_compute(model, fields["tgt"].vocab, opt)
-    valid_loss = onmt.utils.loss.build_loss_compute(model, fields["tgt"].vocab, opt, train=False)
+    train_loss = onmt.utils.loss.build_loss_compute(model, vocab, opt)
+    valid_loss = onmt.utils.loss.build_loss_compute(model, vocab, opt, train=False)
 
     trunc_size = opt.truncated_decoder  # Badly named...
     shard_size = opt.max_generator_batches
@@ -140,7 +140,7 @@ class Trainer(object):
         while step <= train_steps:
 
             reduce_counter = 0
-            for i, batch in enumerate(train_iter):
+            for i, batch in enumerate(next(iter(train_iter))):
                 if self.n_gpu == 0 or (i % self.n_gpu == self.gpu_rank):
                     if self.gpu_verbose_level > 1:
                         logger.info("GpuRank %d: index: %d accum: %d"
@@ -173,7 +173,7 @@ class Trainer(object):
                                 logger.info('GpuRank %d: validate step %d'
                                             % (self.gpu_rank, step))
                             valid_iter = valid_iter_fct()
-                            valid_stats = self.validate(valid_iter)
+                            valid_stats = self.validate(next(iter(valid_iter)))
                             if self.gpu_verbose_level > 0:
                                 logger.info('GpuRank %d: gather valid stat \
                                             step %d' % (self.gpu_rank, step))

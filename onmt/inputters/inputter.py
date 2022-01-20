@@ -1,8 +1,11 @@
 import glob
+import random
 from collections import defaultdict, Counter, OrderedDict
 from itertools import count
 import torch, os, codecs, gc, torchtext
 # local imports
+from torch.utils.data import Dataset, DataLoader
+from torch.nn.utils.rnn import pad_sequence
 from onmt.inputters.text_dataset import TextDataset
 from onmt.inputters.dataset_base import (UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD)
 from onmt.utils.logging import logger
@@ -416,15 +419,43 @@ def lazily_load_dataset(corpus_type, opt):
         yield _lazy_dataset_loader(pt, corpus_type)
 
 
-def _load_fields(dataset, opt, checkpoint):
+def build_dataset_iter(dataset, vocab, batch_size):
+    # TODO
+    PAD_IDX = vocab['<pad>']
+    BOS_IDX = vocab['<bos>']
+    EOS_IDX = vocab['<eos>']
+    def generate_batch(data_batch):
+        de_batch, en_batch = [], []
+        for (de_item, en_item) in data_batch:
+            de_batch.append(torch.cat([torch.tensor([BOS_IDX]), de_item, torch.tensor([EOS_IDX])], dim=0))
+            en_batch.append(torch.cat([torch.tensor([BOS_IDX]), en_item, torch.tensor([EOS_IDX])], dim=0))
+        de_batch = pad_sequence(de_batch, padding_value=PAD_IDX)
+        en_batch = pad_sequence(en_batch, padding_value=PAD_IDX)
+        return de_batch, en_batch
+
+    def batch_sampler():
+        indices = [(i, len(s[1])) for i, s in enumerate(dataset)]
+        random.shuffle(indices)
+        pooled_indices = []
+        # create pool of indices with similar lengths 
+        for i in range(0, len(indices), batch_size * 100):
+            pooled_indices.extend(sorted(indices[i:i + batch_size * 100], key=lambda x: x[1]))
+
+        pooled_indices = [x[0] for x in pooled_indices]
+        # yield indices for current batch
+        for i in range(0, len(pooled_indices), batch_size):
+            yield pooled_indices[i:i + batch_size]  # if you don't yield remove the next(iter( in the trainer
+
+    # FIXME it need similar length sentences in a batch to have a low padding
+    return DataLoader(dataset, batch_sampler=batch_sampler(), collate_fn=generate_batch)
+
+
+def load_vocab(opt, checkpoint):
     if checkpoint is not None:
         logger.info('Loading vocab from checkpoint at %s.' % opt.train_from)
-        fields = load_fields_from_vocab(
-            checkpoint['vocab'])
+        vocab = checkpoint['vocab']
     else:
-        fields = load_fields_from_vocab(
-            torch.load(opt.data + '.vocab.pt'))
-    fields = dict([(k, f) for (k, f) in fields.items()
-                   if k in dataset.examples[0].__dict__])
+        vocab = torch.load(opt.data + '.vocab.pt')  # FIXME is this already a torchtext.Vocab type?
+    return vocab
 
-    return fields
+
