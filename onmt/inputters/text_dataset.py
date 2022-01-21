@@ -20,10 +20,10 @@ class MyTextDataset(Dataset):
         self.target_texts = []
         with codecs.open(src_path, "r", "utf-8") as cf:
             for line in cf:
-                self.src_texts.append(line.strip())
+                self.src_texts.append(line.strip().split())
         with codecs.open(target_path, "r", "utf-8") as cf:
             for line in cf:
-                self.target_texts.append(line.strip())
+                self.target_texts.append(line.strip().split())
 
     def __len__(self):
         return len(self.img_labels)
