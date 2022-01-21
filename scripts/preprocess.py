@@ -6,6 +6,7 @@ import sys, os, codecs, gc
 from onmt.utils.logging import init_logger, logger
 from onmt import opts
 from onmt.inputters.inputter import get_num_features, get_fields, build_dataset, build_vocab, save_fields_to_vocab
+from onmt.inputters.text_dataset import MyTextDataset
 
 
 def check_existing_pt_files(opt):
@@ -85,13 +86,7 @@ def build_save_in_shards_using_shards_size(src_corpus, tgt_corpus, fields,
             tgt_seq_length=opt.tgt_seq_length,
             src_seq_length_trunc=opt.src_seq_length_trunc,
             tgt_seq_length_trunc=opt.tgt_seq_length_trunc,
-            dynamic_dict=opt.dynamic_dict,
-            sample_rate=opt.sample_rate,
-            window_size=opt.window_size,
-            window_stride=opt.window_stride,
-            window=opt.window,
-            image_channel_size=opt.image_channel_size
-        )
+            dynamic_dict=opt.dynamic_dict)
 
         pt_file = "{:s}.{:s}.{:d}.pt".format(
             opt.save_data, corpus_type, index)
@@ -137,20 +132,14 @@ def build_save_dataset(corpus_type, fields, opt):
     # But since the interfaces are uniform, it would be not hard
     # to do this should users need this feature.
     dataset = build_dataset(
-        fields, opt.data_type,
+        fields,
         src_path=src_corpus,
         tgt_path=tgt_corpus,
         src_dir=opt.src_dir,
         src_seq_length=opt.src_seq_length,
         tgt_seq_length=opt.tgt_seq_length,
         src_seq_length_trunc=opt.src_seq_length_trunc,
-        tgt_seq_length_trunc=opt.tgt_seq_length_trunc,
-        dynamic_dict=opt.dynamic_dict,
-        sample_rate=opt.sample_rate,
-        window_size=opt.window_size,
-        window_stride=opt.window_stride,
-        window=opt.window,
-        image_channel_size=opt.image_channel_size)
+        tgt_seq_length_trunc=opt.tgt_seq_length_trunc)
 
     # We save fields in vocab.pt seperately, so make it empty.
     dataset.fields = []
@@ -194,29 +183,38 @@ def main():
     init_logger(opt.log_file)
     logger.info("Extracting features...")
 
-    src_nfeats = get_num_features(
-        opt.data_type, opt.train_src, 'src')
-    tgt_nfeats = get_num_features(
-        opt.data_type, opt.train_tgt, 'tgt')
-    logger.info(" * number of source features: %d." % src_nfeats)
-    logger.info(" * number of target features: %d." % tgt_nfeats)
+    # src_nfeats = get_num_features(opt.train_src, 'src')
+    # tgt_nfeats = get_num_features(opt.train_tgt, 'tgt')
+    # logger.info(" * number of source features: %d." % src_nfeats)
+    # logger.info(" * number of target features: %d." % tgt_nfeats)
 
-    logger.info("Building `Fields` object...")
-    fields = get_fields(opt.data_type, src_nfeats, tgt_nfeats)
+    # an example in training set
+    # {'src': (
+    # 'new', 'file', 'mode', '100755', '<nl>', 'index', '0000000', '.', '.', 'd125c52', '<nl>', 'Binary', 'files', '/',
+    # 'dev', '/', 'null', 'and', 'b', '/', 'art', '/', 'intro', '.', 'png', 'differ', '<nl>'),
+    # 'tgt': ('Added', 'intro', 'image', '.')}
 
-    logger.info("Building & saving training data...")
-    train_dataset_files = build_save_dataset('train', fields, opt)
+    logger.info("Building Dataset")
+    if not os.path.exists("data/preprocessed/"):
+        os.makedirs("data/preprocessed")
+    dataset = MyTextDataset(opt.train_src, opt.train_tgt) # or for validation
+    pt_file = "{:s}.{:s}.pt".format(opt.save_data, "text")
+    logger.info(" * saving %s dataset to %s." % ("text", pt_file))
+    torch.save(dataset, pt_file)
 
-    logger.info("Building & saving validation data...")
-    build_save_dataset('valid', fields, opt)
+    # logger.info("Building & saving training data...")
+    # train_dataset_files = build_save_dataset('train', fields, opt)
 
-    logger.info("Building & saving vocabulary...")
-    build_save_vocab(train_dataset_files, fields, opt)
+    # logger.info("Building & saving validation data...")
+    # build_save_dataset('valid', fields, opt)
+
+    # logger.info("Building & saving vocabulary...")
+    # build_save_vocab(train_dataset_files, fields, opt)
 
 
 def build_save_vocab(train_dataset, fields, opt):
     """ Building and saving the vocab """
-    fields = build_vocab(train_dataset, fields, opt.data_type,
+    fields = build_vocab(train_dataset, fields,
                                    opt.share_vocab,
                                    opt.src_vocab,
                                    opt.src_vocab_size,

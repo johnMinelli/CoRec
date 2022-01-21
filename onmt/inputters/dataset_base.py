@@ -3,7 +3,7 @@
     Base dataset class and constants
 """
 from itertools import chain
-import torchtext
+from torch.utils.data import Dataset
 
 import onmt
 
@@ -14,7 +14,7 @@ BOS_WORD = '<s>'
 EOS_WORD = '</s>'
 
 
-class DatasetBase(torchtext.data.Dataset):
+class DatasetBase(Dataset):
     """
     A dataset basically supports iteration over all the examples
     it contains. We currently have 3 datasets inheriting this base
@@ -27,6 +27,9 @@ class DatasetBase(torchtext.data.Dataset):
      `fields`: a dictionary associating str keys with `torchtext.data.Field`
         objects, and not necessarily having the same keys as the input fields.
     """
+
+    def __getitem__(self, index):
+        return self.__dict__[index]
 
     def __getstate__(self):
         return self.__dict__
@@ -121,10 +124,10 @@ class DatasetBase(torchtext.data.Dataset):
         Returns:
             the created `Example` object.
         """
-        ex = torchtext.data.Example()
-        for (name, field), val in zip(fields, data):
-            if field is not None:
-                setattr(ex, name, field.preprocess(val))
-            else:
-                setattr(ex, name, val)
-        return ex
+        #ex = torchtext.data.Example()
+        #for (name, field), val in zip(fields, data):
+        #    if field is not None:
+        #        setattr(ex, name, field.preprocess(val))
+        #    else:
+        #        setattr(ex, name, val)
+        #return ex

@@ -2,10 +2,34 @@ from collections import Counter
 import torch, torchtext
 from itertools import chain
 import codecs
-
+from torch.utils.data import Dataset
 # local imports
 from onmt.inputters.dataset_base import (DatasetBase, UNK_WORD,
                                          PAD_WORD, BOS_WORD, EOS_WORD)
+
+
+class MyTextDataset(Dataset):
+    def __init__(self, src_path, target_path, transform=None, target_transform=None):
+
+        self.src_path = src_path
+        self.target_path = target_path
+        self.transform = transform
+        self.target_transform = target_transform
+
+        self.src_texts = []
+        self.target_texts = []
+        with codecs.open(src_path, "r", "utf-8") as cf:
+            for line in cf:
+                self.src_texts.append(line.strip())
+        with codecs.open(target_path, "r", "utf-8") as cf:
+            for line in cf:
+                self.target_texts.append(line.strip())
+
+    def __len__(self):
+        return len(self.img_labels)
+
+    def __getitem__(self, idx):
+        return self.src_texts[idx], self.target_texts[idx]
 
 
 class TextDataset(DatasetBase):
@@ -120,7 +144,7 @@ class TextDataset(DatasetBase):
                              batch_offset=None):
         """
         Given scores from an expanded dictionary
-        corresponeding to a batch, sums together copies,
+        corresponding to a batch, sums together copies,
         with a dictionary word when it is ambigious.
         """
         offset = len(tgt_vocab)
@@ -214,7 +238,7 @@ class TextDataset(DatasetBase):
                 yield line
 
     @staticmethod
-    def get_fields(n_src_features, n_tgt_features):
+    def get_fields():
         """
         Args:
             n_src_features (int): the number of source features to
@@ -228,60 +252,17 @@ class TextDataset(DatasetBase):
         """
         fields = {}
 
-        fields["src"] = torchtext.data.Field(
-            pad_token=PAD_WORD,
-            include_lengths=True)
+        #fields["src"] = torchtext.data.Field(
+        #    pad_token=PAD_WORD,
+        #    include_lengths=True)
 
-        fields["syn"] = torchtext.data.Field(
-            pad_token=PAD_WORD,
-            include_lengths=True)
+        #fields["tgt"] = torchtext.data.Field(
+        #    init_token=BOS_WORD, eos_token=EOS_WORD,
+        #    pad_token=PAD_WORD)
 
-        fields["sem"] = torchtext.data.Field(
-            pad_token=PAD_WORD,
-            include_lengths=True)
-
-        for j in range(n_src_features):
-            fields["src_feat_" + str(j)] = \
-                torchtext.data.Field(pad_token=PAD_WORD)
-
-        fields["tgt"] = torchtext.data.Field(
-            init_token=BOS_WORD, eos_token=EOS_WORD,
-            pad_token=PAD_WORD)
-
-        for j in range(n_tgt_features):
-            fields["tgt_feat_" + str(j)] = \
-                torchtext.data.Field(init_token=BOS_WORD, eos_token=EOS_WORD,
-                                     pad_token=PAD_WORD)
-
-        def make_src(data, vocab):
-            """ ? """
-            src_size = max([t.size(0) for t in data])
-            src_vocab_size = max([t.max() for t in data]) + 1
-            alignment = torch.zeros(src_size, len(data), src_vocab_size)
-            for i, sent in enumerate(data):
-                for j, t in enumerate(sent):
-                    alignment[j, i, t] = 1
-            return alignment
-
-        fields["src_map"] = torchtext.data.Field(
-            use_vocab=False, dtype=torch.float,
-            postprocessing=make_src, sequential=False)
-
-        def make_tgt(data, vocab):
-            """ ? """
-            tgt_size = max([t.size(0) for t in data])
-            alignment = torch.zeros(tgt_size, len(data)).long()
-            for i, sent in enumerate(data):
-                alignment[:sent.size(0), i] = sent
-            return alignment
-
-        fields["alignment"] = torchtext.data.Field(
-            use_vocab=False, dtype=torch.long,
-            postprocessing=make_tgt, sequential=False)
-
-        fields["indices"] = torchtext.data.Field(
-            use_vocab=False, dtype=torch.long,
-            sequential=False)
+        #fields["indices"] = torchtext.data.Field(
+        #    use_vocab=False, dtype=torch.long,
+        #    sequential=False)
 
         return fields
 
@@ -301,6 +282,7 @@ class TextDataset(DatasetBase):
             number of features on `side`.
         """
         with codecs.open(corpus_file, "r", "utf-8") as cf:
+
             f_line = cf.readline().strip().split()
             _, _, num_feats = TextDataset.extract_text_features(f_line)
 

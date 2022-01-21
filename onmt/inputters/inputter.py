@@ -11,10 +11,9 @@ from onmt.inputters.dataset_base import (UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD)
 from onmt.utils.logging import logger
 
 
-def get_fields(data_type, n_src_features, n_tgt_features):
+def get_fields():
     """
     Args:
-        data_type: type of the source input. Options are [text|img|audio].
         n_src_features: the number of source features to
             create `torchtext.data.Field` for.
         n_tgt_features: the number of target features to
@@ -24,14 +23,7 @@ def get_fields(data_type, n_src_features, n_tgt_features):
         A dictionary whose keys are strings and whose values are the
         corresponding Field objects.
     """
-    if data_type == 'text':
-        return TextDataset.get_fields(n_src_features, n_tgt_features)
-#    elif data_type == 'img':
-#        return ImageDataset.get_fields(n_src_features, n_tgt_features)
-#    elif data_type == 'audio':
-#        return AudioDataset.get_fields(n_src_features, n_tgt_features)
-    else:
-        raise ValueError("Data type not implemented")
+    return TextDataset.get_fields()
 
 
 def load_fields_from_vocab(vocab, data_type="text"):
@@ -41,7 +33,7 @@ def load_fields_from_vocab(vocab, data_type="text"):
     vocab = dict(vocab)
     n_src_features = len(collect_features(vocab, 'src'))
     n_tgt_features = len(collect_features(vocab, 'tgt'))
-    fields = get_fields(data_type, n_src_features, n_tgt_features)
+    fields = get_fields(n_src_features, n_tgt_features)
     for k, v in vocab.items():
         # Hack. Can't pickle defaultdict :(
         v.stoi = defaultdict(lambda: 0, v.stoi)
@@ -75,11 +67,10 @@ def collect_features(fields, side="src"):
     return feats
 
 
-def get_num_features(data_type, corpus_file, side):
+def get_num_features(corpus_file, side):
     """
     Args:
-        data_type (str): type of the source input.
-            Options are [text|img|audio].
+
         corpus_file (str): file path to get the features.
         side (str): for source or for target.
 
@@ -87,15 +78,7 @@ def get_num_features(data_type, corpus_file, side):
         number of features on `side`.
     """
     assert side in ["src", "tgt", "syn", "sem"]
-
-    if data_type == 'text':
-        return TextDataset.get_num_features(corpus_file, side)
-#    elif data_type == 'img':
-#        return ImageDataset.get_num_features(corpus_file, side)
-#    elif data_type == 'audio':
-#        return AudioDataset.get_num_features(corpus_file, side)
-    else:
-        raise ValueError("Data type not implemented")
+    return TextDataset.get_num_features(corpus_file, side)
 
 
 def _build_field_vocab(field, counter, **kwargs):
@@ -132,7 +115,7 @@ def load_vocabulary(vocabulary_path, tag=""):
     return vocabulary
 
 
-def build_vocab(train_dataset_files, fields, data_type, share_vocab,
+def build_vocab(train_dataset_files, fields, share_vocab,
                 src_vocab_path, src_vocab_size, src_words_min_frequency,
                 tgt_vocab_path, tgt_vocab_size, tgt_words_min_frequency,
                 syn_vocab_path=None, syn_vocab_size=0, syn_words_min_frequency=0,
@@ -141,7 +124,6 @@ def build_vocab(train_dataset_files, fields, data_type, share_vocab,
     Args:
         train_dataset_files: a list of train dataset pt file.
         fields (dict): fields to build vocab for.
-        data_type: "text", "img" or "audio"?
         share_vocab(bool): share source and target vocabulary?
         src_vocab_path(string): Path to src vocabulary file.
         src_vocab_size(int): size of the source vocabulary.
@@ -156,10 +138,6 @@ def build_vocab(train_dataset_files, fields, data_type, share_vocab,
         Dict of Fields
     """
     counter = {}
-
-    # Prop src from field to get lower memory using when training with image
-    if data_type == 'img' or data_type == 'audio':
-        fields.pop("src")
 
     for k in fields:
         counter[k] = Counter()
@@ -231,41 +209,41 @@ def build_vocab(train_dataset_files, fields, data_type, share_vocab,
         logger.info(" * %s vocab size: %d." % (key,
                                                len(fields[key].vocab)))
 
-    if data_type == 'text':
-        if syn_vocab_size:
-            _build_field_vocab(fields["syn"], counter["src"],
-                               max_size=syn_vocab_size,
-                               min_freq=syn_words_min_frequency)
-            logger.info(" * syn vocab size: %d." % len(fields["syn"].vocab))
-        if sem_vocab_size:
-            _build_field_vocab(fields["sem"], counter["src"],
-                               max_size=sem_vocab_size,
-                               min_freq=sem_words_min_frequency)
-            logger.info(" * sem vocab size: %d." % len(fields["sem"].vocab))
 
-        _build_field_vocab(fields["src"], counter["src"],
-                           max_size=src_vocab_size,
-                           min_freq=src_words_min_frequency)
-        logger.info(" * src vocab size: %d." % len(fields["src"].vocab))
+    if syn_vocab_size:
+        _build_field_vocab(fields["syn"], counter["src"],
+                           max_size=syn_vocab_size,
+                           min_freq=syn_words_min_frequency)
+        logger.info(" * syn vocab size: %d." % len(fields["syn"].vocab))
+    if sem_vocab_size:
+        _build_field_vocab(fields["sem"], counter["src"],
+                           max_size=sem_vocab_size,
+                           min_freq=sem_words_min_frequency)
+        logger.info(" * sem vocab size: %d." % len(fields["sem"].vocab))
 
-        # All datasets have same num of n_src_features,
-        # getting the last one is OK.
-        for j in range(dataset.n_src_feats):
-            key = "src_feat_" + str(j)
-            _build_field_vocab(fields[key], counter[key])
-            logger.info(" * %s vocab size: %d." %
-                        (key, len(fields[key].vocab)))
+    _build_field_vocab(fields["src"], counter["src"],
+                       max_size=src_vocab_size,
+                       min_freq=src_words_min_frequency)
+    logger.info(" * src vocab size: %d." % len(fields["src"].vocab))
 
-        # Merge the input and output vocabularies.
-        if share_vocab:
-            # `tgt_vocab_size` is ignored when sharing vocabularies
-            logger.info(" * merging src and tgt vocab...")
-            merged_vocab = merge_vocabs(
-                [fields["src"].vocab, fields["tgt"].vocab],
-                vocab_size=src_vocab_size,
-                min_frequency=src_words_min_frequency)
-            fields["src"].vocab = merged_vocab
-            fields["tgt"].vocab = merged_vocab
+    # All datasets have same num of n_src_features,
+    # getting the last one is OK.
+    for j in range(dataset.n_src_feats):
+        key = "src_feat_" + str(j)
+        _build_field_vocab(fields[key], counter[key])
+        logger.info(" * %s vocab size: %d." %
+                    (key, len(fields[key].vocab)))
+
+    # Merge the input and output vocabularies.
+    if share_vocab:
+        # `tgt_vocab_size` is ignored when sharing vocabularies
+        logger.info(" * merging src and tgt vocab...")
+        merged_vocab = merge_vocabs(
+            [fields["src"].vocab, fields["tgt"].vocab],
+            vocab_size=src_vocab_size,
+            min_frequency=src_words_min_frequency)
+        fields["src"].vocab = merged_vocab
+        fields["tgt"].vocab = merged_vocab
 
     return fields
 
@@ -290,14 +268,11 @@ def merge_vocabs(vocabs, vocab_size=None, min_frequency=1):
                                  min_freq=min_frequency)
 
 
-def build_dataset(fields, data_type, src_data_iter=None, src_path=None,
+def build_dataset(fields,  src_data_iter=None, src_path=None,
                   src_dir=None, tgt_data_iter=None, tgt_path=None,
                   src_seq_length=0, tgt_seq_length=0,
                   src_seq_length_trunc=0, tgt_seq_length_trunc=0,
-                  dynamic_dict=False, sample_rate=0,
-                  window_size=0, window_stride=0, window=None,
-                  normalize_audio=True, use_filter_pred=True,
-                  image_channel_size=3,
+                  dynamic_dict=False, use_filter_pred=True,
                   syn_path=None, sem_path=None,
                   syn_data_iter=None, sem_data_iter=None):
     """
@@ -305,47 +280,20 @@ def build_dataset(fields, data_type, src_data_iter=None, src_path=None,
     number of features.
     """
 
-    def _make_examples_nfeats_tpl(data_type, src_data_iter, src_path, src_dir,
-                                  src_seq_length_trunc, sample_rate,
-                                  window_size, window_stride,
-                                  window, normalize_audio,
-                                  image_channel_size=3):
+    def _make_examples_nfeats_tpl(src_data_iter, src_path, src_dir,
+                                  src_seq_length_trunc):
         """
         Process the corpus into (example_dict iterator, num_feats) tuple
         on source side for different 'data_type'.
         """
 
-        if data_type == 'text':
-            src_examples_iter, num_src_feats = \
-                TextDataset.make_text_examples_nfeats_tpl(
-                    src_data_iter, src_path, src_seq_length_trunc, "src")
-
-        # elif data_type == 'img':
-        #    src_examples_iter, num_src_feats = \
-        #        ImageDataset.make_image_examples_nfeats_tpl(
-        #            src_data_iter, src_path, src_dir, image_channel_size)
-
-        # elif data_type == 'audio':
-        #    if src_data_iter:
-        #        raise ValueError("""Data iterator for AudioDataset isn't
-        #                            implemented""")
-
-        #    if src_path is None:
-        #        raise ValueError("AudioDataset requires a non None path")
-        #    src_examples_iter, num_src_feats = \
-        #        AudioDataset.make_audio_examples_nfeats_tpl(
-        #            src_path, src_dir, sample_rate,
-        #            window_size, window_stride, window,
-        #            normalize_audio)
+        src_examples_iter, num_src_feats = TextDataset.make_text_examples_nfeats_tpl(
+                src_data_iter, src_path, src_seq_length_trunc, "src")
 
         return src_examples_iter, num_src_feats
 
-    src_examples_iter, num_src_feats = \
-        _make_examples_nfeats_tpl(data_type, src_data_iter, src_path, src_dir,
-                                  src_seq_length_trunc, sample_rate,
-                                  window_size, window_stride,
-                                  window, normalize_audio,
-                                  image_channel_size=image_channel_size)
+    src_examples_iter, num_src_feats = _make_examples_nfeats_tpl(src_data_iter, src_path, src_dir,
+                                                                 src_seq_length_trunc)
 
     # For all data types, the tgt side corpus is in form of text.
     tgt_examples_iter, num_tgt_feats = \
@@ -364,28 +312,15 @@ def build_dataset(fields, data_type, src_data_iter=None, src_path=None,
     else:
         sem_examples_iter, num_sem_feats = None, None
 
-    if data_type == 'text':
-        dataset = TextDataset(fields, src_examples_iter, tgt_examples_iter,
-                              num_src_feats, num_tgt_feats,
-                              src_seq_length=src_seq_length,
-                              tgt_seq_length=tgt_seq_length,
-                              dynamic_dict=dynamic_dict,
-                              use_filter_pred=use_filter_pred,
-                              syn_examples_iter=syn_examples_iter, sem_examples_iter=sem_examples_iter,
-                              num_syn_feats=num_syn_feats, num_sem_feats=num_sem_feats
-                              )
-
-    #elif data_type == 'img':
-    #    dataset = ImageDataset(fields, src_examples_iter, tgt_examples_iter,
-    #                           num_src_feats, num_tgt_feats,
-    #                           tgt_seq_length=tgt_seq_length,
-    #                           use_filter_pred=use_filter_pred,
-    #                           image_channel_size=image_channel_size)
-
-    #elif data_type == 'audio':
-    #    dataset = AudioDataset(fields, src_examples_iter, tgt_examples_iter,
-    #                           tgt_seq_length=tgt_seq_length,
-    #                           use_filter_pred=use_filter_pred)
+    dataset = TextDataset(fields, src_examples_iter, tgt_examples_iter,
+                          num_src_feats, num_tgt_feats,
+                          src_seq_length=src_seq_length,
+                          tgt_seq_length=tgt_seq_length,
+                          dynamic_dict=dynamic_dict,
+                          use_filter_pred=use_filter_pred,
+                          syn_examples_iter=syn_examples_iter, sem_examples_iter=sem_examples_iter,
+                          num_syn_feats=num_syn_feats, num_sem_feats=num_sem_feats
+                          )
 
     return dataset
 
