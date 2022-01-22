@@ -9,7 +9,7 @@ from onmt.inputters.dataset_base import (DatasetBase, UNK_WORD,
 
 
 class MyTextDataset(Dataset):
-    def __init__(self, src_path, target_path, transform=None, target_transform=None):
+    def __init__(self, src_path, target_path, src_max_len, target_max_len, transform=None, target_transform=None):
 
         self.src_path = src_path
         self.target_path = target_path
@@ -20,16 +20,19 @@ class MyTextDataset(Dataset):
         self.target_texts = []
         with codecs.open(src_path, "r", "utf-8") as cf:
             for line in cf:
-                self.src_texts.append(line.strip().split())
+                self.src_texts.append(line.strip().split()[:src_max_len])
         with codecs.open(target_path, "r", "utf-8") as cf:
             for line in cf:
-                self.target_texts.append(line.strip().split())
+                self.target_texts.append(line.strip().split()[:target_max_len])
+
+        super(MyTextDataset, self).__init__()
 
     def __len__(self):
-        return len(self.img_labels)
+        return len(self.src_texts)
 
     def __getitem__(self, idx):
         return self.src_texts[idx], self.target_texts[idx]
+
 
 
 class TextDataset(DatasetBase):

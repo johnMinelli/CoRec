@@ -7,7 +7,7 @@ from onmt.utils.logging import init_logger, logger
 from onmt import opts
 from onmt.inputters.inputter import get_num_features, get_fields, build_dataset, build_vocab, save_fields_to_vocab
 from onmt.inputters.text_dataset import MyTextDataset
-
+from torch.utils.data import DataLoader
 
 def check_existing_pt_files(opt):
     """ Checking if there are existing .pt files to avoid tampering """
@@ -197,10 +197,18 @@ def main():
     logger.info("Building Dataset")
     if not os.path.exists("data/preprocessed/"):
         os.makedirs("data/preprocessed")
-    dataset = MyTextDataset(opt.train_src, opt.train_tgt) # or for validation
-    pt_file = "{:s}.{:s}.pt".format(opt.save_data, "text")
-    logger.info(" * saving %s dataset to %s." % ("text", pt_file))
-    torch.save(dataset, pt_file)
+
+
+    train_dataset = MyTextDataset(opt.train_src, opt.train_tgt, opt.src_seq_length, opt.tgt_seq_length)
+    train_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "train")
+    logger.info(" * saving %s dataset to %s." % ("train", train_pt_file))
+    torch.save(train_dataset, train_pt_file)
+
+    valid_dataset = MyTextDataset(opt.valid_src, opt.valid_tgt, opt.src_seq_length, opt.tgt_seq_length)
+    valid_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "valid")
+    logger.info(" * saving %s dataset to %s." % ("valid", valid_pt_file))
+    torch.save(valid_dataset, valid_pt_file)
+
 
     # logger.info("Building & saving training data...")
     # train_dataset_files = build_save_dataset('train', fields, opt)
