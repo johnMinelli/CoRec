@@ -12,9 +12,10 @@ import torch
 import onmt.opts as opts
 from onmt.helpers.model_saver import build_model_saver
 from onmt.helpers.trainer import build_trainer
-
-from onmt.inputters.inputter import lazily_load_dataset, build_dataset_iter, load_vocab
+from onmt.helpers.model_builder import build_model
+from onmt.inputters.inputters import lazily_load_dataset, build_dataset_iter, load_vocab
 from onmt.utils.logging import init_logger, logger
+from onmt.utils.optimizers import build_optim
 
 
 def _count_parameters(model):
@@ -92,14 +93,14 @@ def main(opt, device_id):
     logger.info(' * vocabulary size. source = %d' % len(vocab))
 
     # Build model.
-    model = build_model(model_opt, vocab, checkpoint)  # TODO
+    model = build_model(model_opt, vocab, opt.gpu, checkpoint)
     n_params, enc, dec = _count_parameters(model)
     logger.info('encoder: %d' % enc)
     logger.info('decoder: %d' % dec)
     logger.info('* number of parameters: %d' % n_params)
 
     # Build optimizer.
-    optim = build_optim(model, opt, checkpoint)  # TODO
+    optim = build_optim(model, opt, checkpoint)
 
     # Build model saver
     model_saver = build_model_saver(model_opt, model, vocab, optim)

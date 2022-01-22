@@ -12,8 +12,9 @@
 import onmt.utils
 import onmt
 
+from onmt.helpers.report_manager import build_report_manager
 from onmt.utils.logging import logger
-
+from onmt.utils.loss import build_loss_compute
 
 def build_trainer(opt, model, vocab, optim, model_saver):
     """
@@ -27,16 +28,16 @@ def build_trainer(opt, model, vocab, optim, model_saver):
         model_saver(:obj:`onmt.models.ModelSaverBase`): the utility object
             used to save the model
     """
-    train_loss = onmt.utils.loss.build_loss_compute(model, vocab, opt)
-    valid_loss = onmt.utils.loss.build_loss_compute(model, vocab, opt, train=False)
+    train_loss = build_loss_compute(model, vocab, opt)
+    valid_loss = build_loss_compute(model, vocab, opt, train=False)
 
     trunc_size = opt.truncated_decoder  # Badly named...
     shard_size = opt.max_generator_batches
     grad_accum_count = opt.accum_count
     gpu_verbose_level = opt.gpu_verbose_level
 
-    report_manager = onmt.utils.build_report_manager(opt)
-    trainer = onmt.Trainer(model, train_loss, valid_loss, optim, trunc_size,
+    report_manager = build_report_manager(opt)
+    trainer = Trainer(model, train_loss, valid_loss, optim, trunc_size,
                            shard_size, "text",
                            grad_accum_count,
                            gpu_verbose_level, report_manager,
