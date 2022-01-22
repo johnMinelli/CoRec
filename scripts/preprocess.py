@@ -6,7 +6,7 @@ import sys, os
 from onmt.utils.logging import init_logger, logger
 from onmt import opts
 from onmt.inputters.text_dataset import TextDataset
-
+from onmt.inputters.vocab import create_vocab, get_indices
 
 def check_existing_pt_files(opt):
     """ Checking if there are existing .pt files to avoid tampering """
@@ -72,6 +72,11 @@ def main():
     valid_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "valid")
     logger.info(" * saving %s dataset to %s." % ("valid", valid_pt_file))
     torch.save(valid_dataset, valid_pt_file)
+
+    vocab = create_vocab([train_dataset, valid_dataset])
+    vocab_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "vocab")
+    logger.info(" * saving vocabulary to %s." % (vocab_pt_file, ))
+    torch.save(vocab, vocab_pt_file)
 
 
 if __name__ == "__main__":
