@@ -1,13 +1,12 @@
 import configargparse
 import torch
 import glob
-import sys, os, codecs, gc
+import sys, os
 # local imports
 from onmt.utils.logging import init_logger, logger
 from onmt import opts
-from onmt.inputters.inputter import get_num_features, get_fields, build_dataset, build_vocab, save_fields_to_vocab
-from onmt.inputters.text_dataset import MyTextDataset
-from torch.utils.data import DataLoader
+from onmt.inputters.text_dataset import TextDataset
+
 
 def check_existing_pt_files(opt):
     """ Checking if there are existing .pt files to avoid tampering """
@@ -20,135 +19,6 @@ def check_existing_pt_files(opt):
             sys.stderr.write("Please backup existing pt file: %s, "
                              "to avoid tampering!\n" % pattern)
             sys.exit(1)
-
-
-def build_save_in_shards_using_shards_size(src_corpus, tgt_corpus, fields,
-                                           corpus_type, opt):
-    """
-    Divide src_corpus and tgt_corpus into smaller multiples
-    src_copus and tgt corpus files, then build shards, each
-    shard will have opt.shard_size samples except last shard.
-
-    The reason we do this is to avoid taking up too much memory due
-    to sucking in a huge corpus file.
-    """
-
-    with codecs.open(src_corpus, "r", encoding="utf-8") as fsrc:
-        with codecs.open(tgt_corpus, "r", encoding="utf-8") as ftgt:
-            logger.info("Reading source and target files: %s %s."
-                        % (src_corpus, tgt_corpus))
-            src_data = fsrc.readlines()
-            tgt_data = ftgt.readlines()
-            if len(src_data) != len(tgt_data):
-                raise AssertionError("Source and Target should \
-                                     have the same length")
-
-            num_shards = int(len(src_data) / opt.shard_size)
-            for x in range(num_shards):
-                logger.info("Splitting shard %d." % x)
-                f = codecs.open(src_corpus + ".{0}.txt".format(x), "w",
-                                encoding="utf-8")
-                f.writelines(
-                        src_data[x * opt.shard_size: (x + 1) * opt.shard_size])
-                f.close()
-                f = codecs.open(tgt_corpus + ".{0}.txt".format(x), "w",
-                                encoding="utf-8")
-                f.writelines(
-                        tgt_data[x * opt.shard_size: (x + 1) * opt.shard_size])
-                f.close()
-            num_written = num_shards * opt.shard_size
-            if len(src_data) > num_written:
-                logger.info("Splitting shard %d." % num_shards)
-                f = codecs.open(src_corpus + ".{0}.txt".format(num_shards),
-                                'w', encoding="utf-8")
-                f.writelines(
-                        src_data[num_shards * opt.shard_size:])
-                f.close()
-                f = codecs.open(tgt_corpus + ".{0}.txt".format(num_shards),
-                                'w', encoding="utf-8")
-                f.writelines(
-                        tgt_data[num_shards * opt.shard_size:])
-                f.close()
-
-    src_list = sorted(glob.glob(src_corpus + '.*.txt'))
-    tgt_list = sorted(glob.glob(tgt_corpus + '.*.txt'))
-
-    ret_list = []
-
-    for index, src in enumerate(src_list):
-        logger.info("Building shard %d." % index)
-        dataset = build_dataset(
-            fields, opt.data_type,
-            src_path=src,
-            tgt_path=tgt_list[index],
-            src_dir=opt.src_dir,
-            src_seq_length=opt.src_seq_length,
-            tgt_seq_length=opt.tgt_seq_length,
-            src_seq_length_trunc=opt.src_seq_length_trunc,
-            tgt_seq_length_trunc=opt.tgt_seq_length_trunc,
-            dynamic_dict=opt.dynamic_dict)
-
-        pt_file = "{:s}.{:s}.{:d}.pt".format(
-            opt.save_data, corpus_type, index)
-
-        # We save fields in vocab.pt seperately, so make it empty.
-        dataset.fields = []
-
-        logger.info(" * saving %sth %s data shard to %s."
-                    % (index, corpus_type, pt_file))
-        torch.save(dataset, pt_file)
-
-        ret_list.append(pt_file)
-        os.remove(src)
-        os.remove(tgt_list[index])
-        del dataset.examples
-        gc.collect()
-        del dataset
-        gc.collect()
-
-    return ret_list
-
-
-def build_save_dataset(corpus_type, fields, opt):
-    """ Building and saving the dataset """
-    assert corpus_type in ['train', 'valid']
-
-    if corpus_type == 'train':
-        src_corpus = opt.train_src
-        tgt_corpus = opt.train_tgt
-    else:
-        src_corpus = opt.valid_src
-        tgt_corpus = opt.valid_tgt
-
-    if (opt.shard_size > 0):
-        return build_save_in_shards_using_shards_size(src_corpus,
-                                                      tgt_corpus,
-                                                      fields,
-                                                      corpus_type,
-                                                      opt)
-
-    # For data_type == 'img' or 'audio', currently we don't do
-    # preprocess sharding. We only build a monolithic dataset.
-    # But since the interfaces are uniform, it would be not hard
-    # to do this should users need this feature.
-    dataset = build_dataset(
-        fields,
-        src_path=src_corpus,
-        tgt_path=tgt_corpus,
-        src_dir=opt.src_dir,
-        src_seq_length=opt.src_seq_length,
-        tgt_seq_length=opt.tgt_seq_length,
-        src_seq_length_trunc=opt.src_seq_length_trunc,
-        tgt_seq_length_trunc=opt.tgt_seq_length_trunc)
-
-    # We save fields in vocab.pt seperately, so make it empty.
-    dataset.fields = []
-
-    pt_file = "{:s}.{:s}.pt".format(opt.save_data, corpus_type)
-    logger.info(" * saving %s dataset to %s." % (corpus_type, pt_file))
-    torch.save(dataset, pt_file)
-
-    return [pt_file]
 
 
 def parse_args():
@@ -183,11 +53,6 @@ def main():
     init_logger(opt.log_file)
     logger.info("Extracting features...")
 
-    # src_nfeats = get_num_features(opt.train_src, 'src')
-    # tgt_nfeats = get_num_features(opt.train_tgt, 'tgt')
-    # logger.info(" * number of source features: %d." % src_nfeats)
-    # logger.info(" * number of target features: %d." % tgt_nfeats)
-
     # an example in training set
     # {'src': (
     # 'new', 'file', 'mode', '100755', '<nl>', 'index', '0000000', '.', '.', 'd125c52', '<nl>', 'Binary', 'files', '/',
@@ -198,42 +63,16 @@ def main():
     if not os.path.exists("data/preprocessed/"):
         os.makedirs("data/preprocessed")
 
-
-    train_dataset = MyTextDataset(opt.train_src, opt.train_tgt, opt.src_seq_length, opt.tgt_seq_length)
+    train_dataset = TextDataset(opt.train_src, opt.train_tgt, opt.src_seq_length, opt.tgt_seq_length)
     train_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "train")
     logger.info(" * saving %s dataset to %s." % ("train", train_pt_file))
     torch.save(train_dataset, train_pt_file)
 
-    valid_dataset = MyTextDataset(opt.valid_src, opt.valid_tgt, opt.src_seq_length, opt.tgt_seq_length)
+    valid_dataset = TextDataset(opt.valid_src, opt.valid_tgt, opt.src_seq_length, opt.tgt_seq_length)
     valid_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "valid")
     logger.info(" * saving %s dataset to %s." % ("valid", valid_pt_file))
     torch.save(valid_dataset, valid_pt_file)
 
-
-    # logger.info("Building & saving training data...")
-    # train_dataset_files = build_save_dataset('train', fields, opt)
-
-    # logger.info("Building & saving validation data...")
-    # build_save_dataset('valid', fields, opt)
-
-    # logger.info("Building & saving vocabulary...")
-    # build_save_vocab(train_dataset_files, fields, opt)
-
-
-def build_save_vocab(train_dataset, fields, opt):
-    """ Building and saving the vocab """
-    fields = build_vocab(train_dataset, fields,
-                                   opt.share_vocab,
-                                   opt.src_vocab,
-                                   opt.src_vocab_size,
-                                   opt.src_words_min_frequency,
-                                   opt.tgt_vocab,
-                                   opt.tgt_vocab_size,
-                                   opt.tgt_words_min_frequency)
-
-    # Can't save fields, so remove/reconstruct at training time.
-    vocab_file = opt.save_data + '.vocab.pt'
-    torch.save(save_fields_to_vocab(fields), vocab_file)
 
 if __name__ == "__main__":
     main()
