@@ -306,12 +306,8 @@ def train_opts(parser):
               help="""Keep X checkpoints (negative: keep all)""")
 
     # GPU
-    group.add('--gpuid', '-gpuid', default=[], nargs='*', type=int,
-              help="Deprecated see world_size and gpu_ranks.")
-    group.add('--gpu_ranks', '-gpu_ranks', default=[], nargs='*', type=int,
-              help="list of ranks of each process.")
-    group.add('--world_size', '-world_size', default=1, type=int,
-              help="total number of distributed processes.")
+    group.add('--gpu', '-gpu', action="store_true",
+              help="Use gpu processor for the execution.")
     group.add('--gpu_backend', '-gpu_backend',
               default="nccl", type=str,
               help="Type of torch distributed backend")

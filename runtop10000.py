@@ -27,7 +27,7 @@ def controller(opt):
                                 -global_attention mlp \
                                 -data data/preprocessed/top10000_data \
                                 -save_model models/CoRec_10000 \
-                                -gpu_ranks 0 1 2 3 \
+                                -gpu \
                                 -batch_size 64 \
                                 -optim adam \
                                 -learning_rate 0.001 \

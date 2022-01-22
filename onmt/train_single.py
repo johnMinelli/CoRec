@@ -13,11 +13,7 @@ import onmt.opts as opts
 from onmt.helpers.model_saver import build_model_saver
 from onmt.helpers.trainer import build_trainer
 
-from onmt.inputters.inputter import lazily_load_dataset, _load_fields, build_dataset_iter, load_vocab
-# from onmt.inputters.inputter import build_dataset_iter
-# from onmt.model_builder import build_model
-# from onmt.utils.optimizers import build_optim
-# from onmt.helpers.trainer import build_trainer
+from onmt.inputters.inputter import lazily_load_dataset, build_dataset_iter, load_vocab
 from onmt.utils.logging import init_logger, logger
 
 
@@ -48,8 +44,8 @@ def training_opt_parsing(opt, device_id):
 
     # opt.brnn = (opt.encoder_type == "brnn")
 
-    if torch.cuda.is_available() and not opt.gpu_ranks:
-        logger.info("WARNING: You have a CUDA device, should run with -gpu_ranks")
+    if torch.cuda.is_available() and not opt.gpu:
+        logger.info("WARNING: You have a CUDA device, should run with -gpu")
 
     if opt.seed > 0:
         torch.manual_seed(opt.seed)
@@ -108,7 +104,7 @@ def main(opt, device_id):
     # Build model saver
     model_saver = build_model_saver(model_opt, model, vocab, optim)
 
-    trainer = build_trainer(opt, device_id, model, optim, model_saver)  # TODO
+    trainer = build_trainer(opt, device_id, model, vocab, optim, model_saver)
 
     def train_iter_fct():
         return build_dataset_iter(lazily_load_dataset("train", opt), vocab, opt.batch_size)
@@ -116,11 +112,9 @@ def main(opt, device_id):
     def valid_iter_fct():
         return build_dataset_iter(lazily_load_dataset("valid", opt), vocab, opt.valid_batch_size)
 
-    # maybe it's needed:  next(iter(legacy_train_iterator))
-
     # Do training.
-    if len(opt.gpu_ranks):
-        logger.info('Starting training on GPU: %s' % opt.gpu_ranks)
+    if opt.gpu:
+        logger.info('Starting training on GPU')
     else:
         logger.info('Starting training on CPU, could be very slow')
     trainer.train(train_iter_fct, valid_iter_fct, opt.train_steps, opt.valid_steps)

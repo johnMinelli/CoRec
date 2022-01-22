@@ -9,7 +9,6 @@ import signal
 import torch
 
 import onmt.opts as opts
-import onmt.utils.distributed
 
 from onmt.utils.logging import logger
 from onmt.train_single import main as single_main
@@ -17,45 +16,10 @@ from onmt.train_single import main as single_main
 
 def main(opt):
 
-    nb_gpu = len(opt.gpu_ranks)
-
-    if opt.world_size > 1:
-        mp = torch.multiprocessing.get_context('spawn')
-        # Create a thread to listen for errors in the child processes.
-        error_queue = mp.SimpleQueue()
-        error_handler = ErrorHandler(error_queue)
-        # Train with multiprocessing.
-        procs = []
-        for device_id in range(nb_gpu):
-            procs.append(mp.Process(target=run, args=(
-                opt, device_id, error_queue, ), daemon=True))
-            procs[device_id].start()
-            logger.info(" Starting process pid: %d  " % procs[device_id].pid)
-            error_handler.add_child(procs[device_id].pid)
-        for p in procs:
-            p.join()
-
-    elif nb_gpu == 1:  # case 1 GPU only
+    if opt.gpu:  # case GPU
         single_main(opt, 0)
     else:   # case only CPU
         single_main(opt, -1)
-
-# starter method fpr a thread pool
-def run(opt, device_id, error_queue):
-    """ run process """
-    try:
-        gpu_rank = onmt.utils.distributed.multi_init(opt, device_id)
-        if gpu_rank != opt.gpu_ranks[device_id]:
-            raise AssertionError("An error occurred in \
-                  Distributed initialization")
-        single_main(opt, device_id)
-    except KeyboardInterrupt:
-        pass  # killed by parent, do nothing
-    except Exception:
-        # propagate exception to parent process, keeping original traceback
-        import traceback
-        error_queue.put((opt.gpu_ranks[device_id], traceback.format_exc()))
-
 
 class ErrorHandler(object):
     """A class that listens for exceptions in children processes and propagates
