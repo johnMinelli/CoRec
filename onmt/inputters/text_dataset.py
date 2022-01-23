@@ -26,8 +26,9 @@ class TextDataset(Dataset):
                 self.target_texts.append(line.strip().split()[:target_max_len])
 
     def __len__(self):
+        assert len(self.src_texts) == len(self.target_texts)
         return len(self.src_texts)
 
     def __getitem__(self, idx):
-        return self.src_texts[idx], self.target_texts[idx]
+        return self.src_texts[idx], self.target_texts[idx], len(self.src_texts[idx]), len(self.target_texts[idx])
 

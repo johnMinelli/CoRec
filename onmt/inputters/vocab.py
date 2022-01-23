@@ -9,7 +9,7 @@ def create_vocab(datasets):
     counter = Counter()
     for dataset in datasets:
 
-        for src_text, target_txt in dataset:
+        for src_text, target_txt, _, _ in dataset:
             counter.update(src_text)
             counter.update(target_txt)
 
