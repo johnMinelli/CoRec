@@ -1,8 +1,12 @@
 ﻿import glob
 import random
+from typing import Iterator
+
 import torch, os, codecs, gc, torchtext
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, Sampler
 from torch.nn.utils.rnn import pad_sequence
+from torch.utils.data.sampler import T_co
+
 from onmt.utils.logging import logger
 from onmt.inputters.vocab import get_indices
 
@@ -59,15 +63,38 @@ def lazily_load_dataset(corpus_type, opt):
         yield _lazy_dataset_loader(pt, corpus_type)
 
 
+class MinPaddingSampler(Sampler):
+
+    def __init__(self, data_source, batch_size):
+
+        super().__init__(data_source)
+        self.dataset = data_source
+        self.batch_size = batch_size
+
+    def __iter__(self):
+        indices = [(i, s[2]) for i, s in enumerate(self.dataset)]
+        # sort dataset indices by increasing length, so that
+        # batches contain texts with close lengths, and padding should
+        indices = sorted(indices, key=lambda x: x[1])
+        pooled_indices = []
+        # create pool of indexes of examples with similar lengths
+        for i in range(0, len(indices), self.batch_size * 100):
+            pooled_indices.extend(indices[i:i + self.batch_size * 100])
+        # select only the actual indexes, not lengths
+        print(pooled_indices[:10])
+        print(pooled_indices[200:210])
+        pooled_indices = [x[0] for x in pooled_indices]
+
+        random.shuffle(pooled_indices)
+        for i in range(0, len(pooled_indices), self.batch_size):
+            yield pooled_indices[i:i + self.batch_size]  # if you don't yield remove the next(iter( in the trainer
+
+    def __len__(self):
+        # each time batch size elements are sampled
+        return self.batch_size
+
+
 def build_dataset_iter(dataset, vocabulary, batch_size):
-    # from onmt.inputters.base_dataset import (UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD)
-
-    PAD_WORD = '<blank>'
-    UNK_WORD = '<unk>'
-    UNK = 0
-    BOS_WORD = '<s>'
-    EOS_WORD = '</s>'
-
     def generate_batch(data_batch):
         _, _, en_len, de_len = zip(*data_batch)
         # for padding
@@ -85,30 +112,11 @@ def build_dataset_iter(dataset, vocabulary, batch_size):
                 de_tensor = torch.cat((de_tensor, torch.zeros(max_de_len - de_item_len, dtype=torch.int)))
             en_batch.append(en_tensor)
             de_batch.append(de_tensor)
-            # de_batch.append(torch.cat([torch.tensor([BOS_WORD]), de_item, torch.tensor([EOS_WORD])], dim=0))
-            # en_batch.append(torch.cat([torch.tensor([BOS_WORD]), en_item, torch.tensor([EOS_WORD])], dim=0))
-        #en_batch = torch.Tensor(en_batch)
-        #de_batch = torch.Tensor(de_batch)
 
         return en_batch, de_batch
 
-    # TODO it need similar length sentences in a batch to have a small padding
-#    def batch_sampler():
-#        indices = [(i, len(s[1])) for i, s in enumerate(dataset)]
-#        random.shuffle(indices)
-#        pooled_indices = []
-#        # create pool of indices with similar lengths
-#        for i in range(0, len(indices), batch_size * 100):
-#            pooled_indices.extend(sorted(indices[i:i + batch_size * 100], key=lambda x: x[1]))
-
-#        pooled_indices = [x[0] for x in pooled_indices]
-        # yield indices for current batch
-#        for i in range(0, len(pooled_indices), batch_size):
-#            yield pooled_indices[i:i + batch_size]  # if you don't yield remove the next(iter( in the trainer
-
-    # return DataLoader(dataset, batch_sampler=batch_sampler, collate_fn=generate_batch)
-    return DataLoader(dataset, collate_fn=generate_batch, batch_size=batch_size)
-
+    sampler = MinPaddingSampler(dataset, batch_size)
+    return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
 
 def load_vocab(opt, checkpoint):
     if checkpoint is not None:
