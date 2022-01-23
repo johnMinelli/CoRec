@@ -1,11 +1,8 @@
 ﻿import glob
 import random
-from typing import Iterator
 
-import torch, os, codecs, gc, torchtext
-from torch.utils.data import Dataset, DataLoader, Sampler
-from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data.sampler import T_co
+import torch, os, codecs
+from torch.utils.data import  DataLoader, Sampler
 
 from onmt.utils.logging import logger
 from onmt.inputters.vocab import get_indices
@@ -81,8 +78,6 @@ class MinPaddingSampler(Sampler):
         for i in range(0, len(indices), self.batch_size * 100):
             pooled_indices.extend(indices[i:i + self.batch_size * 100])
         # select only the actual indexes, not lengths
-        print(pooled_indices[:10])
-        print(pooled_indices[200:210])
         pooled_indices = [x[0] for x in pooled_indices]
 
         random.shuffle(pooled_indices)
