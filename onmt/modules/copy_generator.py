@@ -2,8 +2,8 @@
 import torch
 import torch.nn as nn
 
-from onmt.inputters import inputters
-# from onmt.utils.misc import aeq
+from onmt.inputters.vocabulary import (UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD)
+from onmt.utils.misc import aeq
 from onmt.inputters.text_dataset import TextDataset
 from onmt.utils.loss import LossComputeBase
 
@@ -84,12 +84,12 @@ class CopyGenerator(nn.Module):
         batch_by_tlen, _ = hidden.size()
         batch_by_tlen_, slen = attn.size()
         slen_, batch, cvocab = src_map.size()
-        # aeq(batch_by_tlen, batch_by_tlen_)
-        # aeq(slen, slen_)
+        aeq(batch_by_tlen, batch_by_tlen_)
+        aeq(slen, slen_)
 
         # Original probabilities.
         logits = self.linear(hidden)
-        logits[:, self.tgt_dict.stoi[inputters.PAD_WORD]] = -float('inf')
+        logits[:, self.tgt_dict.vocab[PAD_WORD]] = -float('inf')
         prob = torch.softmax(logits, 1)
 
         # Probability of copying p(z=1) batch.

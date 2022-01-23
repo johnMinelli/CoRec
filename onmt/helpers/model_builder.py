@@ -5,11 +5,14 @@ and creates each encoder and decoder accordingly.
 import re
 import torch
 import torch.nn as nn
+
+from onmt.decoders.decoder import StdRNNDecoder
+from onmt.encoders.rnn_encoder import RNNEncoder
 from onmt.modules.copy_generator import CopyGenerator
 
-from onmt.modules.embeddings import Embeddings
+from onmt.models.embeddings import Embeddings
 from torch.nn.init import xavier_uniform_
-from onmt.inputters.vocab import (UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD)
+from onmt.inputters.vocabulary import (UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD)
 
 import onmt.modules
 # from onmt.encoders.rnn_encoder import RNNEncoder
@@ -22,7 +25,7 @@ import onmt.modules
 # from onmt.decoders.cnn_decoder import CNNDecoder
 # 
 # from onmt.modules import Embeddings, CopyGenerator
-from onmt.modules.model import NMTModel
+from onmt.models.model import NMTModel
 from onmt.utils.logging import logger
 
 
@@ -45,9 +48,9 @@ def build_encoder(opt, embeddings):
     #     return MeanEncoder(opt.enc_layers, embeddings)
     # else:
     #     # "rnn" or "brnn"
-    #     return RNNEncoder(opt.rnn_type, opt.brnn, opt.enc_layers,
-    #                       opt.enc_rnn_size, opt.dropout, embeddings,
-    #                       opt.bridge)
+    return RNNEncoder(opt.rnn_type, opt.brnn, opt.enc_layers,
+                      opt.enc_rnn_size, opt.dropout, embeddings,
+                      opt.bridge)
 
 def build_decoder(opt, embeddings):
     """
@@ -82,17 +85,17 @@ def build_decoder(opt, embeddings):
     #                                opt.total,
     #                                opt.batch_size)
     # else:
-    #     return StdRNNDecoder(opt.rnn_type, opt.brnn,
-    #                          opt.dec_layers, opt.dec_rnn_size,
-    #                          opt.global_attention,
-    #                          opt.global_attention_function,
-    #                          opt.coverage_attn,
-    #                          opt.context_gate,
-    #                          opt.copy_attn,
-    #                          opt.dropout,
-    #                          embeddings,
-    #                          opt.reuse_copy_attn,
-    #                          opt.total)
+    return StdRNNDecoder(opt.rnn_type, opt.brnn,
+                         opt.dec_layers, opt.dec_rnn_size,
+                         opt.global_attention,
+                         opt.global_attention_function,
+                         opt.coverage_attn,
+                         opt.context_gate,
+                         opt.copy_attn,
+                         opt.dropout,
+                         embeddings,
+                         opt.reuse_copy_attn,
+                         opt.total)
 
 
 def load_test_model(opt, dummy_opt, model_path=None):

@@ -3,11 +3,11 @@ import torch
 import glob
 import sys, os
 # local imports
-from onmt.inputters.inputters import build_dataset_iter
+from onmt.inputters.input_aux import build_dataset_iter
 from onmt.utils.logging import init_logger, logger
 from onmt import opts
 from onmt.inputters.text_dataset import TextDataset
-from onmt.inputters.vocab import create_vocab
+from onmt.inputters.vocabulary import create_vocab
 
 
 def check_existing_pt_files(opt):

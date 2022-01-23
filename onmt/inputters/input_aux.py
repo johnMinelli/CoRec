@@ -5,7 +5,7 @@ import torch, os, codecs
 from torch.utils.data import  DataLoader, Sampler
 
 from onmt.utils.logging import logger
-from onmt.inputters.vocab import get_indices
+from onmt.inputters.vocabulary import get_indices
 
 def load_vocabulary(vocabulary_path, tag=""):
     """

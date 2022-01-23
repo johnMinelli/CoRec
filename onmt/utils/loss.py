@@ -8,8 +8,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 import onmt
-from onmt.inputters import vocab
-from onmt.inputters import inputters
+from onmt.inputters import vocabulary
+from onmt.inputters import input_aux
 from onmt.modules.sparse_losses import SparsemaxLoss
 from onmt.modules.sparse_activations import LogSparsemax
 
