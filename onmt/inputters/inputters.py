@@ -31,7 +31,7 @@ def load_vocabulary(vocabulary_path, tag=""):
     return vocabulary
 
 
-def lazily_load_dataset(corpus_type, opt):
+def load_dataset(corpus_type, opt):
     """
     Dataset generator. Don't do extra stuff here, like printing,
     because they will be postponed to the first loading time.
@@ -43,21 +43,10 @@ def lazily_load_dataset(corpus_type, opt):
     """
     assert corpus_type in ["train", "valid"]
 
-    def _lazy_dataset_loader(pt_file, corpus_type):
-        dataset = torch.load(pt_file)
-        logger.info('Loading %s dataset from %s, number of examples: %d' %
-                    (corpus_type, pt_file, len(dataset)))
-        return dataset
-
-    # Sort the glob output by file name (by increasing indexes).
-    pts = sorted(glob.glob(opt.data + '.' + corpus_type + '.[0-9]*.pt'))
-    if pts:
-        for pt in pts:
-            yield _lazy_dataset_loader(pt, corpus_type)
-    else:
-        # Only one inputters.*Dataset, simple!
-        pt = opt.data + '.' + corpus_type + '.pt'
-        yield _lazy_dataset_loader(pt, corpus_type)
+    pt = opt.data + '.' + corpus_type + '.pt'
+    dataset = torch.load(pt)
+    logger.info('Loading %s dataset from %s, number of examples: %d' % (corpus_type, pt, len(dataset)))
+    return dataset
 
 
 class MinPaddingSampler(Sampler):
@@ -111,7 +100,8 @@ def build_dataset_iter(dataset, vocabulary, batch_size):
         return en_batch, de_batch
 
     sampler = MinPaddingSampler(dataset, batch_size)
-    return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
+    a = DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
+    return a
 
 def load_vocab(opt, checkpoint):
     if checkpoint is not None:

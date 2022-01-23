@@ -3,6 +3,7 @@ import torch
 import glob
 import sys, os
 # local imports
+from onmt.inputters.inputters import build_dataset_iter
 from onmt.utils.logging import init_logger, logger
 from onmt import opts
 from onmt.inputters.text_dataset import TextDataset
@@ -54,7 +55,7 @@ def main():
     init_logger(opt.log_file)
     logger.info("Extracting features...")
 
-    # an example in training set
+    # An example in training set
     # {'src': (
     # 'new', 'file', 'mode', '100755', '<nl>', 'index', '0000000', '.', '.', 'd125c52', '<nl>', 'Binary', 'files', '/',
     # 'dev', '/', 'null', 'and', 'b', '/', 'art', '/', 'intro', '.', 'png', 'differ', '<nl>'),
@@ -79,10 +80,10 @@ def main():
     logger.info(" * saving vocabulary to %s." % (vocab_pt_file, ))
     torch.save(vocab, vocab_pt_file)
 
+    # Test print
     # train_loader = build_dataset_iter(train_dataset, vocab, 2)
-
     # for src, target in train_loader:
-    #     break
+    #     print(src, target); break
 
 
 if __name__ == "__main__":

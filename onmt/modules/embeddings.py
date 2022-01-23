@@ -121,7 +121,7 @@ class Embeddings(nn.Module):
         # The embedding matrix look-up tables for words.
         emb_params = zip(vocab_sizes, emb_dims, pad_indices)
         embeddings = [nn.Embedding(vocab, dim, padding_idx=pad, sparse=sparse) for vocab, dim, pad in emb_params]
-        emb_luts = Elementwise(embeddings)
+        emb_luts = Elementwise("concat", embeddings)
 
         # The final output size of word vectors.
         # This is the attribute you should access if you need to know

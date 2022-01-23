@@ -38,8 +38,7 @@ def build_trainer(opt, model, vocab, optim, model_saver):
 
     report_manager = build_report_manager(opt)
     trainer = Trainer(model, train_loss, valid_loss, optim, trunc_size,
-                           shard_size, "text",
-                           grad_accum_count,
+                           shard_size, grad_accum_count,
                            gpu_verbose_level, report_manager,
                            model_saver=model_saver)
     return trainer
@@ -123,7 +122,7 @@ class Trainer(object):
         while step <= train_steps:
 
             reduce_counter = 0
-            for i, batch in enumerate(next(iter(train_iter))):
+            for i, batch in enumerate(train_iter):
                 logger.info(f"Batch: {i} accum: {accum}") if self.gpu_verbose_level > 1 else None
                 true_batchs.append(batch)
 
@@ -243,7 +242,7 @@ class Trainer(object):
         see `onmt.utils.ReportManagerBase.report_training` for doc
         """
         if self.report_manager is not None:
-            return self.report_manager.report_training(step, num_steps, learning_rate, report_stats, multigpu=self.n_gpu > 1)
+            return self.report_manager.report_training(step, num_steps, learning_rate, report_stats, multigpu=False)
 
     def _report_step(self, learning_rate, step, train_stats=None, valid_stats=None):
         """

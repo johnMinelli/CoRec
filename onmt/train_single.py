@@ -13,7 +13,7 @@ import onmt.opts as opts
 from onmt.helpers.model_saver import build_model_saver
 from onmt.helpers.trainer import build_trainer
 from onmt.helpers.model_builder import build_model
-from onmt.inputters.inputters import lazily_load_dataset, build_dataset_iter, load_vocab
+from onmt.inputters.inputters import load_dataset, build_dataset_iter, load_vocab
 from onmt.utils.logging import init_logger, logger
 from onmt.utils.optimizers import build_optim
 
@@ -105,13 +105,13 @@ def main(opt, device_id):
     # Build model saver
     model_saver = build_model_saver(model_opt, model, vocab, optim)
 
-    trainer = build_trainer(opt, device_id, model, vocab, optim, model_saver)
+    trainer = build_trainer(opt, model, vocab, optim, model_saver)
 
     def train_iter_fct():
-        return build_dataset_iter(lazily_load_dataset("train", opt), vocab, opt.batch_size)
+        return build_dataset_iter(load_dataset("train", opt), vocab, opt.batch_size)
 
     def valid_iter_fct():
-        return build_dataset_iter(lazily_load_dataset("valid", opt), vocab, opt.valid_batch_size)
+        return build_dataset_iter(load_dataset("valid", opt), vocab, opt.valid_batch_size)
 
     # Do training.
     if opt.gpu:
