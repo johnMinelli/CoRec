@@ -237,7 +237,7 @@ class NMTLossCompute(LossComputeBase):
     def _make_shard_state(self, batch, output, range_, attns=None):
         return {
             "output": output,
-            "target": batch.tgt[range_[0] + 1: range_[1]],
+            "target": batch[1][range_[0] + 1: range_[1]],
         }
 
     def _compute_loss(self, batch, output, target):
@@ -295,8 +295,7 @@ def shards(state, shard_size, eval_only=False):
         # want a sequence of dictionaries of tensors.
         # First, unzip the dictionary into a sequence of keys and a
         # sequence of tensor-like sequences.
-        keys, values = zip(*((k, [v_chunk for v_chunk in v_split])
-                             for k, (_, v_split) in non_none.items()))
+        keys, values = zip(*((k, [v_chunk for v_chunk in v_split]) for k, (_, v_split) in non_none.items()))
 
         # Now, yield a dictionary for each shard. The keys are always
         # the same. values is a sequence of length #keys where each
@@ -306,6 +305,7 @@ def shards(state, shard_size, eval_only=False):
         # with the keys.
         for shard_tensors in zip(*values):
             yield dict(zip(keys, shard_tensors))
+
 
         # Assumed backprop'd
         variables = []
