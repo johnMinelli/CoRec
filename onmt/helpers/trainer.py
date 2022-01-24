@@ -143,7 +143,7 @@ class Trainer(object):
                     if (step % valid_steps == 0):
                         logger.info(f'Validate step {step}') if self.gpu_verbose_level > 0 else None
                         valid_iter = valid_iter_fct()
-                        valid_stats = self.validate(next(iter(valid_iter)))
+                        valid_stats = self.validate(valid_iter)
                         logger.info(f'Report stat step {step}') if self.gpu_verbose_level > 0 else None
                         self._report_step(self.optim.learning_rate, step, valid_stats=valid_stats)
 
@@ -166,8 +166,8 @@ class Trainer(object):
         self.model.eval()
 
         stats = onmt.utils.Statistics()
-
-        for batch in enumerate(next(iter(valid_iter))):
+        # why it doesn't use the with torch.no_grad():
+        for batch in valid_iter:
             src, source_lengths = batch[0]
             tgt = batch[1]
 
