@@ -17,7 +17,7 @@ class NMTModel(nn.Module):
         self.encoder = encoder
         self.decoder = decoder
 
-    def set_step(self, step):
+    def set_step(self, step):  #+++
         self.decoder.step = step
 
     def forward(self, src, tgt, lengths):

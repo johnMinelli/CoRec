@@ -1,3 +1,4 @@
+# STANDARD
 """Base class for encoders and generic multi encoders."""
 
 import torch.nn as nn

@@ -108,7 +108,7 @@ def load_vocab(opt, checkpoint):
         logger.info('Loading vocab from checkpoint at %s.' % opt.train_from)
         vocab = checkpoint['vocab']
     else:
-        vocab = torch.load(opt.data + '.vocab.pt')  # TESTME is this already a torchtext.Vocab type?
+        vocab = torch.load(opt.data + '.vocab.pt')
     return vocab
 
 

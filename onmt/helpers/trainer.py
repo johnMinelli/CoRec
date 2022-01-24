@@ -184,7 +184,7 @@ class Trainer(object):
 
         return stats
 
-    def _gradient_accumulation(self, true_batchs, normalization, total_stats, report_stats, step):
+    def _gradient_accumulation(self, true_batchs, normalization, total_stats, report_stats, step):  #+++ step
         if self.grad_accum_count > 1:
             self.model.zero_grad()
 

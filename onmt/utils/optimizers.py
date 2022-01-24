@@ -1,3 +1,4 @@
+# STANDARD
 """ Optimizers class """
 import torch
 import torch.optim as optim

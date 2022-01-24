@@ -1,3 +1,4 @@
+# STANDARD
 """
 This includes: LossComputeBase and the standard NMTLossCompute, and
                sharded loss compute stuff.
@@ -9,7 +10,6 @@ import torch.nn.functional as F
 
 import onmt
 from onmt.inputters import vocabulary
-from onmt.inputters import input_aux
 from onmt.modules.sparse_losses import SparsemaxLoss
 from onmt.modules.sparse_activations import LogSparsemax
 
@@ -27,11 +27,11 @@ def build_loss_compute(model, tgt_vocab, opt, train=True):
     """
     device = torch.device("cuda" if opt.gpu else "cpu")
 
-    padding_idx = tgt_vocab.vocab[vocab.PAD_WORD]
+    padding_idx = tgt_vocab.vocab[vocabulary.PAD_WORD]
     if opt.copy_attn:
         criterion = onmt.modules.copy_generator.CopyGeneratorLoss(
             len(tgt_vocab), opt.copy_attn_force,
-            unk_index=inputters.UNK, ignore_index=padding_idx
+            unk_index=vocabulary.UNK, ignore_index=padding_idx
         )
     elif opt.label_smoothing > 0 and train:
         criterion = LabelSmoothingLoss(
@@ -46,7 +46,7 @@ def build_loss_compute(model, tgt_vocab, opt, train=True):
     # probabilities, only the first part of the generator needs to be
     # passed to the NMTLossCompute. At the moment, the only supported
     # loss function of this kind is the sparsemax loss.
-    use_raw_logits = True  # isinstance(criterion, SparsemaxLoss)
+    use_raw_logits = isinstance(criterion, SparsemaxLoss)
     loss_gen = model.generator[0] if use_raw_logits else model.generator
     if opt.copy_attn:
         compute = onmt.modules.copy_generator.CopyGeneratorLossCompute(

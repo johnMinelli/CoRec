@@ -1,3 +1,4 @@
+# STANDARD
 """ Implementation of ONMT RNN for Input Feeding Decoding """
 import torch
 import torch.nn as nn

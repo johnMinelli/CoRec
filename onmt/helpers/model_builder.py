@@ -95,7 +95,7 @@ def build_decoder(opt, embeddings):
                          opt.dropout,
                          embeddings,
                          opt.reuse_copy_attn,
-                         opt.total)
+                         opt.total)  #+++ opt.total
 
 
 def load_test_model(opt, dummy_opt, model_path=None):

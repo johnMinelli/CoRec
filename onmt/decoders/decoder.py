@@ -61,7 +61,7 @@ class RNNDecoderBase(nn.Module):
                  reuse_copy_attn=False, total=0, batch_size=64):
         super(RNNDecoderBase, self).__init__()
 
-        # Basic attributes.
+        # Basic attributes.  #+++
         self.test = 0
         self.step = None
         self.total = total
@@ -306,7 +306,7 @@ class InputFeedRNNDecoder(RNNDecoderBase):
           E --> H
           G --> H
     """
-    def randn_choose(self, emb_t, input_feed):
+    def randn_choose(self, emb_t, input_feed):  #+++
         if self.test == 1:
             return emb_t
         total = self.total * 4
@@ -352,7 +352,7 @@ class InputFeedRNNDecoder(RNNDecoderBase):
         for _, emb_t in enumerate(emb.split(1)):
             emb_t = emb_t.squeeze(0)
             # decoder_input = torch.cat([emb_t, input_feed], 1)
-            decoder_input = self.randn_choose(emb_t, input_feed)
+            decoder_input = self.randn_choose(emb_t, input_feed)  #+++
             rnn_output, dec_state = self.rnn(decoder_input, dec_state)
             decoder_output, p_attn = self.attn(
                 rnn_output,
@@ -402,4 +402,4 @@ class InputFeedRNNDecoder(RNNDecoderBase):
         """
         Using input feed by concatenating input with attention vectors.
         """
-        return self.embeddings.embedding_size# + self.hidden_size
+        return self.embeddings.embedding_size# + self.hidden_size  #+++

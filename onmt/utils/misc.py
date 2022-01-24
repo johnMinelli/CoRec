@@ -1,3 +1,4 @@
+# STANDARD
 # -*- coding: utf-8 -*-
 
 import torch
@@ -45,11 +46,3 @@ def tile(x, count, dim=0):
     if dim != 0:
         x = x.permute(perm).contiguous()
     return x
-
-
-def use_gpu(opt):
-    """
-    Creates a boolean if gpu used
-    """
-    return (hasattr(opt, 'gpu_ranks') and len(opt.gpu_ranks) > 0) or \
-        (hasattr(opt, 'gpu') and opt.gpu > -1)

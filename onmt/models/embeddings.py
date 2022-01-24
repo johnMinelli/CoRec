@@ -1,3 +1,4 @@
+# STANDARD
 """ Embeddings module """
 import math
 
@@ -126,7 +127,7 @@ class Embeddings(nn.Module):
         # The final output size of word vectors.
         # This is the attribute you should access if you need to know
         # how big your embeddings are going to be. (equivalent to word_vec_size)
-        self.embedding_size = emb_dims
+        self.embedding_size = emb_dims[0]
 
         # The sequence of operations that converts the input sequence
         # into a sequence of embeddings. At minimum this consists of
