@@ -43,7 +43,7 @@ def training_opt_parsing(opt, device_id):
         opt.enc_rnn_size = opt.rnn_size
         opt.dec_rnn_size = opt.rnn_size
 
-    # opt.brnn = (opt.encoder_type == "brnn")
+    opt.brnn = (opt.encoder_type == "brnn")
 
     if torch.cuda.is_available() and not opt.gpu:
         logger.info("WARNING: You have a CUDA device, should run with -gpu")

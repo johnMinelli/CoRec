@@ -8,6 +8,7 @@
           things to users(i.e. how to do it). Also see train.py(one of the
           users of this library) for the strategy things we do.
 """
+import torch
 
 import onmt.utils
 import onmt
@@ -126,7 +127,7 @@ class Trainer(object):
                 logger.info(f"Batch: {i} accum: {accum}") if self.gpu_verbose_level > 1 else None
                 true_batchs.append(batch)
 
-                normalization += len(batch[0])
+                normalization += batch[0][1].size(0)
 
                 accum += 1
                 if accum == self.grad_accum_count:
@@ -167,11 +168,11 @@ class Trainer(object):
         stats = onmt.utils.Statistics()
 
         for batch in enumerate(next(iter(valid_iter))):
-            src = batch[0]  # torch.cat(batch[0].unsqueeze(2), 2)
-            tgt = batch[1]  # torch.cat(batch[1].unsqueeze(2), 2)
+            src, source_lengths = batch[0]
+            tgt = batch[1]
 
             # F-prop through the model.
-            outputs, attention = self.model(src, tgt, len(src))
+            outputs, attention = self.model(src, tgt, source_lengths)
 
             # Compute loss.
             batch_stats = self.valid_loss.monolithic_compute_loss(batch, outputs, attention)
@@ -189,17 +190,20 @@ class Trainer(object):
             self.model.zero_grad()
 
         for batch in true_batchs:
-            target_size = len(batch[1])
+            # if samples are not padded correctly with same size an error will rise
+            src, source_lengths = batch[0]
+            tgt_outer = batch[1]
+
+            target_size = tgt_outer.size(0)
+            report_stats.n_src_words += source_lengths.sum().item()
+
             # Truncated BPTT: reminder not compatible with accum > 1
             if self.trunc_size:
                 trunc_size = self.trunc_size
             else:
                 trunc_size = target_size
 
-            src = batch[0]
-            tgt_outer = batch[1]
-
-            for j in range(0, target_size - 1, trunc_size):
+            for j in range(0, target_size-1, trunc_size):
                 # 1. Create truncated target.
                 tgt = tgt_outer[j: j + trunc_size]
 
@@ -208,7 +212,7 @@ class Trainer(object):
                     self.model.zero_grad()
 
                 self.model.set_step(step)
-                outputs, attention = self.model(src, tgt, len(src))  # probably len(src) value is wrong
+                outputs, attention = self.model(src, tgt, source_lengths)
 
                 # 3. Compute loss in shards for memory efficiency.
                 batch_stats = self.train_loss.sharded_compute_loss(batch, outputs, attention, j, trunc_size, self.shard_size, normalization)  # probably normalization value is wrong
@@ -242,7 +246,7 @@ class Trainer(object):
         see `onmt.utils.ReportManagerBase.report_training` for doc
         """
         if self.report_manager is not None:
-            return self.report_manager.report_training(step, num_steps, learning_rate, report_stats, multigpu=False)
+            return self.report_manager.report_training(step, num_steps, learning_rate, report_stats)
 
     def _report_step(self, learning_rate, step, train_stats=None, valid_stats=None):
         """
