@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 
 
 class TextDataset(Dataset):
-    def __init__(self, src_path, target_path, src_max_len, target_max_len, transform=None, target_transform=None):
+    def __init__(self, src_path, target_path, src_max_len=None, target_max_len=None, transform=None, target_transform=None):
         super(TextDataset, self).__init__()
 
         self.src_path = src_path

@@ -8,7 +8,7 @@ BOS_WORD = '<s>'
 EOS_WORD = '</s>'
 
 
-def create_vocab(datasets):
+def create_vocab(*datasets):
     """Creates a torchtext vocabulary of source and target
     datasets texts. Indices go from most to least frequent word"""
 

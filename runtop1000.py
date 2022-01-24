@@ -56,6 +56,7 @@ def controller(opt):
         print("Begin translation...")
         command = "python scripts/translate.py -model models/CoRec_1000_step_100000.pt \
                             -src data/top1000/cleaned.test.diff \
+                            -tgt data/top1000/cleaned.test.msg \
                             -output data/output/1000test.out \
                             -sem_path data/top1000/new_1000.sem.diff \
                             -min_length 2 \
