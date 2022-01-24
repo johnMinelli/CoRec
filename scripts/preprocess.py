@@ -55,12 +55,6 @@ def main():
     init_logger(opt.log_file)
     logger.info("Extracting features...")
 
-    # An example in training set
-    # {'src': (
-    # 'new', 'file', 'mode', '100755', '<nl>', 'index', '0000000', '.', '.', 'd125c52', '<nl>', 'Binary', 'files', '/',
-    # 'dev', '/', 'null', 'and', 'b', '/', 'art', '/', 'intro', '.', 'png', 'differ', '<nl>'),
-    # 'tgt': ('Added', 'intro', 'image', '.')}
-
     logger.info("Building Dataset")
     if not os.path.exists("data/preprocessed/"):
         os.makedirs("data/preprocessed")
@@ -75,16 +69,15 @@ def main():
     logger.info(" * saving %s dataset to %s." % ("valid", valid_pt_file))
     torch.save(valid_dataset, valid_pt_file)
 
-    vocab = create_vocab(train_dataset)
+    #test_dataset = TextDataset(opt.test_src, opt.test_tgt, opt.src_seq_length, opt.tgt_seq_length)
+    #test_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "test")
+    #logger.info(" * saving %s dataset to %s." % ("test", test_pt_file))
+    #torch.save(test_dataset, test_pt_file)
+
+    vocab = create_vocab(train_dataset, valid_dataset)
     vocab_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "vocab")
     logger.info(" * saving vocabulary to %s." % (vocab_pt_file, ))
-    #vocab = update_vocab(vocab, valid_dataset)
     torch.save(vocab, vocab_pt_file)
-
-    # Test print
-    # train_loader = build_dataset_iter(train_dataset, vocab, 2)
-    # for src, target in train_loader:
-    #     print(src, target); break
 
 
 if __name__ == "__main__":

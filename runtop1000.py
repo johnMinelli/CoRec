@@ -40,19 +40,19 @@ def controller(opt):
         print("done.")
     elif opt == "translate":
         print("Retrieve similar commits...")
-        command = "python scripts/translate.py -model models/CoRec_1000_step_100000.pt \
-                                        -src data/top1000/cleaned.test.diff \
-                                        -train_diff  data/top1000/cleaned.train.diff \
-                                        -train_msg data/top1000/cleaned.train.msg \
-                                        -semantic_msg data/output/semantic_1000.out \
-                                        -output data/top1000/new_1000.sem.diff \
-                                        -batch_size 64 \
-                                        -gpu 0 \
-                                        -fast \
-                                        -mode 1 \
-                                        -max_sent_length 100"
+        #command = "python scripts/translate.py -model models/CoRec_1000_step_100000.pt \
+        #                                -src data/top1000/cleaned.test.diff \
+        #                                -train_diff  data/top1000/cleaned.train.diff \
+        #                                -train_msg data/top1000/cleaned.train.msg \
+        #                                -semantic_msg data/output/semantic_1000.out \
+        #                                -output data/top1000/new_1000.sem.diff \
+        #                                -batch_size 64 \
+        #                                -gpu 0 \
+        #                                -fast \
+        #                                -mode 1 \
+        #                                -max_sent_length 100"
 
-        os.system(command)
+        #os.system(command)
         print("Begin translation...")
         command = "python scripts/translate.py -model models/CoRec_1000_step_100000.pt \
                             -src data/top1000/cleaned.test.diff \
@@ -66,7 +66,9 @@ def controller(opt):
                             -fast \
                             -mode 2 \
                             -lam_sem 0.8 \
-                            -max_sent_length 100"
+                            -max_sent_length 100 \
+                            -src_vocab data/preprocessed/top1000_data.vocab.pt"
+
 
         os.system(command)
         print('Done.')
