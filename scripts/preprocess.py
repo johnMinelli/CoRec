@@ -7,6 +7,7 @@ from onmt.inputters.input_aux import build_dataset_iter
 from onmt.utils.logging import init_logger, logger
 from onmt import opts
 from onmt.inputters.text_dataset import TextDataset
+from onmt.inputters.vocabulary import create_vocab
 
 
 def check_existing_pt_files(opt):
