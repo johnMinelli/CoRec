@@ -17,6 +17,7 @@ def main(opt):
                             batch_size=opt.batch_size,
                             train_diff=opt.train_diff,
                             train_msg=opt.train_msg,
+                            preprocessed_data=opt.data,
                             semantic_msg=opt.semantic_msg,
                             shard_dir="data/sem_shard/")
     if opt.mode == "2":

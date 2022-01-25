@@ -5,14 +5,14 @@ import codecs
 import torch
 #import onmt.model_builder
 #import onmt.translate.beam
-import onmt.inputters as inputters
+from onmt.helpers.model_builder import load_test_model
 from itertools import count
 import onmt.opts as opts
-#import onmt.decoders.ensemble
-from onmt.translate.translator import Translator
+from onmt.translate.beam import GNMTGlobalScorer
 from onmt.helpers.model_builder import load_test_model
 from onmt.inputters.text_dataset import TextDataset
-from onmt.inputters.input_aux import build_dataset_iter
+from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab
+from onmt.utils.logging import logger
 
 
 def build_translator(opt, report_score=True, logger=None, out_file=None):
@@ -23,12 +23,9 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
     opts.model_opts(dummy_parser)
     dummy_opt = dummy_parser.parse_known_args([])[0]
 
-    # TODO load model
-    model, model_opt = None, None
+    vocab, model, model_opt = load_test_model(opt, dummy_opt.__dict__)
 
-    # TODO scorer
-    # scorer = onmt.translate.GNMTGlobalScorer(opt)
-    scorer = None
+    scorer = GNMTGlobalScorer(opt)
 
     translator = DiffTranslator(model, opt, model_opt,
                                 global_scorer=scorer, out_file=out_file,
@@ -37,7 +34,7 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
     return translator
 
 
-class DiffTranslator():
+class DiffTranslator(object):
 
     def __init__(self,
                  model,
@@ -48,6 +45,7 @@ class DiffTranslator():
                  report_score=True,
                  logger=None):
 
+        self.opt = opt
         self.model = model
 
         self.gpu = opt.gpu
@@ -88,6 +86,105 @@ class DiffTranslator():
                 "beam_parent_ids": [],
                 "scores": [],
                 "log_probs": []}
+
+    def semantic(self, test_diff=None, train_diff=None, train_msg=None, preprocessed_data=None, batch_size=None, semantic_msg=None, shard_dir=None):
+        """
+        save the semantic info
+        """
+        if preprocessed_data is None and (test_diff is None or train_diff is None or train_msg is None):
+            raise AssertionError("--data argument with preprocessed data or" +
+                                 "data specific paths [--test_diff, --train_diff, --train_msg] must be specified")
+
+        if batch_size is None:
+            raise ValueError("batch_size must be set")
+
+        if preprocessed_data is not None and self.max_sent_length is not None:
+            logger.info("--max_sent_length will be ignored since --data parameter specify a dataset already created")
+
+        # load vocab
+        vocab = load_vocab(self.opt, None)
+
+        if preprocessed_data is not None:
+            data_iter = build_dataset_iter(load_dataset("train", preprocessed_data), vocab, batch_size)
+        else:
+            # create dataset with messages not truncated
+            data_iter = build_dataset_iter(TextDataset(train_diff, train_msg, self.max_sent_length))  # are we able to use the msg here afterwards (would be nice since if we load the pt we have the msg here)? else is better to pass None and use the file later
+
+        # FIXME don't shuffle(?)
+
+        memorys = []
+        shard = 0
+        # run encoder
+        for batch in data_iter:
+            src, source_lengths = batch[0]
+            enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
+
+            feature = torch.max(memory_bank, 0)[0]
+            _, rank = torch.sort(batch.indices, descending=False)
+            feature = feature[rank]
+            memorys.append(feature)
+            # consider the memory, must shard
+            if len(memorys) % 200 == 0:
+                # save file
+                memorys = torch.cat(memorys)
+                torch.save(memorys, shard_dir + "shard.%d" % shard)
+
+                memorys = []
+                shard += 1
+        if len(memorys) > 0:
+            memorys = torch.cat(memorys)
+            torch.save(memorys, shard_dir + "shard.%d" % shard)
+            shard += 1
+
+        indexes = []
+        for i in range(shard):
+            print(i)
+            shard_index = torch.load(shard_dir + "shard.%d" % i)
+            indexes.append(shard_index)
+        indexes = torch.cat(indexes)
+
+        # search the best
+        if preprocessed_data is not None:
+            data_iter = build_dataset_iter(load_dataset("test", preprocessed_data), vocab, batch_size)  # FIXME facciamo il load e lo creiamo in preprocess phase, ok? o vogliamo fare la creazione solo qui?
+        else:
+            # create dataset with messages not truncated
+            data_iter = build_dataset_iter(TextDataset(test_diff, None, self.max_sent_length))
+
+        diffs = []
+        msgs = []
+        with open(train_msg, 'r') as tm:
+            train_msgs = tm.readlines()
+        with open(train_diff, 'r') as td:
+            train_diffs = td.readlines()
+
+        for batch in data_iter:
+            src, source_lengths = batch[0]
+            enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
+
+            feature = torch.max(memory_bank, 0)[0]
+            _,  rank = torch.sort(batch.indices, descending=False)
+            feature = feature[rank]
+            numerator = torch.mm(feature, indexes.transpose(0, 1))
+            denominator = torch.mm(feature.norm(2, 1).unsqueeze(1), indexes.norm(2, 1).unsqueeze(1).transpose(0, 1))
+            sims = torch.div(numerator, denominator)
+            tops = torch.topk(sims, 1, dim=1)
+            idx = tops[1][:, -1].tolist()
+            # todo get score
+            for i in idx:
+                diffs.append(train_diffs[i].strip() + '\n')
+                msgs.append(train_msgs[i].strip() + '\n')
+
+        with open(semantic_msg, 'w') as sm:
+            for i in msgs:
+                sm.write(i)
+                sm.flush()
+
+        for i in diffs:
+            self.out_file.write(i)
+            self.out_file.flush()
+
+        return
+
 
     def translate(self,
                   src_path=None,
@@ -130,7 +227,7 @@ class DiffTranslator():
             raise ValueError("batch_size must be set")
 
         test_dataset = TextDataset(src_path, tgt_path)
-        vocab = torch.load(src_vocab) # need to create vocab for test set
+        vocab = torch.load(src_vocab)  # need to create vocab for test set
         test_loader = build_dataset_iter(test_dataset, vocab, batch_size)
 
         if self.cuda:

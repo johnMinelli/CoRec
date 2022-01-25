@@ -39,7 +39,7 @@ def load_dataset(corpus_type, opt):
     Returns:
         A list of dataset, the dataset(s) are lazily loaded.
     """
-    assert corpus_type in ["train", "valid"]
+    assert corpus_type in ["train", "valid", "test"]
 
     pt = opt.data + '.' + corpus_type + '.pt'
     dataset = torch.load(pt)
