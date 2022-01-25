@@ -91,9 +91,8 @@ class DiffTranslator(object):
         """
         save the semantic info
         """
-        if preprocessed_data is None and (test_diff is None or train_diff is None or train_msg is None):
-            raise AssertionError("--data argument with preprocessed data or" +
-                                 "data specific paths [--test_diff, --train_diff, --train_msg] must be specified")
+        if test_diff is None or train_diff is None or train_msg is None:
+            raise AssertionError("data files paths [--test_diff, --train_diff, --train_msg] must be specified")
 
         if batch_size is None:
             raise ValueError("batch_size must be set")
@@ -103,32 +102,26 @@ class DiffTranslator(object):
 
         # load vocab
         vocab = load_vocab(self.opt, None)
-
-        if preprocessed_data is not None:
-            data_iter = build_dataset_iter(load_dataset("train", preprocessed_data), vocab, batch_size)
-        else:
-            # create dataset with messages not truncated
-            data_iter = build_dataset_iter(TextDataset(train_diff, train_msg, self.max_sent_length))  # are we able to use the msg here afterwards (would be nice since if we load the pt we have the msg here)? else is better to pass None and use the file later
-
-        # FIXME don't shuffle(?)
+        # load/create dataset and create iterator
+        ds = TextDataset(train_diff, None, self.max_sent_length, indexed_data=True)
+        data_iter = build_dataset_iter(ds, vocab, batch_size, shuffle_batches=False)
 
         memorys = []
         shard = 0
         # run encoder
         for batch in data_iter:
             src, source_lengths = batch[0]
-            enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
+            batch_indices = batch[1].squeeze()
+            enc_states, memory_bank, src_lengths = self.model.encoder(src, source_lengths)
 
             feature = torch.max(memory_bank, 0)[0]
-            _, rank = torch.sort(batch.indices, descending=False)
+            _, rank = torch.sort(batch_indices, descending=False)
             feature = feature[rank]
             memorys.append(feature)
             # consider the memory, must shard
-            if len(memorys) % 200 == 0:
-                # save file
+            if len(memorys) % 200 == 0:  # save file
                 memorys = torch.cat(memorys)
                 torch.save(memorys, shard_dir + "shard.%d" % shard)
-
                 memorys = []
                 shard += 1
         if len(memorys) > 0:
@@ -136,40 +129,40 @@ class DiffTranslator(object):
             torch.save(memorys, shard_dir + "shard.%d" % shard)
             shard += 1
 
-        indexes = []
+        train_encodings_indexes = []
         for i in range(shard):
-            print(i)
             shard_index = torch.load(shard_dir + "shard.%d" % i)
-            indexes.append(shard_index)
-        indexes = torch.cat(indexes)
+            train_encodings_indexes.append(shard_index)
+        train_encodings_indexes = torch.cat(train_encodings_indexes)
 
-        # search the best
-        if preprocessed_data is not None:
-            data_iter = build_dataset_iter(load_dataset("test", preprocessed_data), vocab, batch_size)  # FIXME facciamo il load e lo creiamo in preprocess phase, ok? o vogliamo fare la creazione solo qui?
-        else:
-            # create dataset with messages not truncated
-            data_iter = build_dataset_iter(TextDataset(test_diff, None, self.max_sent_length))
-
-        diffs = []
-        msgs = []
+        # get ordered train diffs and msgs from source in order to make use of full length data
         with open(train_msg, 'r') as tm:
             train_msgs = tm.readlines()
         with open(train_diff, 'r') as td:
             train_diffs = td.readlines()
 
+        # search the best (most similar) correspondence of test set encodings with computed training set encodings
+        ds = TextDataset(test_diff, None, self.max_sent_length, indexed_data=True)
+        data_iter = build_dataset_iter(ds, vocab, batch_size, shuffle_batches=False)
+
+        diffs = []
+        msgs = []
         for batch in data_iter:
             src, source_lengths = batch[0]
-            enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
-
+            batch_indices = batch[1].squeeze()
+            enc_states, memory_bank, src_lengths = self.model.encoder(src, source_lengths)
+            # get the token with maximum attention for all samples in batch
             feature = torch.max(memory_bank, 0)[0]
-            _,  rank = torch.sort(batch.indices, descending=False)
+            # reorder attention results as the order of samples in dataset
+            _,  rank = torch.sort(batch_indices, descending=False)
             feature = feature[rank]
-            numerator = torch.mm(feature, indexes.transpose(0, 1))
-            denominator = torch.mm(feature.norm(2, 1).unsqueeze(1), indexes.norm(2, 1).unsqueeze(1).transpose(0, 1))
+            # compute similarities
+            numerator = torch.mm(feature, train_encodings_indexes.transpose(0, 1))
+            denominator = torch.mm(feature.norm(2, 1).unsqueeze(1), train_encodings_indexes.norm(2, 1).unsqueeze(1).transpose(0, 1))
             sims = torch.div(numerator, denominator)
+            # get indices of most similar
             tops = torch.topk(sims, 1, dim=1)
             idx = tops[1][:, -1].tolist()
-            # todo get score
             for i in idx:
                 diffs.append(train_diffs[i].strip() + '\n')
                 msgs.append(train_msgs[i].strip() + '\n')
@@ -179,9 +172,14 @@ class DiffTranslator(object):
                 sm.write(i)
                 sm.flush()
 
-        for i in diffs:
-            self.out_file.write(i)
-            self.out_file.flush()
+        with open(self.out_file, 'w') as of:
+            for i in diffs:
+                of.write(i)
+                of.flush()
+
+        # for i in diffs:
+        #     self.out_file.write(i)
+        #     self.out_file.flush()
 
         return
 

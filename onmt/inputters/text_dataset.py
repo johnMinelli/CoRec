@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 
 
 class TextDataset(Dataset):
-    def __init__(self, src_path, target_path, src_max_len=None, target_max_len=None, transform=None, target_transform=None):
+    def __init__(self, src_path, target_path, src_max_len=None, target_max_len=None, transform=None, target_transform=None, indexed_data=False):
         super(TextDataset, self).__init__()
 
         self.src_path = src_path
@@ -19,11 +19,14 @@ class TextDataset(Dataset):
         self.src_texts = []
         self.target_texts = []
         with codecs.open(src_path, "r", "utf-8") as cf:
-            for line in cf:
+            for i, line in enumerate(cf):
                 self.src_texts.append(line.strip().split()[:src_max_len])
-        with codecs.open(target_path, "r", "utf-8") as cf:
-            for line in cf:
-                self.target_texts.append(line.strip().split()[:target_max_len])
+                if indexed_data:
+                    self.target_texts.append(i)
+        if not indexed_data:
+            with codecs.open(target_path, "r", "utf-8") as cf:
+                for line in cf:
+                    self.target_texts.append(line.strip().split()[:target_max_len])
 
     def __len__(self):
         assert len(self.src_texts) == len(self.target_texts)
