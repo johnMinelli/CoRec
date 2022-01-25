@@ -28,12 +28,11 @@ def controller(opt):
                                 -global_attention mlp \
                                 -data data/preprocessed/top1000_data \
                                 -save_model models/CoRec_1000 \
-                                -gpu \
                                 -batch_size 64 \
                                 -optim adam \
                                 -learning_rate 0.001 \
                                 -dropout 0.1 \
-                                -train_steps 100000 \
+                                -train_steps 30 \
                                 -total 22112"
 
         os.system(command)
@@ -66,8 +65,7 @@ def controller(opt):
                             -fast \
                             -mode 2 \
                             -lam_sem 0.8 \
-                            -max_sent_length 100 \
-                            -src_vocab data/preprocessed/top1000_data.vocab.pt"
+                            -max_sent_length 100"
 
 
         os.system(command)

@@ -102,16 +102,18 @@ def load_test_model(opt, dummy_opt, model_path=None):
     if model_path is None:
         model_path = opt.models[0]
     checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
-    model_opt = checkpoint['opt']
-    vocab = checkpoint['vocab']
 
-    for arg in dummy_opt:
-        if arg not in model_opt:
-            model_opt.__dict__[arg] = dummy_opt[arg]
-    model = build_model(model_opt, vocab, opt.gpu, checkpoint)
-    model.eval()
-    model.generator.eval()
-    return vocab, model, model_opt
+    return checkpoint
+    #model_opt = checkpoint['opt']
+    #vocab = checkpoint['vocab']
+
+    #for arg in dummy_opt:
+    #    if arg not in model_opt:
+    #        model_opt.__dict__[arg] = dummy_opt[arg]
+    #model = build_model(model_opt, vocab, opt.gpu, checkpoint)
+    #model.eval()
+    #model.generator.eval()
+    #return vocab, model, model_opt
 
 def build_model(model_opt, vocab, gpu, checkpoint=None):
     """

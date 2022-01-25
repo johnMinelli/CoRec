@@ -13,6 +13,8 @@ from onmt.helpers.model_builder import load_test_model
 from onmt.inputters.text_dataset import TextDataset
 from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab
 from onmt.utils.logging import logger
+from onmt.translate.beam import Beam
+from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_vocab
 
 
 def build_translator(opt, report_score=True, logger=None, out_file=None):
@@ -23,11 +25,11 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
     opts.model_opts(dummy_parser)
     dummy_opt = dummy_parser.parse_known_args([])[0]
 
-    vocab, model, model_opt = load_test_model(opt, dummy_opt.__dict__)
-
+    #vocab, model, model_opt = load_test_model(opt, dummy_opt.__dict__)
+    model = load_test_model(opt, dummy_opt.__dict__)
     scorer = GNMTGlobalScorer(opt)
 
-    translator = DiffTranslator(model, opt, model_opt,
+    translator = DiffTranslator(model, opt,
                                 global_scorer=scorer, out_file=out_file,
                                 report_score=report_score, logger=logger)
 
@@ -39,7 +41,6 @@ class DiffTranslator(object):
     def __init__(self,
                  model,
                  opt,
-                 model_opt,
                  global_scorer=None,
                  out_file=None,
                  report_score=True,
@@ -47,7 +48,8 @@ class DiffTranslator(object):
 
         self.opt = opt
         self.model = model
-
+        self.test_dataset = TextDataset(opt.src, opt.tgt)
+        self.vocab = create_vocab(self.test_dataset)
         self.gpu = opt.gpu
         self.cuda = opt.gpu > -1
 
@@ -194,8 +196,7 @@ class DiffTranslator(object):
                   src_dir=None,
                   batch_size=None,
                   attn_debug=False,
-                  sem_path=None,
-                  src_vocab=None):
+                  sem_path=None):
         """
         Translate content of `src_data_iter` (if not None) or `src_path`
         and get gold scores if one of `tgt_data_iter` or `tgt_path` is set.
@@ -213,6 +214,7 @@ class DiffTranslator(object):
                 (used for Audio and Image datasets)
             batch_size (int): size of examples per mini-batch
             attn_debug (bool): enables the attention logging
+            src_vocab (str): vocabulary path
 
         Returns:
             (`list`, `list`)
@@ -226,9 +228,8 @@ class DiffTranslator(object):
         if batch_size is None:
             raise ValueError("batch_size must be set")
 
-        test_dataset = TextDataset(src_path, tgt_path)
-        vocab = torch.load(src_vocab)  # need to create vocab for test set
-        test_loader = build_dataset_iter(test_dataset, vocab, batch_size)
+
+        test_loader = build_dataset_iter(self.test_dataset, self.vocab, batch_size)
 
         if self.cuda:
             cur_device = "cuda"
@@ -247,7 +248,14 @@ class DiffTranslator(object):
         all_predictions = []
 
         for batch in test_loader:
-            batch_data = self.translate_batch(batch, test_dataset, fast=True, attn_debug=False)
+
+            #print(test_diffs.shape)
+
+            print(len(batch))
+            print(batch[0][0].shape)
+            print(batch[1].shape)
+            # batch here is ((encoder_batch, encoder_length), decoder_batch)
+            batch_data = self.translate_batch(batch, self.test_dataset, fast=True, attn_debug=False)
             # TODO translations = builder.from_batch(batch_data)
             translations = None
             for trans in translations:
@@ -278,18 +286,137 @@ class DiffTranslator(object):
            data (:obj:`Dataset`): the dataset object
            fast (bool): enables fast beam search (may not support all features)
 
-        Todo:
-           Shouldn't need the original dataset.
         """
         with torch.no_grad():
             if fast:
-                # TODO _fast_translate_batch, _translate_batch
-                return self._fast_translate_batch(
-                    batch,
-                    data,
-                    self.max_length,
-                    min_length=self.min_length,
-                    n_best=self.n_best,
-                    return_attention=attn_debug or self.replace_unk)
+                pass
+                # TODO _translate_batch
+                #return self._fast_translate_batch(
+                #    batch,
+                #    data,
+                #    self.max_length,
+                #    min_length=self.min_length,
+                #    n_best=self.n_best,
+                #    return_attention=attn_debug or self.replace_unk)
             else:
                 return self._translate_batch(batch, data)
+
+    def _run_encoder(self, batch, data_type):
+        #src = inputters.make_features(batch, 'src', data_type)
+        _, src_lengths = batch.src
+        enc_states, memory_bank, src_lengths = self.model.encoder(
+            batch.src, src_lengths)
+        if src_lengths is None:
+            assert not isinstance(memory_bank, tuple), \
+                'Ensemble decoding only supported for text data'
+            src_lengths = torch.Tensor(batch.batch_size) \
+                .type_as(memory_bank) \
+                .long() \
+                .fill_(memory_bank.size(0))
+        return src, enc_states, memory_bank, src_lengths
+
+    def _translate_batch(self, batch, data):
+        # (0) Prep each of the components of the search.
+        # And helper method for reducing verbosity.
+        beam_size = self.beam_size
+        batch_size = batch.batch_size
+        data_type = data.data_type
+        # TODO full vocab, just target vocab??
+        # vocab = self.fields["tgt"].vocab
+
+        # Define a list of tokens to exclude from ngram-blocking
+        # exclusion_list = ["<t>", "</t>", "."]
+        exclusion_tokens = set([self.vocab.get_stoi(t)
+                                for t in self.ignore_when_blocking])
+
+        beam = [Beam(beam_size, n_best=self.n_best,
+                                    cuda=self.cuda,
+                                    global_scorer=self.global_scorer,
+                                    pad=self.vocab.get_stoi(PAD_WORD),
+                                    eos=self.vocab.get_stoi(EOS_WORD),
+                                    bos=self.vocab.get_stoi(BOS_WORD),
+                                    min_length=self.min_length,
+                                    stepwise_penalty=self.stepwise_penalty,
+                                    block_ngram_repeat=self.block_ngram_repeat,
+                                    exclusion_tokens=exclusion_tokens)
+                for __ in range(batch_size)]
+
+        # (1) Run the encoder on the src.
+        src, enc_states, memory_bank, src_lengths = self._run_encoder(
+            batch, data_type)
+        self.model.decoder.init_state(src, memory_bank, enc_states)
+
+        results = {}
+        results["predictions"] = []
+        results["scores"] = []
+        results["attention"] = []
+        results["batch"] = batch
+        if "tgt" in batch.__dict__:
+            results["gold_score"] = self._score_target(
+                batch, memory_bank, src_lengths, data, batch.src_map
+                if data_type == 'text' and self.copy_attn else None)
+            self.model.decoder.init_state(
+                src, memory_bank, enc_states, with_cache=True)
+        else:
+            results["gold_score"] = [0] * batch_size
+
+        # (2) Repeat src objects `beam_size` times.
+        # We use now  batch_size x beam_size (same as fast mode)
+        src_map = (tile(batch.src_map, beam_size, dim=1)
+                   if data.data_type == 'text' and self.copy_attn else None)
+        self.model.decoder.map_state(
+            lambda state, dim: tile(state, beam_size, dim=dim))
+
+        if isinstance(memory_bank, tuple):
+            memory_bank = tuple(tile(x, beam_size, dim=1) for x in memory_bank)
+        else:
+            memory_bank = tile(memory_bank, beam_size, dim=1)
+        memory_lengths = tile(src_lengths, beam_size)
+
+        # (3) run the decoder to generate sentences, using beam search.
+        for i in range(self.max_length):
+            if all((b.done() for b in beam)):
+                break
+
+            # (a) Construct batch x beam_size nxt words.
+            # Get all the pending current beam words and arrange for forward.
+
+            inp = torch.stack([b.get_current_state() for b in beam])
+            inp = inp.view(1, -1, 1)
+
+            # (b) Decode and forward
+            out, beam_attn = \
+                self._decode_and_generate(inp, memory_bank, batch, data,
+                                          memory_lengths=memory_lengths,
+                                          src_map=src_map, step=i)
+
+            out = out.view(batch_size, beam_size, -1)
+            beam_attn = beam_attn.view(batch_size, beam_size, -1)
+
+            # (c) Advance each beam.
+            select_indices_array = []
+            # Loop over the batch_size number of beam
+            for j, b in enumerate(beam):
+                b.advance(out[j, :],
+                          beam_attn.data[j, :, :memory_lengths[j]])
+                select_indices_array.append(
+                    b.get_current_origin() + j * beam_size)
+            select_indices = torch.cat(select_indices_array)
+
+            self.model.decoder.map_state(
+                lambda state, dim: state.index_select(dim, select_indices))
+
+        # (4) Extract sentences from beam.
+        for b in beam:
+            n_best = self.n_best
+            scores, ks = b.sort_finished(minimum=n_best)
+            hyps, attn = [], []
+            for i, (times, k) in enumerate(ks[:n_best]):
+                hyp, att = b.get_hyp(times, k)
+                hyps.append(hyp)
+                attn.append(att)
+            results["predictions"].append(hyps)
+            results["scores"].append(scores)
+            results["attention"].append(attn)
+
+        return results

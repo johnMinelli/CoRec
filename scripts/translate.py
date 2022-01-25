@@ -26,8 +26,7 @@ def main(opt):
                              src_dir=opt.src_dir,
                              batch_size=opt.batch_size,
                              attn_debug=opt.attn_debug,
-                             sem_path=opt.sem_path,
-                             src_vocab=opt.src_vocab)
+                             sem_path=opt.sem_path)
 
 
 if __name__ == "__main__":
