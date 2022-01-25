@@ -49,15 +49,16 @@ def load_dataset(corpus_type, opt):
 
 class MinPaddingSampler(Sampler):
 
-    def __init__(self, data_source, batch_size):
+    def __init__(self, data_source, batch_size, shuffle_batches):
 
         super().__init__(data_source)
         self.dataset = data_source
         self.batch_size = batch_size
+        self.shuffle_batches = shuffle_batches
 
     def __iter__(self):
         indices = [(i, s[2]) for i, s in enumerate(self.dataset)]
-        # sort dataset indices by increasing length, so that
+        # sort dataset indices by decreasing length, so that
         # batches contain texts with close lengths, and padding should
         indices = sorted(indices, key=lambda x: x[1], reverse=True)
         pooled_indices = []
@@ -66,8 +67,9 @@ class MinPaddingSampler(Sampler):
             pooled_indices.extend(indices[i:i + self.batch_size * 100])
         # select only the actual indexes, not lengths
         pooled_indices = [x[0] for x in pooled_indices]
-
-        for i in RandomShuffler()(range(0, len(pooled_indices), self.batch_size)):
+        batches = RandomShuffler()(range(0, len(pooled_indices), self.batch_size)) if self.shuffle_batches else \
+                range(0, len(pooled_indices), self.batch_size)
+        for i in batches:
             yield pooled_indices[i:i + self.batch_size]
 
     def __len__(self):
@@ -75,7 +77,7 @@ class MinPaddingSampler(Sampler):
         return self.batch_size
 
 
-def build_dataset_iter(dataset, vocabulary, batch_size):
+def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
     def generate_batch(data_batch):
         _, _, en_len, de_len = zip(*data_batch)
         # for padding
@@ -97,7 +99,7 @@ def build_dataset_iter(dataset, vocabulary, batch_size):
         de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2)
         return (en_batch, torch.tensor(en_len)), de_batch
 
-    sampler = MinPaddingSampler(dataset, batch_size)
+    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches)
     a = DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
     return a
 
