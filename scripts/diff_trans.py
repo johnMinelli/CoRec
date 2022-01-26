@@ -15,6 +15,7 @@ from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_voca
 from onmt.utils.logging import logger
 from onmt.translate.beam import Beam
 from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_vocab
+from onmt.utils.misc import tile
 
 
 def build_translator(opt, report_score=True, logger=None, out_file=None):
@@ -26,6 +27,7 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
     dummy_opt = dummy_parser.parse_known_args([])[0]
 
     #vocab, model, model_opt = load_test_model(opt, dummy_opt.__dict__)
+    # TODO see load_test_model, checkpoint[vocab]?
     model = load_test_model(opt, dummy_opt.__dict__)
     scorer = GNMTGlobalScorer(opt)
 
@@ -246,15 +248,10 @@ class DiffTranslator(object):
         all_predictions = []
 
         for batch in test_loader:
-
-            #print(test_diffs.shape)
-
-            print(len(batch))
-            print(batch[0][0].shape)
-            print(batch[1].shape)
             # batch here is ((encoder_batch, encoder_length), decoder_batch)
             batch_data = self.translate_batch(batch, self.test_dataset, fast=True, attn_debug=False)
             # TODO translations = builder.from_batch(batch_data)
+            # translations = builder.from_batch(batch_data)
             translations = None
             for trans in translations:
                 all_scores += [trans.pred_scores[:self.n_best]]
@@ -288,7 +285,6 @@ class DiffTranslator(object):
         with torch.no_grad():
             if fast:
                 pass
-                # TODO _translate_batch
                 #return self._fast_translate_batch(
                 #    batch,
                 #    data,
@@ -299,19 +295,49 @@ class DiffTranslator(object):
             else:
                 return self._translate_batch(batch, data)
 
-    def _run_encoder(self, batch, data_type):
-        #src = inputters.make_features(batch, 'src', data_type)
-        _, src_lengths = batch.src
-        enc_states, memory_bank, src_lengths = self.model.encoder(
-            batch.src, src_lengths)
-        if src_lengths is None:
-            assert not isinstance(memory_bank, tuple), \
-                'Ensemble decoding only supported for text data'
-            src_lengths = torch.Tensor(batch.batch_size) \
-                .type_as(memory_bank) \
-                .long() \
-                .fill_(memory_bank.size(0))
-        return src, enc_states, memory_bank, src_lengths
+
+    def _score_target(self, batch, memory_bank, src_lengths, data, src_map):
+        tgt_in = batch[1]
+
+        log_probs, attn = \
+            self._decode_and_generate(tgt_in, memory_bank, batch, data,
+                                      memory_lengths=src_lengths,
+                                      src_map=src_map)
+        # tgt_pad = self.fields["tgt"].vocab.stoi[inputters.PAD_WORD]
+        # not sure
+        tgt_pad = 0
+        log_probs[:, :, tgt_pad] = 0
+        gold = batch.tgt[1:].unsqueeze(2)
+        gold_scores = log_probs.gather(2, gold)
+        gold_scores = gold_scores.sum(dim=0).view(-1)
+
+        return gold_scores
+
+    def _decode_and_generate(self, decoder_input, memory_bank, batch, data,
+                             memory_lengths, src_map=None,
+                             step=None, batch_offset=None,
+                             syn_sc=None, syn_lengths=None, syn_bank=None,
+                             sem_sc=None, sem_lengths=None, sem_bank=None
+                             ):
+
+        # Decoder forward, takes [tgt_len, batch, nfeats] as input
+        # and [src_len, batch, hidden] as memory_bank
+        # in case of inference tgt_len = 1, batch = beam times batch_size
+        # in case of Gold Scoring tgt_len = actual length, batch = 1 batch
+        self.model.decoder.test = 1
+
+        dec_out, dec_attn = self.model.decoder(
+            decoder_input,
+            memory_bank,
+            memory_lengths=memory_lengths,
+            step=step)
+
+        # Generator forward.
+
+        attn = dec_attn["std"]
+        log_probs = self.model.generator(dec_out.squeeze(0))
+
+        return log_probs, attn
 
     def _translate_batch(self, batch, data):
         # (0) Prep each of the components of the search.
@@ -340,8 +366,8 @@ class DiffTranslator(object):
                 for __ in range(batch_size)]
 
         # (1) Run the encoder on the src.
-        src, enc_states, memory_bank, src_lengths = self._run_encoder(
-            batch, data_type)
+        src, source_lengths = batch[0]
+        enc_states, memory_bank, src_lengths = self.model.encoder(src, source_lengths)
         self.model.decoder.init_state(src, memory_bank, enc_states)
 
         results = {}
@@ -351,8 +377,7 @@ class DiffTranslator(object):
         results["batch"] = batch
         if "tgt" in batch.__dict__:
             results["gold_score"] = self._score_target(
-                batch, memory_bank, src_lengths, data, batch.src_map
-                if data_type == 'text' and self.copy_attn else None)
+                batch, memory_bank, src_lengths, data, batch.src_map)
             self.model.decoder.init_state(
                 src, memory_bank, enc_states, with_cache=True)
         else:
@@ -360,8 +385,8 @@ class DiffTranslator(object):
 
         # (2) Repeat src objects `beam_size` times.
         # We use now  batch_size x beam_size (same as fast mode)
-        src_map = (tile(batch.src_map, beam_size, dim=1)
-                   if data.data_type == 'text' and self.copy_attn else None)
+        src_map = tile(batch.src_map, beam_size, dim=1)
+
         self.model.decoder.map_state(
             lambda state, dim: tile(state, beam_size, dim=dim))
 
