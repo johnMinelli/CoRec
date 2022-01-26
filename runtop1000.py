@@ -61,7 +61,6 @@ def controller(opt):
                             -min_length 2 \
                             -max_length 30 \
                             -batch_size 64 \
-                            -gpu 0 \
                             -fast \
                             -mode 2 \
                             -lam_sem 0.8 \

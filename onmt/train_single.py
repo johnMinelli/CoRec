@@ -119,7 +119,7 @@ def main(opt, device_id):
     else:
         logger.info('Starting training on CPU, could be very slow')
     trainer.train(train_iter_fct, valid_iter_fct, opt.train_steps, opt.valid_steps)
-
+    torch.save(model.state_dict(), "models/CoRec_1000_step_100000.pt")
     if opt.tensorboard:
         trainer.report_manager.tensorboard_writer.close()
 
