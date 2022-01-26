@@ -43,8 +43,7 @@ def controller(opt):
         #                                -src data/top1000/cleaned.test.diff \
         #                                -train_diff  data/top1000/cleaned.train.diff \
         #                                -train_msg data/top1000/cleaned.train.msg \
-        #                                -semantic_msg data/output/semantic_1000.out \
-        #                                -output data/top1000/new_1000.sem.diff \
+        #                                -semantic_out data/top1000 \
         #                                -batch_size 64 \
         #                                -gpu 0 \
         #                                -fast \
@@ -56,8 +55,8 @@ def controller(opt):
         command = "python scripts/translate.py -model models/CoRec_1000_step_100000.pt \
                             -src data/top1000/cleaned.test.diff \
                             -tgt data/top1000/cleaned.test.msg \
-                            -output data/output/1000test.out \
                             -sem_path data/top1000/new_1000.sem.diff \
+                            -output data/output/1000test.out \
                             -min_length 2 \
                             -max_length 30 \
                             -batch_size 64 \

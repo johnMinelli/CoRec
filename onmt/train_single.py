@@ -89,7 +89,7 @@ def main(opt, device_id):
         model_opt = opt
 
     # Load fields generated from preprocess phase.
-    vocab = load_vocab(opt, checkpoint)
+    vocab = load_vocab(opt.data + '.vocab.pt', checkpoint)
     logger.info(' * vocabulary size. source = %d' % len(vocab))
 
     # Build model.

@@ -103,12 +103,12 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
     a = DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
     return a
 
-def load_vocab(opt, checkpoint):
+def load_vocab(vocab_file, checkpoint):
     if checkpoint is not None:
-        logger.info('Loading vocab from checkpoint at %s.' % opt.train_from)
+        logger.info('Loading vocab from checkpoint')
         vocab = checkpoint['vocab']
     else:
-        vocab = torch.load(opt.data + '.vocab.pt')
+        vocab = torch.load(vocab_file)
     return vocab
 
 

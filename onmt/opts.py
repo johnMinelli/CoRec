@@ -539,7 +539,7 @@ def translate_opts(parser):
               help="path to train diff")
     group.add('--train_msg', '-train_msg', default="",
               help="path to train msg")
-    group.add('--semantic_msg', '-semantic_msg', default="",
+    group.add('--semantic_out', '-semantic_out', default="",
               help="path to semantic output")
     group.add('--syn_path', '-syn_path', default="",
               help="syn path")
