@@ -22,10 +22,9 @@ class TranslationBuilder(object):
        has_tgt (bool): will the batch have gold targets
     """
 
-    def __init__(self, data, fields, n_best=1, replace_unk=False,
+    def __init__(self, data, n_best=1, replace_unk=False,
                  has_tgt=False):
         self.data = data
-        self.fields = fields
         self.n_best = n_best
         self.replace_unk = replace_unk
         self.has_tgt = has_tgt
@@ -48,27 +47,26 @@ class TranslationBuilder(object):
                     tokens[i] = src_raw[max_index.item()]
         return tokens
 
-    def from_batch(self, translation_batch):
+    def from_batch(self, translation_batch, batch_size):
         batch = translation_batch["batch"]
         assert(len(translation_batch["gold_score"]) ==
                len(translation_batch["predictions"]))
-        batch_size = batch.batch_size
+
 
         preds, pred_score, attn, gold_score, indices = list(zip(
             *sorted(zip(translation_batch["predictions"],
                         translation_batch["scores"],
                         translation_batch["attention"],
                         translation_batch["gold_score"],
-                        batch.indices.data),
+                        batch.indices.data), # not sure here, all indices?
                     key=lambda x: x[-1])))
 
         # Sorting
         inds, perm = torch.sort(batch.indices.data)
         data_type = self.data.data_type
-        if data_type == 'text':
-            src = batch.src[0].data.index_select(1, perm)
-        else:
-            src = None
+
+        src = batch.src[0].data.index_select(1, perm)
+
 
         if self.has_tgt:
             tgt = batch.tgt.data.index_select(1, perm)

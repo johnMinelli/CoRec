@@ -13,6 +13,7 @@ from onmt.modules.copy_generator import CopyGenerator
 from onmt.models.embeddings import Embeddings
 from torch.nn.init import xavier_uniform_
 from onmt.inputters.vocabulary import (UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD)
+from onmt.utils.misc import use_gpu
 
 import onmt.modules
 # from onmt.encoders.rnn_encoder import RNNEncoder
@@ -97,23 +98,19 @@ def build_decoder(opt, embeddings):
                          opt.reuse_copy_attn,
                          opt.total)  #+++ opt.total
 
-
 def load_test_model(opt, dummy_opt, model_path=None):
     if model_path is None:
         model_path = opt.models[0]
-    checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
+    checkpoint = torch.load(model_path,
+                            map_location=lambda storage, loc: storage)
 
-    return checkpoint
     #model_opt = checkpoint['opt']
-    #vocab = checkpoint['vocab']
 
-    #for arg in dummy_opt:
-    #    if arg not in model_opt:
-    #        model_opt.__dict__[arg] = dummy_opt[arg]
-    #model = build_model(model_opt, vocab, opt.gpu, checkpoint)
-    #model.eval()
-    #model.generator.eval()
-    #return vocab, model, model_opt
+
+    model = build_model(model_opt, opt, use_gpu(opt), checkpoint)
+    model.eval()
+    model.generator.eval()
+    return model, model_opt
 
 def build_model(model_opt, vocab, gpu, checkpoint=None):
     """

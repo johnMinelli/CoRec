@@ -16,7 +16,7 @@ from onmt.utils.logging import logger
 from onmt.translate.beam import Beam
 from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_vocab
 from onmt.utils.misc import tile
-
+from onmt.translate.translation import TranslationBuilder
 
 def build_translator(opt, report_score=True, logger=None, out_file=None):
     if out_file is None:
@@ -26,9 +26,8 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
     opts.model_opts(dummy_parser)
     dummy_opt = dummy_parser.parse_known_args([])[0]
 
-    #vocab, model, model_opt = load_test_model(opt, dummy_opt.__dict__)
-    # TODO see load_test_model, checkpoint[vocab]?
-    model = load_test_model(opt, dummy_opt.__dict__)
+    model, model_opt = load_test_model(opt, dummy_opt.__dict__)
+
     scorer = GNMTGlobalScorer(opt)
 
     translator = DiffTranslator(model, opt,
@@ -206,10 +205,10 @@ class DiffTranslator(object):
 
         Args:
             src_path (str): filepath of source data
-            src_data_iter (iterator): an interator generating source data
+            src_data_iter (iterator): an iterator generating source data
                 e.g. it may be a list or an openned file
             tgt_path (str): filepath of target data
-            tgt_data_iter (iterator): an interator generating target data
+            tgt_data_iter (iterator): an iterator generating target data
             src_dir (str): source directory path
                 (used for Audio and Image datasets)
             batch_size (int): size of examples per mini-batch
@@ -236,8 +235,8 @@ class DiffTranslator(object):
         else:
             cur_device = "cpu"
 
-        # TODO builder
-        builder = None
+        builder = TranslationBuilder(self.test_dataset,
+            self.n_best, self.replace_unk)
         #
         # Statistics
         counter = count(1)
@@ -249,10 +248,10 @@ class DiffTranslator(object):
 
         for batch in test_loader:
             # batch here is ((encoder_batch, encoder_length), decoder_batch)
-            batch_data = self.translate_batch(batch, self.test_dataset, fast=True, attn_debug=False)
-            # TODO translations = builder.from_batch(batch_data)
-            # translations = builder.from_batch(batch_data)
-            translations = None
+            batch_data = self.translate_batch(batch, batch_size, self.test_dataset, fast=False, attn_debug=False)
+
+            translations = builder.from_batch(batch_data, batch_size)
+
             for trans in translations:
                 all_scores += [trans.pred_scores[:self.n_best]]
                 pred_score_total += trans.pred_scores[0]
@@ -270,7 +269,7 @@ class DiffTranslator(object):
         return all_scores, all_predictions
 
 
-    def translate_batch(self, batch, data, attn_debug, fast=False):
+    def translate_batch(self, batch, batch_size, data, attn_debug, fast=False):
         """
         Translate a batch of sentences.
 
@@ -293,32 +292,25 @@ class DiffTranslator(object):
                 #    n_best=self.n_best,
                 #    return_attention=attn_debug or self.replace_unk)
             else:
-                return self._translate_batch(batch, data)
+                return self._translate_batch(batch, batch_size, data)
 
 
-    def _score_target(self, batch, memory_bank, src_lengths, data, src_map):
+    def _score_target(self, batch, memory_bank, src_lengths):
         tgt_in = batch[1]
 
         log_probs, attn = \
-            self._decode_and_generate(tgt_in, memory_bank, batch, data,
-                                      memory_lengths=src_lengths,
-                                      src_map=src_map)
+            self._decode_and_generate(tgt_in, memory_bank, memory_lengths=src_lengths)
         # tgt_pad = self.fields["tgt"].vocab.stoi[inputters.PAD_WORD]
         # not sure
         tgt_pad = 0
         log_probs[:, :, tgt_pad] = 0
-        gold = batch.tgt[1:].unsqueeze(2)
+        gold = batch[1].unsqueeze(2)
         gold_scores = log_probs.gather(2, gold)
         gold_scores = gold_scores.sum(dim=0).view(-1)
 
         return gold_scores
 
-    def _decode_and_generate(self, decoder_input, memory_bank, batch, data,
-                             memory_lengths, src_map=None,
-                             step=None, batch_offset=None,
-                             syn_sc=None, syn_lengths=None, syn_bank=None,
-                             sem_sc=None, sem_lengths=None, sem_bank=None
-                             ):
+    def _decode_and_generate(self, decoder_input, memory_bank, memory_lengths, step=None):
 
         # Decoder forward, takes [tgt_len, batch, nfeats] as input
         # and [src_len, batch, hidden] as memory_bank
@@ -339,12 +331,11 @@ class DiffTranslator(object):
 
         return log_probs, attn
 
-    def _translate_batch(self, batch, data):
+    def _translate_batch(self, batch, batch_size, data):
         # (0) Prep each of the components of the search.
         # And helper method for reducing verbosity.
         beam_size = self.beam_size
-        batch_size = batch.batch_size
-        data_type = data.data_type
+
         # TODO full vocab, just target vocab??
         # vocab = self.fields["tgt"].vocab
 
@@ -356,9 +347,9 @@ class DiffTranslator(object):
         beam = [Beam(beam_size, n_best=self.n_best,
                                     cuda=self.cuda,
                                     global_scorer=self.global_scorer,
-                                    pad=self.vocab.get_stoi(PAD_WORD),
-                                    eos=self.vocab.get_stoi(EOS_WORD),
-                                    bos=self.vocab.get_stoi(BOS_WORD),
+                                    pad=self.vocab.get_stoi()[PAD_WORD],
+                                    eos=self.vocab.get_stoi()[EOS_WORD],
+                                    bos=self.vocab.get_stoi()[BOS_WORD],
                                     min_length=self.min_length,
                                     stepwise_penalty=self.stepwise_penalty,
                                     block_ngram_repeat=self.block_ngram_repeat,
@@ -375,17 +366,15 @@ class DiffTranslator(object):
         results["scores"] = []
         results["attention"] = []
         results["batch"] = batch
-        if "tgt" in batch.__dict__:
-            results["gold_score"] = self._score_target(
-                batch, memory_bank, src_lengths, data, batch.src_map)
-            self.model.decoder.init_state(
-                src, memory_bank, enc_states, with_cache=True)
-        else:
-            results["gold_score"] = [0] * batch_size
+
+        results["gold_score"] = self._score_target(
+            batch, memory_bank, src_lengths)
+        self.model.decoder.init_state(
+            src, memory_bank, enc_states, with_cache=True)
 
         # (2) Repeat src objects `beam_size` times.
         # We use now  batch_size x beam_size (same as fast mode)
-        src_map = tile(batch.src_map, beam_size, dim=1)
+        #src_map = tile(batch.src_map, beam_size, dim=1)
 
         self.model.decoder.map_state(
             lambda state, dim: tile(state, beam_size, dim=dim))
@@ -409,9 +398,7 @@ class DiffTranslator(object):
 
             # (b) Decode and forward
             out, beam_attn = \
-                self._decode_and_generate(inp, memory_bank, batch, data,
-                                          memory_lengths=memory_lengths,
-                                          src_map=src_map, step=i)
+                self._decode_and_generate(inp, memory_bank, memory_lengths=memory_lengths, step=i)
 
             out = out.view(batch_size, beam_size, -1)
             beam_attn = beam_attn.view(batch_size, beam_size, -1)
