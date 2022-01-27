@@ -18,9 +18,9 @@ def main(opt):
                             train_diff=opt.train_diff,
                             train_msg=opt.train_msg,
                             batch_size=opt.batch_size,
-                            src_vocab=opt.src_vocab,
+                            train_vocab=opt.src_vocab,
                             semantic_out=opt.semantic_out,
-                            shard_dir="data/sem_shard/")
+                            shard_dir="../data/sem_shard/")
 # it outputs two files: diffs and msgs of training set samples aligned with the test set samples by similarity of encode
 # -semantic_out
 #       ../data/top1000/sem.msg

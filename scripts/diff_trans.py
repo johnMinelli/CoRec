@@ -29,7 +29,7 @@ def build_translator(opt, report_score=True):
 
     scorer = GNMTGlobalScorer(opt)
 
-    translator = DiffTranslator(model, opt, global_scorer=scorer, report_score=report_score)
+    translator = DiffTranslator(model, opt, model_opt, global_scorer=scorer, report_score=report_score)
 
     return translator
 
@@ -39,12 +39,13 @@ class DiffTranslator(object):
     def __init__(self,
                  model,
                  opt,
+                 model_opt,
                  global_scorer=None,
                  report_score=True):
 
         self.opt = opt
         self.model = model
-        self.test_dataset = TextDataset(opt.src, opt.tgt)
+        self.test_dataset = TextDataset(opt.src, opt.tgt, opt.max_sent_length)
         self.test_vocab = create_vocab(self.test_dataset)
 
         self.stepwise_penalty = opt.stepwise_penalty
@@ -56,7 +57,7 @@ class DiffTranslator(object):
         self.report_rouge = opt.report_rouge
         self.fast = opt.fast
         # TODO copy attention ?
-        # self.copy_attn = model_opt.copy_attn
+        self.copy_attn = model_opt.copy_attn
 
         self.global_scorer = global_scorer
         self.report_score = report_score
@@ -83,7 +84,7 @@ class DiffTranslator(object):
         # run encoder
         for batch in data_iter:
             src, source_lengths = batch[0]
-            batch_indices = batch[1].squeeze()
+            batch_indices = batch[1]
             enc_states, memory_bank, src_lengths = self.model.encoder(src, source_lengths)
 
             feature = torch.max(memory_bank, 0)[0]
@@ -102,7 +103,7 @@ class DiffTranslator(object):
             shard += 1
 
         train_encodings_indexes = []
-        for i in range(shard):
+        for i in range(56):
             shard_index = torch.load(shard_dir + "shard.%d" % i)
             train_encodings_indexes.append(shard_index)
         train_encodings_indexes = torch.cat(train_encodings_indexes)
@@ -121,7 +122,7 @@ class DiffTranslator(object):
         msgs = []
         for batch in data_iter:
             src, source_lengths = batch[0]
-            batch_indices = batch[1].squeeze()
+            batch_indices = batch[1]
             enc_states, memory_bank, src_lengths = self.model.encoder(src, source_lengths)
             # get the token with maximum attention for all samples in batch
             feature = torch.max(memory_bank, 0)[0]

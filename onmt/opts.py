@@ -530,6 +530,9 @@ def translate_opts(parser):
                        call tools/test_rouge.py on command line""")
 
     # Options most relevant to summarization.
+    group.add('--src_vocab', '-src_vocab', default="",
+              help="""Path to an existing source vocabulary. Format:
+                       one word per line.""")
     group.add('--dynamic_dict', '-dynamic_dict', action='store_true',
               help="Create dynamic dictionaries")
     group.add('--share_vocab', '-share_vocab', action='store_true',

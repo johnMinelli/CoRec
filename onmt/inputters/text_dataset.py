@@ -15,6 +15,7 @@ class TextDataset(Dataset):
         self.target_path = target_path
         self.transform = transform
         self.target_transform = target_transform
+        self.indexed_data = indexed_data
 
         self.src_texts = []
         self.target_texts = []
@@ -23,7 +24,7 @@ class TextDataset(Dataset):
                 self.src_texts.append(line.strip().split()[:src_max_len])
                 if indexed_data:
                     self.target_texts.append(i)
-        if not indexed_data:
+        if not indexed_data and target_path is not None:
             with codecs.open(target_path, "r", "utf-8") as cf:
                 for line in cf:
                     self.target_texts.append(line.strip().split()[:target_max_len])
@@ -33,5 +34,5 @@ class TextDataset(Dataset):
         return len(self.src_texts)
 
     def __getitem__(self, idx):
-        return self.src_texts[idx], self.target_texts[idx], len(self.src_texts[idx]), len(self.target_texts[idx])
+        return self.src_texts[idx], self.target_texts[idx], len(self.src_texts[idx]), len(self.target_texts[idx]) if type(self.target_texts[idx]) == type([]) else 1
 
