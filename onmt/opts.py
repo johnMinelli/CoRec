@@ -300,7 +300,7 @@ def train_opts(parser):
                        of steps""")
 
     group.add('--save_checkpoint_steps', '-save_checkpoint_steps',
-              type=int, default=5000,
+              type=int, default=1,
               help="""Save a checkpoint every X steps""")
     group.add('--keep_checkpoint', '-keep_checkpoint', type=int, default=-1,
               help="""Keep X checkpoints (negative: keep all)""")

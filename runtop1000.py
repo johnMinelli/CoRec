@@ -32,7 +32,7 @@ def controller(opt):
                                 -optim adam \
                                 -learning_rate 0.001 \
                                 -dropout 0.1 \
-                                -train_steps 30 \
+                                -train_steps 2 \
                                 -total 22112"
 
         os.system(command)
