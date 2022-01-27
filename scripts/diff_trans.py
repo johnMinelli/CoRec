@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import copy
 import os.path
 
 import configargparse
@@ -62,6 +63,19 @@ class DiffTranslator(object):
         self.global_scorer = global_scorer
         self.report_score = report_score
         self.use_filter_pred = False
+
+    def _init_extra_params(self):
+        if self.opt.mode == "2":  # absolutely that needs a refactor
+            self.lam_syn = self.opt.lam_syn
+            self.lam_sem = self.opt.lam_sem
+            self.syn_path = self.opt.syn_path
+            self.sem_path = self.opt.sem_path
+            ## syn : test additional searcher
+            self.syn_decoder = copy.deepcopy(self.model.decoder) if self.syn_path else None  ##simi score
+            self.sem_decoder = copy.deepcopy(self.model.decoder) if self.sem_path else None
+            self.sem_score = torch.tensor(save_bleu_score(self.sem_path, self.opt.src)) if self.sem_path else None
+            self.syn_score = torch.tensor(save_bleu_score(self.syn_path, self.opt.src)) if self.syn_path else None
+
 
     def semantic(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None, train_vocab=None, semantic_out=None, shard_dir=None):
         """
@@ -153,7 +167,7 @@ class DiffTranslator(object):
         return
 
 
-    def translate(self, test_diff=None, test_msg=None, batch_size=None, attn_debug=False, sem_path=None, out_file=None):
+    def translate(self, test_diff=None, test_msg=None, batch_size=None, attn_debug=False, syn_path=None, sem_path=None, out_file=None):
         """
         Translate content of `src_data_iter` (if not None) or `test_diff`
         and get gold scores if one of `tgt_data_iter` or `test_msg` is set.
@@ -177,6 +191,7 @@ class DiffTranslator(object):
                 of `n_best` predictions
         """
         assert test_diff is not None and out_file is not None
+        self._init_extra_params()
 
         if batch_size is None:
             raise ValueError("batch_size must be set")
@@ -198,7 +213,7 @@ class DiffTranslator(object):
 
         for batch in test_loader:
             # batch here is ((encoder_batch, encoder_length), decoder_batch)
-            batch_data = self.translate_batch(batch, batch_size, self.test_dataset, attn_debug=attn_debug)
+            batch_data = self.translate_batch(batch, batch_size, self.test_dataset, syn_path, sem_path, attn_debug=attn_debug)
 
             translations = builder.from_batch(batch_data, batch_size)
 
@@ -247,21 +262,17 @@ class DiffTranslator(object):
         with torch.no_grad():
 
             # Encoder forward.
-            src, enc_states, memory_bank, src_lengths = self._run_encoder(
-                batch, data.data_type)
-            self.model.decoder.init_state(
-                src, memory_bank, enc_states, with_cache=True)
+            src, enc_states, memory_bank, src_lengths = self._run_encoder(batch, batch_size)
+            self.model.decoder.init_state(src, memory_bank, enc_states, with_cache=True)
 
             if self.syn_path:
                 syn, syn_states, syn_bank, syn_lengths = self._run_ext_encoder(batch, data.data_type, "syn")
-                self.syn_decoder.init_state(
-                    syn, syn_bank, syn_states, with_cache=True)
+                self.syn_decoder.init_state(syn, syn_bank, syn_states, with_cache=True)
             else:
                 syn, syn_states, syn_bank, syn_lengths = None, None, None, None
             if self.sem_path:
                 sem, sem_states, sem_bank, sem_lengths = self._run_ext_encoder(batch, data.data_type, "sem")
-                self.sem_decoder.init_state(
-                    sem, sem_bank, sem_states, with_cache=True)
+                self.sem_decoder.init_state(sem, sem_bank, sem_states, with_cache=True)
             else:
                 sem, sem_states, sem_bank, sem_lengths = None, None, None, None
 
@@ -271,17 +282,13 @@ class DiffTranslator(object):
             results["attention"] = [[] for _ in range(batch_size)]  # noqa: F812
             results["batch"] = batch
             if "tgt" in batch.__dict__:
-                results["gold_score"] = self._score_target(
-                    batch, memory_bank, src_lengths, data, batch.src_map
-                    if data.data_type == 'text' and self.copy_attn else None)
-                self.model.decoder.init_state(
-                    src, memory_bank, enc_states, with_cache=True)
+                results["gold_score"] = self._score_target(batch, memory_bank, src_lengths, data, batch.src_map if self.copy_attn else None)
+                self.model.decoder.init_state(src, memory_bank, enc_states, with_cache=True)
             else:
                 results["gold_score"] = [0] * batch_size
 
             # Tile states and memory beam_size times.
-            self.model.decoder.map_state(
-                lambda state, dim: tile(state, beam_size, dim=dim))
+            self.model.decoder.map_state(lambda state, dim: tile(state, beam_size, dim=dim))
             if isinstance(memory_bank, tuple):
                 memory_bank = tuple(tile(x, beam_size, dim=1) for x in memory_bank)
                 mb_device = memory_bank[0].device
@@ -292,9 +299,7 @@ class DiffTranslator(object):
 
             if self.syn_path:
                 syn_sc = torch.index_select(self.syn_score.to(src.device), 0, batch.indices)  ##simi score
-                self.syn_decoder.map_state(
-                    lambda state, dim: tile(state, beam_size, dim=dim)
-                )
+                self.syn_decoder.map_state(lambda state, dim: tile(state, beam_size, dim=dim))
                 if isinstance(syn_bank, tuple):
                     syn_bank = tuple(tile(x, beam_size, dim=1) for x in syn_bank)
                 else:
@@ -305,9 +310,7 @@ class DiffTranslator(object):
                 syn_sc, syn_lengths, syn_bank = None, None, None
             if self.sem_path:
                 sem_sc = torch.index_select(self.sem_score.to(src.device), 0, batch.indices)  ##simi score
-                self.sem_decoder.map_state(
-                    lambda state, dim: tile(state, beam_size, dim=dim)
-                )
+                self.sem_decoder.map_state(lambda state, dim: tile(state, beam_size, dim=dim))
                 if isinstance(sem_bank, tuple):
                     sem_bank = tuple(tile(x, beam_size, dim=1) for x in sem_bank)
                 else:
@@ -317,28 +320,16 @@ class DiffTranslator(object):
             else:
                 sem_sc, sem_lengths, sem_bank = None, None, None
 
-            src_map = (tile(batch.src_map, beam_size, dim=1)
-                       if data.data_type == 'text' and self.copy_attn else None)
+            src_map = (tile(batch.src_map, beam_size, dim=1) if self.copy_attn else None)
 
             top_beam_finished = torch.zeros([batch_size], dtype=torch.uint8)
             batch_offset = torch.arange(batch_size, dtype=torch.long)
-            beam_offset = torch.arange(
-                0,
-                batch_size * beam_size,
-                step=beam_size,
-                dtype=torch.long,
-                device=mb_device)
-            alive_seq = torch.full(
-                [batch_size * beam_size, 1],
-                start_token,
-                dtype=torch.long,
-                device=mb_device)
+            beam_offset = torch.arange(0, batch_size * beam_size, step=beam_size, dtype=torch.long, device=mb_device)
+            alive_seq = torch.full([batch_size * beam_size, 1], start_token, dtype=torch.long, device=mb_device)
             alive_attn = None
 
             # Give full probability to the first beam on the first step.
-            topk_log_probs = (
-                torch.tensor([0.0] + [float("-inf")] * (beam_size - 1),
-                             device=mb_device).repeat(batch_size))
+            topk_log_probs = (torch.tensor([0.0] + [float("-inf")] * (beam_size - 1), device=mb_device).repeat(batch_size))
 
             # Structure that holds finished hypotheses.
             hypotheses = [[] for _ in range(batch_size)]  # noqa: F812
@@ -346,16 +337,14 @@ class DiffTranslator(object):
             for step in range(max_length):
                 decoder_input = alive_seq[:, -1].view(1, -1, 1)
 
-                log_probs, attn = \
-                    self._decode_and_generate(decoder_input, memory_bank,
+                log_probs, attn = self._decode_and_generate(decoder_input, memory_bank,
                                               batch, data,
                                               memory_lengths=memory_lengths,
                                               src_map=src_map,
                                               step=step,
                                               batch_offset=batch_offset,
                                               syn_sc=syn_sc, syn_lengths=syn_lengths, syn_bank=syn_bank,
-                                              sem_sc=sem_sc, sem_lengths=sem_lengths, sem_bank=sem_bank
-                                              )
+                                              sem_sc=sem_sc, sem_lengths=sem_lengths, sem_bank=sem_bank)
 
                 vocab_size = log_probs.size(-1)
 
@@ -381,15 +370,11 @@ class DiffTranslator(object):
                 topk_ids = topk_ids.fmod(vocab_size)
 
                 # Map beam_index to batch_index in the flat representation.
-                batch_index = (
-                        topk_beam_index
-                        + beam_offset[:topk_beam_index.size(0)].unsqueeze(1))
+                batch_index = (topk_beam_index + beam_offset[:topk_beam_index.size(0)].unsqueeze(1))
                 select_indices = batch_index.view(-1)
 
                 # Append last prediction.
-                alive_seq = torch.cat(
-                    [alive_seq.index_select(0, select_indices),
-                     topk_ids.view(-1, 1)], -1)
+                alive_seq = torch.cat([alive_seq.index_select(0, select_indices), topk_ids.view(-1, 1)], -1)
                 if return_attention:
                     current_attn = attn.index_select(1, select_indices)
                     if alive_attn is None:
@@ -427,15 +412,13 @@ class DiffTranslator(object):
                         # End condition is the top beam finished and we can return
                         # n_best hypotheses.
                         if top_beam_finished[i] and len(hypotheses[b]) >= n_best:
-                            best_hyp = sorted(
-                                hypotheses[b], key=lambda x: x[0], reverse=True)
+                            best_hyp = sorted(hypotheses[b], key=lambda x: x[0], reverse=True)
                             for n, (score, pred, attn) in enumerate(best_hyp):
                                 if n >= n_best:
                                     break
                                 results["scores"][b].append(score)
                                 results["predictions"][b].append(pred)
-                                results["attention"][b].append(
-                                    attn if attn is not None else [])
+                                results["attention"][b].append(attn if attn is not None else [])
                         else:
                             non_finished_batch.append(i)
                     non_finished = torch.tensor(non_finished_batch)
@@ -443,24 +426,19 @@ class DiffTranslator(object):
                     if len(non_finished) == 0:
                         break
                     # Remove finished batches for the next step.
-                    top_beam_finished = top_beam_finished.index_select(
-                        0, non_finished)
+                    top_beam_finished = top_beam_finished.index_select(0, non_finished)
                     batch_offset = batch_offset.index_select(0, non_finished)
                     non_finished = non_finished.to(topk_ids.device)
                     topk_log_probs = topk_log_probs.index_select(0, non_finished)
                     batch_index = batch_index.index_select(0, non_finished)
                     select_indices = batch_index.view(-1)
-                    alive_seq = predictions.index_select(0, non_finished) \
-                        .view(-1, alive_seq.size(-1))
+                    alive_seq = predictions.index_select(0, non_finished).view(-1, alive_seq.size(-1))
                     if alive_attn is not None:
-                        alive_attn = attention.index_select(1, non_finished) \
-                            .view(alive_attn.size(0),
-                                  -1, alive_attn.size(-1))
+                        alive_attn = attention.index_select(1, non_finished).view(alive_attn.size(0), -1, alive_attn.size(-1))
 
                 # Reorder states.
                 if isinstance(memory_bank, tuple):
-                    memory_bank = tuple(x.index_select(1, select_indices)
-                                        for x in memory_bank)
+                    memory_bank = tuple(x.index_select(1, select_indices) for x in memory_bank)
                 else:
                     memory_bank = memory_bank.index_select(1, select_indices)
 
@@ -474,8 +452,7 @@ class DiffTranslator(object):
 
                     syn_lengths = syn_lengths.index_select(0, select_indices)
                     syn_sc = syn_sc.index_select(0, select_indices)
-                    self.syn_decoder.map_state(
-                        lambda state, dim: state.index_select(dim, select_indices))
+                    self.syn_decoder.map_state(lambda state, dim: state.index_select(dim, select_indices))
                 if self.sem_path:
                     if isinstance(sem_bank, tuple):
                         sem_bank = tuple(x.index_select(1, select_indices) for x in sem_bank)
@@ -484,16 +461,42 @@ class DiffTranslator(object):
 
                     sem_lengths = sem_lengths.index_select(0, select_indices)
                     sem_sc = sem_sc.index_select(0, select_indices)
-                    self.sem_decoder.map_state(
-                        lambda state, dim: state.index_select(dim, select_indices))
+                    self.sem_decoder.map_state(lambda state, dim: state.index_select(dim, select_indices))
 
-                self.model.decoder.map_state(
-                    lambda state, dim: state.index_select(dim, select_indices))
+                self.model.decoder.map_state(lambda state, dim: state.index_select(dim, select_indices))
                 if src_map is not None:
                     src_map = src_map.index_select(1, select_indices)
 
             return results
 
+    def _run_encoder(self, batch, batch_size):
+        src, src_lengths = batch[0]
+        enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
+        if src_lengths is None:
+            assert not isinstance(memory_bank, tuple), 'Ensemble decoding only supported for text data'
+            src_lengths = torch.Tensor(batch_size).type_as(memory_bank).long().fill_(memory_bank.size(0))
+        return src, enc_states, memory_bank, src_lengths
+
+    def _run_ext_encoder(self, batch, data_type, side):
+        src = inputters.make_features(batch, side, data_type)
+        _, src_lengths = eval('batch.%s' % side)
+
+        src_lengths, rank = src_lengths.sort(descending=True)
+        src = src[:, rank, :]
+        enc_states, memory_bank, src_lengths = self.model.encoder(
+            src, src_lengths)
+        _, recover = rank.sort(descending=False)
+        enc_states = (enc_states[0][:, recover, :], enc_states[1][:, recover, :])
+        memory_bank = memory_bank[:, recover, :]
+        src_lengths = src_lengths[recover]
+        if src_lengths is None:
+            assert not isinstance(memory_bank, tuple), \
+                'Ensemble decoding only supported for text data'
+            src_lengths = torch.Tensor(batch.batch_size) \
+                .type_as(memory_bank) \
+                .long() \
+                .fill_(memory_bank.size(0))
+        return src, enc_states, memory_bank, src_lengths
 
     def _score_target(self, batch, memory_bank, src_lengths):
         tgt_in = batch[1][:-1]
@@ -531,7 +534,7 @@ class DiffTranslator(object):
 
         return log_probs, attn
 
-    
+
     def _translate_batch(self, batch, batch_size, data):\
         # (0) Prep each of the components of the search.
         # And helper method for reducing verbosity.

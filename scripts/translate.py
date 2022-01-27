@@ -31,7 +31,8 @@ def main(opt):
                              test_msg=opt.tgt,  # cleaned.test.msg
                              batch_size=opt.batch_size,
                              attn_debug=opt.attn_debug,
-                             sem_path=opt.sem_path)  # sem.diff
+                             sem_path=opt.sem_path,  # sem.diff
+                             out_file=opt.output)
 
 
 if __name__ == "__main__":
