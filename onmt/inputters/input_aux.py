@@ -100,7 +100,7 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
             en_batch.append(en_tensor)
             de_batch.append(de_tensor)
         en_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
-        de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2) if not dataset.indexed_data else torch.tensor(de_batch)
+        de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2)
         return {"src_batch":en_batch, "src_len":torch.tensor(en_len), "tgt_batch": de_batch, "tgt_len": torch.tensor(de_len)}
 
     sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches, 2)
@@ -109,13 +109,13 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
 
 def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
     def generate_batch(data_batch):
-        _, _, _,  en_len, de_len, sem_len = zip(*data_batch)
+        _, _, _, _, en_len, de_len, sem_len = zip(*data_batch)
         # for padding
         max_en_len = max(en_len)
         max_de_len = max(de_len)
         max_sem_len = max(sem_len)
         de_batch, en_batch, sem_batch = [], [], []
-        for (en_item, de_item, sem_item, _, en_item_len, de_item_len, sem_item_len, _) in data_batch:
+        for (en_item, de_item, sem_item, _, en_item_len, de_item_len, sem_item_len) in data_batch:
 
             # encode source
             en_tensor = torch.tensor(get_indices(vocabulary, en_item))
@@ -124,18 +124,16 @@ def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True
             sem_tensor = torch.tensor(get_indices(vocabulary, sem_item))
             if sem_item_len != max_sem_len:
                 sem_tensor = torch.cat((sem_tensor, torch.zeros(max_sem_len - sem_item_len, dtype=torch.int)))
-            # encode target
-            if dataset.indexed_data:
-                de_tensor = de_item
-            else:
-                de_tensor = torch.tensor(get_indices(vocabulary, de_item))
-                if de_item_len != max_de_len:
-                    de_tensor = torch.cat((de_tensor, torch.zeros(max_de_len - de_item_len, dtype=torch.int)))
+
+            de_tensor = torch.tensor(get_indices(vocabulary, de_item))
+            if de_item_len != max_de_len:
+                de_tensor = torch.cat((de_tensor, torch.zeros(max_de_len - de_item_len, dtype=torch.int)))
+
             en_batch.append(en_tensor)
             de_batch.append(de_tensor)
             sem_batch.append(sem_tensor)
         en_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
-        de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2) if not dataset.indexed_data else torch.tensor(de_batch)
+        de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2)
         sem_batch = torch.cat([tensor.unsqueeze(1) for tensor in sem_batch], 1).unsqueeze(2)
         return {"src_batch":en_batch, "src_len":torch.tensor(en_len), "tgt_batch": de_batch, "tgt_len": torch.tensor(de_len),
                 "sem_batch": sem_batch, "sem_len": torch.tensor(sem_len), "indexes": data_batch[3]}

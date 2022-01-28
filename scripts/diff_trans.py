@@ -48,7 +48,7 @@ class DiffTranslator(object):
 
         self.opt = opt
         self.model = model
-        self.test_dataset = SemTextDataset(opt.src, opt.tgt, opt.sem_path, opt.max_sent_length)
+        self.test_dataset = SemTextDataset(opt.src, opt.tgt, opt.sem_path, opt.max_sent_length, indexed_data=True)
         self.test_vocab = create_sem_vocab(self.test_dataset)
 
         self.stepwise_penalty = opt.stepwise_penalty
@@ -462,7 +462,7 @@ class DiffTranslator(object):
             return results
 
     def _run_encoder(self, batch, batch_size):
-        src, src_lengths = batch[0]
+        src, src_lengths = batch["src"]
         enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
         if src_lengths is None:
             assert not isinstance(memory_bank, tuple), 'Ensemble decoding only supported for text data'
