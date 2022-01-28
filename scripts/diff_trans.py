@@ -16,7 +16,7 @@ from onmt.helpers.model_builder import load_test_model
 from onmt.inputters.text_dataset import SemTextDataset, TextDataset
 from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab
 from onmt.translate.beam import Beam
-from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_sem_vocab, create_vocab
+from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_vocab
 from onmt.utils.misc import tile
 from onmt.translate.translation import TranslationBuilder
 from onmt.hashes.smooth import save_bleu_score
@@ -49,7 +49,7 @@ class DiffTranslator(object):
         self.opt = opt
         self.model = model
         self.test_dataset = SemTextDataset(opt.src, opt.tgt, opt.sem_path, opt.max_sent_length)
-        self.test_vocab = create_sem_vocab(self.test_dataset)
+        self.test_vocab = create_vocab(self.test_dataset)
 
         self.stepwise_penalty = opt.stepwise_penalty
         self.block_ngram_repeat = opt.block_ngram_repeat
@@ -202,7 +202,7 @@ class DiffTranslator(object):
         n_best = self.opt.n_best
         replace_unk = self.opt.replace_unk
 
-        test_loader = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size)
+        test_loader = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size, shuffle_batches=False)
 
         builder = TranslationBuilder(self.test_dataset, n_best, replace_unk)
 
@@ -356,7 +356,7 @@ class DiffTranslator(object):
                 topk_log_probs = topk_scores * length_penalty
 
                 # Resolve beam origin and true word ids.
-                topk_beam_index = topk_ids.div(vocab_size)
+                topk_beam_index = torch.tensor(topk_ids.div(vocab_size), dtype=torch.int64)
                 topk_ids = topk_ids.fmod(vocab_size)
 
                 # Map beam_index to batch_index in the flat representation.
@@ -365,7 +365,6 @@ class DiffTranslator(object):
                 select_indices = batch_index.view(-1)
 
                 # Append last prediction.
-                print(torch.round(select_indices))
                 alive_seq = torch.cat([alive_seq.index_select(0, select_indices), topk_ids.view(-1, 1)], -1)
                 if return_attention:
                     current_attn = attn.index_select(1, select_indices)

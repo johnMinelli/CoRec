@@ -105,7 +105,7 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
         tgt_batch = torch.cat([tensor.unsqueeze(1) for tensor in tgt_batch], 1).unsqueeze(2)
         return {"src_batch": src_batch, "src_len": torch.tensor(src_len), "tgt_batch": tgt_batch, "tgt_len": torch.tensor(tgt_len), "indexes": torch.tensor(indexes)}
 
-    def generate_batch_sem_ds(data_batch):
+    def generate_batch_sem_dataset(data_batch):
         _, _, _, _, src_len, tgt_len, sem_len = zip(*data_batch)
         # for padding
         max_src_len = max(src_len)
@@ -141,7 +141,7 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
                 "sem_batch": sem_batch, "sem_len": torch.tensor(sem_len), "indexes": torch.tensor(indexes)}
 
     sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches)
-    return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch_sem_ds if dataset is SemTextDataset else generate_batch)
+    return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch_sem_dataset if type(dataset) is SemTextDataset else generate_batch)
 
 
 def load_vocab(vocab_file, checkpoint):

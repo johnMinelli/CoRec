@@ -46,10 +46,7 @@ class SemTextDataset(TextDataset):
         if sem_path is not None:
             with codecs.open(sem_path, "r", "utf-8") as cf:
                 for i, line in enumerate(cf):
-                    self.sem_texts.append(line.strip().split()[:src_max_len])
-
-    def __len__(self):
-        return len(self.src_texts)
+                    self.sem_texts.append(line.strip().split())
 
     def __getitem__(self, idx):
         return self.src_texts[idx],\
