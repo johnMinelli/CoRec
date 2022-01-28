@@ -283,7 +283,7 @@ class DiffTranslator(object):
             results["scores"] = [[] for _ in range(batch_size)]  # noqa: F812
             results["attention"] = [[] for _ in range(batch_size)]  # noqa: F812
             results["batch"] = batch
-            if batch[1] is None or batch[1][0] is None:
+            if batch["tgt_len"] is None or batch["tgt_batch"] is None:
                 results["gold_score"] = self._score_target(batch, memory_bank, src_lengths, data)
                 self.model.decoder.init_state(src, memory_bank, enc_states, with_cache=True)
             else:
@@ -301,7 +301,8 @@ class DiffTranslator(object):
 
             syn_sc, syn_lengths, syn_bank = None, None, None
             if self.sem_path:
-                sem_sc = torch.index_select(self.sem_score.to(src.device), 0, batch.indices)  ##simi score
+                print(batch["indexes"])
+                sem_sc = torch.index_select(self.sem_score.to(src.device), 0, batch["indexes"])  ##simi score
                 self.sem_decoder.map_state(lambda state, dim: tile(state, beam_size, dim=dim))
                 if isinstance(sem_bank, tuple):
                     sem_bank = tuple(tile(x, beam_size, dim=1) for x in sem_bank)
@@ -462,7 +463,7 @@ class DiffTranslator(object):
             return results
 
     def _run_encoder(self, batch, batch_size):
-        src, src_lengths = batch["src"]
+        src, src_lengths = batch["src_batch"], batch["src_len"]
         enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
         if src_lengths is None:
             assert not isinstance(memory_bank, tuple), 'Ensemble decoding only supported for text data'
@@ -470,7 +471,7 @@ class DiffTranslator(object):
         return src, enc_states, memory_bank, src_lengths
 
     def _run_ext_encoder(self, batch, data_type, side):
-        src, src_lengths = batch[2]
+        src, src_lengths = batch["tgt_batch"], batch["tgt_len"]
 
         src_lengths, rank = src_lengths.sort(descending=True)
         print(src.shape)

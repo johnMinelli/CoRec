@@ -114,9 +114,10 @@ def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True
         max_en_len = max(en_len)
         max_de_len = max(de_len)
         max_sem_len = max(sem_len)
-        de_batch, en_batch, sem_batch = [], [], []
-        for (en_item, de_item, sem_item, _, en_item_len, de_item_len, sem_item_len) in data_batch:
+        de_batch, en_batch, sem_batch, indexes = [], [], [], []
+        for (en_item, de_item, sem_item, index, en_item_len, de_item_len, sem_item_len) in data_batch:
 
+            indexes.append(index)
             # encode source
             en_tensor = torch.tensor(get_indices(vocabulary, en_item))
             if en_item_len != max_en_len:
