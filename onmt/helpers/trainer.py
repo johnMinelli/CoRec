@@ -169,7 +169,7 @@ class Trainer(object):
         # why it doesn't use the with torch.no_grad():
         for batch in valid_iter:
             src, source_lengths = batch[0]
-            tgt = batch[1]
+            tgt, tgt_lengths = batch[1]
 
             # F-prop through the model.
             outputs, attention = self.model(src, tgt, source_lengths)
@@ -192,7 +192,7 @@ class Trainer(object):
         for batch in true_batchs:
             # if samples are not padded correctly with same size an error will rise
             src, source_lengths = batch[0]
-            tgt_outer = batch[1]
+            tgt_outer, tgt_lengths = batch[1]
 
             target_size = tgt_outer.size(0)
             report_stats.n_src_words += source_lengths.sum().item()

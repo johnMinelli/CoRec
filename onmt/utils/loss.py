@@ -128,7 +128,7 @@ class LossComputeBase(nn.Module):
         Returns:
             :obj:`onmt.utils.Statistics`: loss statistics
         """
-        range_ = (0, batch[1].size(0))
+        range_ = (0, batch[1][0].size(0))
         shard_state = self._make_shard_state(batch, output, range_, attns)
         _, batch_stats = self._compute_loss(batch, **shard_state)
 
@@ -237,7 +237,7 @@ class NMTLossCompute(LossComputeBase):
     def _make_shard_state(self, batch, output, range_, attns=None):
         return {
             "output": output,
-            "target": batch[1][range_[0] + 1: range_[1]],
+            "target": batch[1][0][range_[0] + 1: range_[1]],
         }
 
     def _compute_loss(self, batch, output, target):

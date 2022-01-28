@@ -100,11 +100,46 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
             de_batch.append(de_tensor)
         en_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
         de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2) if not dataset.indexed_data else torch.tensor(de_batch)
-        return (en_batch, torch.tensor(en_len)), de_batch
+        return (en_batch, torch.tensor(en_len)), (de_batch, torch.tensor(de_len))
 
     sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches)
-    a = DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
-    return a
+    return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
+
+
+def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
+    def generate_batch(data_batch):
+        _, _, _,  en_len, de_len, sem_len = zip(*data_batch)
+        # for padding
+        max_en_len = max(en_len)
+        max_de_len = max(de_len)
+        max_sem_len = max(sem_len)
+        de_batch, en_batch, sem_batch = [], [], []
+        for (en_item, de_item, sem_item, en_item_len, de_item_len, sem_item_len) in data_batch:
+            # encode source
+            en_tensor = torch.tensor(get_indices(vocabulary, en_item))
+            if en_item_len != max_en_len:
+                en_tensor = torch.cat((en_tensor, torch.zeros(max_en_len - en_item_len, dtype=torch.int)))
+            sem_tensor = torch.tensor(get_indices(vocabulary, sem_item))
+            if sem_item_len != max_sem_len:
+                sem_tensor = torch.cat((sem_tensor, torch.zeros(max_sem_len - sem_item_len, dtype=torch.int)))
+            # encode target
+            if dataset.indexed_data:
+                de_tensor = de_item
+            else:
+                de_tensor = torch.tensor(get_indices(vocabulary, de_item))
+                if de_item_len != max_de_len:
+                    de_tensor = torch.cat((de_tensor, torch.zeros(max_de_len - de_item_len, dtype=torch.int)))
+            en_batch.append(en_tensor)
+            de_batch.append(de_tensor)
+            sem_batch.append(sem_tensor)
+        en_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
+        de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2) if not dataset.indexed_data else torch.tensor(de_batch)
+        sem_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
+        return (en_batch, torch.tensor(en_len)), (de_batch, torch.tensor(de_len)), (sem_batch, torch.tensor(sem_len))
+
+    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches)
+    return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
+
 
 def load_vocab(vocab_file, checkpoint):
     if checkpoint is not None:
