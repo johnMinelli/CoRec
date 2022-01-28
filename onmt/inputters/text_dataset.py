@@ -48,8 +48,7 @@ class SemTextDataset(TextDataset):
             for i, line in enumerate(cf):
                 self.sem_texts.append(line.strip().split()[:src_max_len])
                 if indexed_data:
-                    self.sem_texts.append(i)
-
+                    self.indexes.append(i)
 
     def __len__(self):
         assert len(self.src_texts) == len(self.target_texts)
