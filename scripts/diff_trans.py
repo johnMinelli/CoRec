@@ -328,21 +328,17 @@ class DiffTranslator(object):
             # Structure that holds finished hypotheses.
             hypotheses = [[] for _ in range(batch_size)]  # noqa: F812
 
-            for step in range(max_length):
+            for step in range(max_length[0]):
                 decoder_input = alive_seq[:, -1].view(1, -1, 1)
 
                 log_probs, attn = self._decode_and_generate(decoder_input, memory_bank,
-                                              batch, data,
                                               memory_lengths=memory_lengths,
-                                              src_map=src_map,
                                               step=step,
-                                              batch_offset=batch_offset,
-                                              syn_sc=syn_sc, syn_lengths=syn_lengths, syn_bank=syn_bank,
                                               sem_sc=sem_sc, sem_lengths=sem_lengths, sem_bank=sem_bank)
 
                 vocab_size = log_probs.size(-1)
 
-                if step < min_length:
+                if step < min_length[0]:
                     log_probs[:, end_token] = -1e20
 
                 # Multiply probs by the beam probability.
@@ -365,9 +361,11 @@ class DiffTranslator(object):
 
                 # Map beam_index to batch_index in the flat representation.
                 batch_index = (topk_beam_index + beam_offset[:topk_beam_index.size(0)].unsqueeze(1))
+
                 select_indices = batch_index.view(-1)
 
                 # Append last prediction.
+                print(torch.round(select_indices))
                 alive_seq = torch.cat([alive_seq.index_select(0, select_indices), topk_ids.view(-1, 1)], -1)
                 if return_attention:
                     current_attn = attn.index_select(1, select_indices)
@@ -507,7 +505,7 @@ class DiffTranslator(object):
 
         return gold_scores
 
-    def _decode_and_generate(self, decoder_input, memory_bank, memory_lengths, data, sem_lengths, sem_sc=None, step=None, sem_bank=None):
+    def _decode_and_generate(self, decoder_input, memory_bank, memory_lengths, sem_lengths, sem_sc=None, step=None, sem_bank=None):
 
         # Decoder forward, takes [tgt_len, batch, nfeats] as input
         # and [src_len, batch, hidden] as memory_bank
