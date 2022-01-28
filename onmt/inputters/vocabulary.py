@@ -33,7 +33,7 @@ def create_sem_vocab(*datasets):
     counter = Counter()
     for dataset in datasets:
 
-        for src_text, target_txt, sem_txt, _, _, _ in dataset:
+        for src_text, target_txt, sem_txt, _, _, _, _, _ in dataset:
             counter.update(src_text)
             counter.update(target_txt)
             counter.update(sem_txt)

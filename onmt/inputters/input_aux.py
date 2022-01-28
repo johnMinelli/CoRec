@@ -101,7 +101,7 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
             de_batch.append(de_tensor)
         en_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
         de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2) if not dataset.indexed_data else torch.tensor(de_batch)
-        return (en_batch, torch.tensor(en_len)), (de_batch, torch.tensor(de_len))
+        return {"src_batch":en_batch, "src_len":torch.tensor(en_len), "tgt_batch": de_batch, "tgt_len": torch.tensor(de_len)}
 
     sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches, 2)
     return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
@@ -115,7 +115,7 @@ def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True
         max_de_len = max(de_len)
         max_sem_len = max(sem_len)
         de_batch, en_batch, sem_batch = [], [], []
-        for (en_item, de_item, sem_item, en_item_len, de_item_len, sem_item_len) in data_batch:
+        for (en_item, de_item, sem_item, _, en_item_len, de_item_len, sem_item_len, _) in data_batch:
 
             # encode source
             en_tensor = torch.tensor(get_indices(vocabulary, en_item))
@@ -137,9 +137,10 @@ def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True
         en_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
         de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2) if not dataset.indexed_data else torch.tensor(de_batch)
         sem_batch = torch.cat([tensor.unsqueeze(1) for tensor in sem_batch], 1).unsqueeze(2)
-        return (en_batch, torch.tensor(en_len)), (de_batch, torch.tensor(de_len)), (sem_batch, torch.tensor(sem_len))
+        return {"src_batch":en_batch, "src_len":torch.tensor(en_len), "tgt_batch": de_batch, "tgt_len": torch.tensor(de_len),
+                "sem_batch": sem_batch, "sem_len": torch.tensor(sem_len), "indexes": data_batch[3]}
 
-    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches, 3)
+    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches, 4)
     return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
 
 
