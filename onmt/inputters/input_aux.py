@@ -137,7 +137,7 @@ def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True
         de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2)
         sem_batch = torch.cat([tensor.unsqueeze(1) for tensor in sem_batch], 1).unsqueeze(2)
         return {"src_batch":en_batch, "src_len":torch.tensor(en_len), "tgt_batch": de_batch, "tgt_len": torch.tensor(de_len),
-                "sem_batch": sem_batch, "sem_len": torch.tensor(sem_len), "indexes": data_batch[3]}
+                "sem_batch": sem_batch, "sem_len": torch.tensor(sem_len), "indexes": torch.tensor(indexes)}
 
     sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches, 4)
     return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
