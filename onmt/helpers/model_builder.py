@@ -161,7 +161,7 @@ def build_model(model_opt, vocab, gpu, checkpoint=None):
     decoder = build_decoder(model_opt, tgt_embeddings)
 
     # Build NMTModel(= encoder + decoder).
-    device = torch.device("cuda" if gpu else "cpu")
+    device = torch.device("cpu")
     model = NMTModel(encoder, decoder)
 
     # Build Generator.

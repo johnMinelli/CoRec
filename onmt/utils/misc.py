@@ -46,3 +46,12 @@ def tile(x, count, dim=0):
     if dim != 0:
         x = x.permute(perm).contiguous()
     return x
+
+
+def read_file(path):
+    """load lines from a file"""
+    sents = []
+    with open(path, 'r') as f:
+        for line in f:
+            sents.append(line.strip())
+    return sents

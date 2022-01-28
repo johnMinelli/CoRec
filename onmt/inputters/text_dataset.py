@@ -45,9 +45,8 @@ class SemTextDataset(TextDataset):
         self.sem_texts = []
         with codecs.open(sem_path, "r", "utf-8") as cf:
             for i, line in enumerate(cf):
-                self.src_texts.append(line.strip().split()[:src_max_len])
-                if indexed_data:
-                    self.target_texts.append(i)
+                self.sem_texts.append(line.strip().split()[:src_max_len])
+
 
     def __len__(self):
         assert len(self.src_texts) == len(self.target_texts)

@@ -49,15 +49,16 @@ def load_dataset(corpus_type, opt):
 
 class MinPaddingSampler(Sampler):
 
-    def __init__(self, data_source, batch_size, shuffle_batches):
+    def __init__(self, data_source, batch_size, shuffle_batches, index_length_value):
 
         super().__init__(data_source)
+        self.index_length_value = index_length_value
         self.dataset = data_source
         self.batch_size = batch_size
         self.shuffle_batches = shuffle_batches
 
     def __iter__(self):
-        indices = [(i, s[2]) for i, s in enumerate(self.dataset)]
+        indices = [(i, s[self.index_length_value]) for i, s in enumerate(self.dataset)]
         # sort dataset indices by decreasing length, so that
         # batches contain texts with close lengths, and padding should
         indices = sorted(indices, key=lambda x: x[1], reverse=True)
@@ -102,7 +103,7 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
         de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2) if not dataset.indexed_data else torch.tensor(de_batch)
         return (en_batch, torch.tensor(en_len)), (de_batch, torch.tensor(de_len))
 
-    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches)
+    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches, 2)
     return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
 
 
@@ -115,6 +116,7 @@ def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True
         max_sem_len = max(sem_len)
         de_batch, en_batch, sem_batch = [], [], []
         for (en_item, de_item, sem_item, en_item_len, de_item_len, sem_item_len) in data_batch:
+
             # encode source
             en_tensor = torch.tensor(get_indices(vocabulary, en_item))
             if en_item_len != max_en_len:
@@ -134,10 +136,10 @@ def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True
             sem_batch.append(sem_tensor)
         en_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
         de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2) if not dataset.indexed_data else torch.tensor(de_batch)
-        sem_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
+        sem_batch = torch.cat([tensor.unsqueeze(1) for tensor in sem_batch], 1).unsqueeze(2)
         return (en_batch, torch.tensor(en_len)), (de_batch, torch.tensor(de_len)), (sem_batch, torch.tensor(sem_len))
 
-    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches)
+    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches, 3)
     return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
 
 

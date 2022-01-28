@@ -52,10 +52,10 @@ def controller(opt):
 
         #os.system(command)
         print("Begin translation...")
-        command = "python scripts/translate.py -model models/CoRec_1000_step_100000.pt \
+        command = "python scripts/translate.py -model models/CoRec_1000_step_2.pt \
                             -src data/top1000/cleaned.test.diff \
                             -tgt data/top1000/cleaned.test.msg \
-                            -sem_path data/top1000/new_1000.sem.diff \
+                            -sem_path data/top1000/sem.diff \
                             -output data/output/1000test.out \
                             -min_length 2 \
                             -max_length 30 \
