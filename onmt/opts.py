@@ -544,9 +544,9 @@ def translate_opts(parser):
               help="path to train msg")
     group.add('--semantic_out', '-semantic_out', default="",
               help="path to semantic output")
-    group.add('--syn_path', '-syn_path', default="",
+    group.add('--syn_path', '-syn_path',
               help="syn path")
-    group.add('--sem_path', '-sem_path', default="",
+    group.add('--sem_path', '-sem_path',
               help="sem path")
     group.add('--mode', '-mode', type=str, default="1", help="choose retrieval or translate")
     group.add('--lam_syn', '-lam_syn', type=float, default=0.0,

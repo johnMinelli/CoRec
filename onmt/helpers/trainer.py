@@ -127,7 +127,7 @@ class Trainer(object):
                 logger.info(f"Batch: {i} accum: {accum}") if self.gpu_verbose_level > 1 else None
                 true_batchs.append(batch)
 
-                normalization += batch[0][1].size(0)
+                normalization += batch["src_len"].size(0)
 
                 accum += 1
                 if accum == self.grad_accum_count:
@@ -168,8 +168,10 @@ class Trainer(object):
         stats = onmt.utils.Statistics()
         # why it doesn't use the with torch.no_grad():
         for batch in valid_iter:
-            src, source_lengths = batch[0]
-            tgt, tgt_lengths = batch[1]
+            src = batch["src_batch"]
+            source_lengths = batch["src_len"]
+            tgt = batch["tgt_batch"]
+            tgt_lengths = batch["tgt_len"]
 
             # F-prop through the model.
             outputs, attention = self.model(src, tgt, source_lengths)
@@ -191,8 +193,10 @@ class Trainer(object):
 
         for batch in true_batchs:
             # if samples are not padded correctly with same size an error will rise
-            src, source_lengths = batch[0]
-            tgt_outer, tgt_lengths = batch[1]
+            src = batch["src_batch"]
+            source_lengths = batch["src_len"]
+            tgt_outer = batch["tgt_batch"]
+            tgt_lengths = batch["tgt_len"]
 
             target_size = tgt_outer.size(0)
             report_stats.n_src_words += source_lengths.sum().item()

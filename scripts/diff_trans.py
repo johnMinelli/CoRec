@@ -13,10 +13,10 @@ import onmt.opts as opts
 from onmt.inputters import vocabulary
 from onmt.translate.beam import GNMTGlobalScorer
 from onmt.helpers.model_builder import load_test_model
-from onmt.inputters.text_dataset import SemTextDataset
-from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab, build_sem_dataset_iter
+from onmt.inputters.text_dataset import SemTextDataset, TextDataset
+from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab
 from onmt.translate.beam import Beam
-from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_sem_vocab
+from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_sem_vocab, create_vocab
 from onmt.utils.misc import tile
 from onmt.translate.translation import TranslationBuilder
 from onmt.hashes.smooth import save_bleu_score
@@ -48,7 +48,7 @@ class DiffTranslator(object):
 
         self.opt = opt
         self.model = model
-        self.test_dataset = SemTextDataset(opt.src, opt.tgt, opt.sem_path, opt.max_sent_length, indexed_data=True)
+        self.test_dataset = SemTextDataset(opt.src, opt.tgt, opt.sem_path, opt.max_sent_length)
         self.test_vocab = create_sem_vocab(self.test_dataset)
 
         self.stepwise_penalty = opt.stepwise_penalty
@@ -92,30 +92,31 @@ class DiffTranslator(object):
         max_sent_length = self.opt.max_sent_length
 
         # load/create dataset and create iterator
-        ds = TextDataset(train_diff, None, max_sent_length, indexed_data=True)
-        data_iter = build_dataset_iter(ds, load_vocab(train_vocab, None), batch_size, shuffle_batches=False)
+        ds = TextDataset(train_diff, None, src_max_len=max_sent_length)
+        data_iter = build_dataset_iter(ds, load_vocab(train_vocab, None) if train_vocab is not None else create_vocab(ds), batch_size, shuffle_batches=False)
 
-        memorys = []
+        memories = []
         shard = 0
         # run encoder
         for batch in data_iter:
-            src, source_lengths = batch[0]
-            batch_indices = batch[1]
+            src = batch["src_batch"]
+            source_lengths = batch["src_len"]
+            batch_indices = batch["indexes"]
             enc_states, memory_bank, src_lengths = self.model.encoder(src, source_lengths)
 
             feature = torch.max(memory_bank, 0)[0]
             _, rank = torch.sort(batch_indices, descending=False)
             feature = feature[rank]
-            memorys.append(feature)
+            memories.append(feature)
             # consider the memory, must shard
-            if len(memorys) % 200 == 0:  # save file
-                memorys = torch.cat(memorys)
-                torch.save(memorys, shard_dir + "shard.%d" % shard)
-                memorys = []
+            if len(memories) % 200 == 0:  # save file
+                memories = torch.cat(memories)
+                torch.save(memories, shard_dir + "shard.%d" % shard)
+                memories = []
                 shard += 1
-        if len(memorys) > 0:
-            memorys = torch.cat(memorys)
-            torch.save(memorys, shard_dir + "shard.%d" % shard)
+        if len(memories) > 0:
+            memories = torch.cat(memories)
+            torch.save(memories, shard_dir + "shard.%d" % shard)
             shard += 1
 
         train_encodings_indexes = []
@@ -131,14 +132,14 @@ class DiffTranslator(object):
             train_diffs = td.readlines()
 
         # search the best (most similar) correspondence of test set encodings with computed training set encodings
-        ds = TextDataset(test_diff, None, max_sent_length, indexed_data=True)
-        data_iter = build_dataset_iter(ds, self.test_vocab, batch_size, shuffle_batches=False)
+        data_iter = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size, shuffle_batches=False)
 
         diffs = []
         msgs = []
         for batch in data_iter:
-            src, source_lengths = batch[0]
-            batch_indices = batch[1]
+            src = batch["src_batch"]
+            source_lengths = batch["src_len"]
+            batch_indices = batch["indexes"]
             enc_states, memory_bank, src_lengths = self.model.encoder(src, source_lengths)
             # get the token with maximum attention for all samples in batch
             feature = torch.max(memory_bank, 0)[0]
@@ -201,7 +202,7 @@ class DiffTranslator(object):
         n_best = self.opt.n_best
         replace_unk = self.opt.replace_unk
 
-        test_loader = build_sem_dataset_iter(self.test_dataset, self.test_vocab, batch_size)
+        test_loader = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size)
 
         builder = TranslationBuilder(self.test_dataset, n_best, replace_unk)
 

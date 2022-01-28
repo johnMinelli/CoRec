@@ -15,7 +15,7 @@ def create_vocab(*datasets):
     counter = Counter()
     for dataset in datasets:
 
-        for src_text, target_txt, _, _ in dataset:
+        for src_text, target_txt, _, _, _ in dataset:
             counter.update(src_text)
             counter.update(target_txt)
     counter.update([PAD_WORD, UNK_WORD, BOS_WORD, EOS_WORD])

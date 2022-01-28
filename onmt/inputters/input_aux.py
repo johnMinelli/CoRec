@@ -2,6 +2,7 @@
 from torch.utils.data import DataLoader, Sampler
 from torchtext.data.utils import RandomShuffler
 
+from onmt.inputters.text_dataset import SemTextDataset
 from onmt.utils.logging import logger
 from onmt.inputters.vocabulary import get_indices
 
@@ -49,16 +50,15 @@ def load_dataset(corpus_type, opt):
 
 class MinPaddingSampler(Sampler):
 
-    def __init__(self, data_source, batch_size, shuffle_batches, index_length_value):
+    def __init__(self, data_source, batch_size, shuffle_batches):
 
         super().__init__(data_source)
-        self.index_length_value = index_length_value
         self.dataset = data_source
         self.batch_size = batch_size
         self.shuffle_batches = shuffle_batches
 
     def __iter__(self):
-        indices = [(i, s[self.index_length_value]) for i, s in enumerate(self.dataset)]
+        indices = [(i, s[self.dataset.sort_index]) for i, s in enumerate(self.dataset)]
         # sort dataset indices by decreasing length, so that
         # batches contain texts with close lengths, and padding should
         indices = sorted(indices, key=lambda x: x[1], reverse=True)
@@ -80,67 +80,68 @@ class MinPaddingSampler(Sampler):
 
 def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
     def generate_batch(data_batch):
-        _, _, en_len, de_len = zip(*data_batch)
+        _, _, _, src_len, tgt_len = zip(*data_batch)
         # for padding
-        max_en_len = max(en_len)
-        max_de_len = max(de_len)
-        de_batch, en_batch = [], []
-        for (en_item, de_item, en_item_len, de_item_len) in data_batch:
-            # encode source
-            en_tensor = torch.tensor(get_indices(vocabulary, en_item))
-            if en_item_len != max_en_len:
-                en_tensor = torch.cat((en_tensor, torch.zeros(max_en_len - en_item_len, dtype=torch.int)))
-            # encode target
-            if dataset.indexed_data:
-                de_tensor = de_item
-            else:
-                de_tensor = torch.tensor(get_indices(vocabulary, de_item))
-                if de_item_len != max_de_len:
-                    de_tensor = torch.cat((de_tensor, torch.zeros(max_de_len - de_item_len, dtype=torch.int)))
-            en_batch.append(en_tensor)
-            de_batch.append(de_tensor)
-        en_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
-        de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2)
-        return {"src_batch":en_batch, "src_len":torch.tensor(en_len), "tgt_batch": de_batch, "tgt_len": torch.tensor(de_len)}
-
-    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches, 2)
-    return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
-
-
-def build_sem_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
-    def generate_batch(data_batch):
-        _, _, _, _, en_len, de_len, sem_len = zip(*data_batch)
-        # for padding
-        max_en_len = max(en_len)
-        max_de_len = max(de_len)
-        max_sem_len = max(sem_len)
-        de_batch, en_batch, sem_batch, indexes = [], [], [], []
-        for (en_item, de_item, sem_item, index, en_item_len, de_item_len, sem_item_len) in data_batch:
+        max_src_len = max(src_len)
+        max_tgt_len = max(tgt_len)
+        tgt_batch, src_batch, indexes = [], [], []
+        for (src_item, tgt_item, index, src_item_len, tgt_item_len) in data_batch:
 
             indexes.append(index)
             # encode source
-            en_tensor = torch.tensor(get_indices(vocabulary, en_item))
-            if en_item_len != max_en_len:
-                en_tensor = torch.cat((en_tensor, torch.zeros(max_en_len - en_item_len, dtype=torch.int)))
-            sem_tensor = torch.tensor(get_indices(vocabulary, sem_item))
-            if sem_item_len != max_sem_len:
-                sem_tensor = torch.cat((sem_tensor, torch.zeros(max_sem_len - sem_item_len, dtype=torch.int)))
+            src_tensor = torch.tensor(get_indices(vocabulary, src_item))
+            if src_item_len != max_src_len:
+                src_tensor = torch.cat((src_tensor, torch.zeros(max_src_len - src_item_len, dtype=torch.int)))
+            # encode target
+            if tgt_item is None:
+                tgt_tensor = torch.tensor([])
+            else:
+                tgt_tensor = torch.tensor(get_indices(vocabulary, tgt_item))
+                if tgt_item_len != max_tgt_len:
+                    tgt_tensor = torch.cat((tgt_tensor, torch.zeros(max_tgt_len - tgt_item_len, dtype=torch.int)))
+            src_batch.append(src_tensor)
+            tgt_batch.append(tgt_tensor)
+        src_batch = torch.cat([tensor.unsqueeze(1) for tensor in src_batch], 1).unsqueeze(2)
+        tgt_batch = torch.cat([tensor.unsqueeze(1) for tensor in tgt_batch], 1).unsqueeze(2)
+        return {"src_batch": src_batch, "src_len": torch.tensor(src_len), "tgt_batch": tgt_batch, "tgt_len": torch.tensor(tgt_len), "indexes": torch.tensor(indexes)}
 
-            de_tensor = torch.tensor(get_indices(vocabulary, de_item))
-            if de_item_len != max_de_len:
-                de_tensor = torch.cat((de_tensor, torch.zeros(max_de_len - de_item_len, dtype=torch.int)))
+    def generate_batch_sem_ds(data_batch):
+        _, _, _, _, src_len, tgt_len, sem_len = zip(*data_batch)
+        # for padding
+        max_src_len = max(src_len)
+        max_tgt_len = max(tgt_len)
+        max_sem_len = max(sem_len)
+        src_batch, tgt_batch, sem_batch, indexes = [], [], [], []
+        for (src_item, tgt_item, sem_item, index, src_item_len, tgt_item_len, sem_item_len) in data_batch:
 
-            en_batch.append(en_tensor)
-            de_batch.append(de_tensor)
+            indexes.append(index)
+            # encode source
+            src_tensor = torch.tensor(get_indices(vocabulary, src_item))
+            if src_item_len != max_src_len:
+                src_tensor = torch.cat((src_tensor, torch.zeros(max_src_len - src_item_len, dtype=torch.int)))
+            if tgt_item is None:
+                tgt_tensor = torch.tensor([])
+            else:
+                tgt_tensor = torch.tensor(get_indices(vocabulary, tgt_item))
+                if tgt_item_len != max_tgt_len:
+                    tgt_tensor = torch.cat((tgt_tensor, torch.zeros(max_tgt_len - tgt_item_len, dtype=torch.int)))
+            if sem_item is None:
+                sem_tensor = torch.tensor([])
+            else:
+                sem_tensor = torch.tensor(get_indices(vocabulary, sem_item))
+                if sem_item_len != max_sem_len:
+                    sem_tensor = torch.cat((sem_tensor, torch.zeros(max_sem_len - sem_item_len, dtype=torch.int)))
+            src_batch.append(src_tensor)
+            tgt_batch.append(tgt_tensor)
             sem_batch.append(sem_tensor)
-        en_batch = torch.cat([tensor.unsqueeze(1) for tensor in en_batch], 1).unsqueeze(2)
-        de_batch = torch.cat([tensor.unsqueeze(1) for tensor in de_batch], 1).unsqueeze(2)
+        src_batch = torch.cat([tensor.unsqueeze(1) for tensor in src_batch], 1).unsqueeze(2)
+        tgt_batch = torch.cat([tensor.unsqueeze(1) for tensor in tgt_batch], 1).unsqueeze(2)
         sem_batch = torch.cat([tensor.unsqueeze(1) for tensor in sem_batch], 1).unsqueeze(2)
-        return {"src_batch":en_batch, "src_len":torch.tensor(en_len), "tgt_batch": de_batch, "tgt_len": torch.tensor(de_len),
+        return {"src_batch": src_batch, "src_len": torch.tensor(src_len), "tgt_batch": tgt_batch, "tgt_len": torch.tensor(tgt_len),
                 "sem_batch": sem_batch, "sem_len": torch.tensor(sem_len), "indexes": torch.tensor(indexes)}
 
-    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches, 4)
-    return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch)
+    sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches)
+    return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch_sem_ds if dataset is SemTextDataset else generate_batch)
 
 
 def load_vocab(vocab_file, checkpoint):
