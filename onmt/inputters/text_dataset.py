@@ -8,23 +8,20 @@ from torch.utils.data import Dataset
 
 
 class TextDataset(Dataset):
-    def __init__(self, src_path, target_path, src_max_len=None, target_max_len=None, transform=None, target_transform=None, indexed_data=False):
+    def __init__(self, src_path, target_path, src_max_len=None, target_max_len=None, transform=None, target_transform=None):
         super(TextDataset, self).__init__()
 
         self.src_path = src_path
         self.target_path = target_path
         self.transform = transform
         self.target_transform = target_transform
-        self.indexed_data = indexed_data
 
         self.src_texts = []
         self.target_texts = []
         with codecs.open(src_path, "r", "utf-8") as cf:
             for i, line in enumerate(cf):
                 self.src_texts.append(line.strip().split()[:src_max_len])
-                if indexed_data:
-                    self.target_texts.append(i)
-        if not indexed_data and target_path is not None:
+        if target_path is not None:
             with codecs.open(target_path, "r", "utf-8") as cf:
                 for line in cf:
                     self.target_texts.append(line.strip().split()[:target_max_len])
@@ -34,7 +31,7 @@ class TextDataset(Dataset):
         return len(self.src_texts)
 
     def __getitem__(self, idx):
-        return self.src_texts[idx], self.target_texts[idx], len(self.src_texts[idx]), len(self.target_texts[idx]) if type(self.target_texts[idx]) == type([]) else 1
+        return self.src_texts[idx], self.target_texts[idx], len(self.src_texts[idx]), len(self.target_texts[idx])
 
 
 class SemTextDataset(TextDataset):
