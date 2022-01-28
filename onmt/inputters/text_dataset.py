@@ -43,9 +43,12 @@ class SemTextDataset(TextDataset):
 
         self.sem_path = sem_path
         self.sem_texts = []
+        self.indexes = []
         with codecs.open(sem_path, "r", "utf-8") as cf:
             for i, line in enumerate(cf):
                 self.sem_texts.append(line.strip().split()[:src_max_len])
+                if indexed_data:
+                    self.sem_texts.append(i)
 
 
     def __len__(self):
@@ -53,5 +56,7 @@ class SemTextDataset(TextDataset):
         return len(self.src_texts)
 
     def __getitem__(self, idx):
-        return self.src_texts[idx], self.target_texts[idx], self.sem_texts[idx], len(self.src_texts[idx]), len(self.target_texts[idx]), len(self.sem_texts[idx]) if type(self.target_texts[idx]) == type([]) else 1
+        return self.src_texts[idx], self.target_texts[idx], self.sem_texts[idx], self.indexes[idx], \
+               len(self.src_texts[idx]), len(self.target_texts[idx]), len(self.sem_texts[idx]), len(self.indexes[idx]) \
+                   if type(self.target_texts[idx]) == type([]) else 1
 
