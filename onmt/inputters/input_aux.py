@@ -79,6 +79,7 @@ class MinPaddingSampler(Sampler):
 
 
 def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
+    device = torch.device("cuda")
     def generate_batch(data_batch):
         _, _, _, src_len, tgt_len = zip(*data_batch)
         # for padding
@@ -103,7 +104,8 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
             tgt_batch.append(tgt_tensor)
         src_batch = torch.cat([tensor.unsqueeze(1) for tensor in src_batch], 1).unsqueeze(2)
         tgt_batch = torch.cat([tensor.unsqueeze(1) for tensor in tgt_batch], 1).unsqueeze(2)
-        return {"src_batch": src_batch, "src_len": torch.tensor(src_len), "tgt_batch": tgt_batch, "tgt_len": torch.tensor(tgt_len), "indexes": torch.tensor(indexes)}
+        return {"src_batch": src_batch.to(device), "src_len": torch.tensor(src_len).to(device), "tgt_batch": tgt_batch.to(device),
+                "tgt_len": torch.tensor(tgt_len).to(device), "indexes": torch.tensor(indexes).to(device)}
 
     def generate_batch_sem_dataset(data_batch):
         _, _, _, _, src_len, tgt_len, sem_len = zip(*data_batch)
