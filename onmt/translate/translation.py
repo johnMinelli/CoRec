@@ -52,20 +52,20 @@ class TranslationBuilder(object):
         assert(len(translation_batch["gold_score"]) ==
                len(translation_batch["predictions"]))
 
-
         preds, pred_score, attn, gold_score, indices = list(zip(
             *sorted(zip(translation_batch["predictions"],
                         translation_batch["scores"],
                         translation_batch["attention"],
                         translation_batch["gold_score"],
-                        batch.indices.data), # not sure here, all indices?
+                        batch["indexes"]), # not sure here, all indices?
                     key=lambda x: x[-1])))
 
         # Sorting
-        inds, perm = torch.sort(batch.indices.data)
-        data_type = self.data.data_type
+        inds, perm = torch.sort(batch["indexes"])
+        data_type = 'text'
 
-        src = batch.src[0].data.index_select(1, perm)
+        src = batch["src_batch"][0].data.index_select(1, perm)
+        print(src)
 
 
         if self.has_tgt:

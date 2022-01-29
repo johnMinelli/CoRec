@@ -361,11 +361,13 @@ class DiffTranslator(object):
 
                 # Map beam_index to batch_index in the flat representation.
                 batch_index = (topk_beam_index + beam_offset[:topk_beam_index.size(0)].unsqueeze(1))
-
                 select_indices = batch_index.view(-1)
+
+
 
                 # Append last prediction.
                 alive_seq = torch.cat([alive_seq.index_select(0, select_indices), topk_ids.view(-1, 1)], -1)
+
                 if return_attention:
                     current_attn = attn.index_select(1, select_indices)
                     if alive_attn is None:
@@ -416,6 +418,7 @@ class DiffTranslator(object):
                     # If all sentences are translated, no need to go further.
                     if len(non_finished) == 0:
                         break
+
                     # Remove finished batches for the next step.
                     top_beam_finished = top_beam_finished.index_select(0, non_finished)
                     batch_offset = batch_offset.index_select(0, non_finished)
