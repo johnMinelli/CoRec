@@ -97,6 +97,8 @@ class DiffTranslator(object):
 
         memories = []
         shard = 0
+        if not os.path.exists(shard_dir):
+            os.makedirs(shard_dir)
         # run encoder
         for batch in data_iter:
             src = batch["src_batch"]
@@ -112,6 +114,7 @@ class DiffTranslator(object):
             if len(memories) % 200 == 0:  # save file
                 memories = torch.cat(memories)
                 torch.save(memories, shard_dir + "shard.%d" % shard)
+                print(f"Saving shard {shard_dir}shard.{shard}")
                 memories = []
                 shard += 1
         if len(memories) > 0:
@@ -268,11 +271,7 @@ class DiffTranslator(object):
             src, enc_states, memory_bank, src_lengths = self._run_encoder(batch, batch_size)
             self.model.decoder.init_state(src, memory_bank, enc_states, with_cache=True)
 
-            if self.syn_path:
-                syn, syn_states, syn_bank, syn_lengths = self._run_ext_encoder(batch, data.data_type, "syn")
-                self.syn_decoder.init_state(syn, syn_bank, syn_states, with_cache=True)
-            else:
-                syn, syn_states, syn_bank, syn_lengths = None, None, None, None
+
             if self.sem_path:
                 sem, sem_states, sem_bank, sem_lengths = self._run_ext_encoder(batch, 'text', "sem")
                 self.sem_decoder.init_state(sem, sem_bank, sem_states, with_cache=True)
@@ -284,8 +283,8 @@ class DiffTranslator(object):
             results["scores"] = [[] for _ in range(batch_size)]  # noqa: F812
             results["attention"] = [[] for _ in range(batch_size)]  # noqa: F812
             results["batch"] = batch
-            if batch["tgt_len"] is None or batch["tgt_batch"] is None:
-                results["gold_score"] = self._score_target(batch, memory_bank, src_lengths, data)
+            if batch["tgt_batch"] is not None:
+                results["gold_score"] = self._score_target(batch, memory_bank, src_lengths)
                 self.model.decoder.init_state(src, memory_bank, enc_states, with_cache=True)
             else:
                 results["gold_score"] = [0] * batch_size
@@ -438,15 +437,7 @@ class DiffTranslator(object):
 
                 memory_lengths = memory_lengths.index_select(0, select_indices)
 
-                if self.syn_path:
-                    if isinstance(syn_bank, tuple):
-                        syn_bank = tuple(x.index_select(1, select_indices) for x in syn_bank)
-                    else:
-                        syn_bank = syn_bank.index_select(1, select_indices)
 
-                    syn_lengths = syn_lengths.index_select(0, select_indices)
-                    syn_sc = syn_sc.index_select(0, select_indices)
-                    self.syn_decoder.map_state(lambda state, dim: state.index_select(dim, select_indices))
                 if self.sem_path:
                     if isinstance(sem_bank, tuple):
                         sem_bank = tuple(x.index_select(1, select_indices) for x in sem_bank)
@@ -493,10 +484,10 @@ class DiffTranslator(object):
         return src, enc_states, memory_bank, src_lengths
 
     def _score_target(self, batch, memory_bank, src_lengths, data):
-        tgt_in = batch[1][:-1]
+        tgt_in = batch["tgt_batch"][:-1]
 
         log_probs, attn = \
-            self._decode_and_generate(tgt_in, memory_bank, src_lengths, data, batch[2][1])
+            self._decode_and_generate(tgt_in, memory_bank, src_lengths, batch["sem_len"])
         # tgt_pad = self.fields["tgt"].vocab.stoi[inputters.PAD_WORD]
         # not sure
         tgt_pad = 0
@@ -542,104 +533,3 @@ class DiffTranslator(object):
         # or [ tgt_len, batch_size, vocab ] when full sentence
 
         return log_probs, attn
-
-
-    def _translate_batch(self, batch, batch_size, data):\
-        # (0) Prep each of the components of the search.
-        # And helper method for reducing verbosity.
-        beam_size = self.opt.beam_size
-
-        # TODO full vocab, just target vocab??
-        # vocab = self.fields["tgt"].vocab
-
-        # Define a list of tokens to exclude from ngram-blocking
-        # exclusion_list = ["<t>", "</t>", "."]
-        exclusion_tokens = set([self.vocab.get_stoi(t)
-                                for t in self.ignore_when_blocking])
-
-        beam = [Beam(beam_size, n_best=self.n_best,
-                                    cuda=self.cuda,
-                                    global_scorer=self.global_scorer,
-                                    pad=self.vocab.get_stoi()[PAD_WORD],
-                                    eos=self.vocab.get_stoi()[EOS_WORD],
-                                    bos=self.vocab.get_stoi()[BOS_WORD],
-                                    min_length=self.min_length,
-                                    stepwise_penalty=self.stepwise_penalty,
-                                    block_ngram_repeat=self.block_ngram_repeat,
-                                    exclusion_tokens=exclusion_tokens)
-                for __ in range(batch_size)]
-
-        # (1) Run the encoder on the src.
-        src, source_lengths = batch[0]
-        enc_states, memory_bank, src_lengths = self.model.encoder(src, source_lengths)
-        self.model.decoder.init_state(src, memory_bank, enc_states)
-
-        results = {}
-        results["predictions"] = []
-        results["scores"] = []
-        results["attention"] = []
-        results["batch"] = batch
-
-        results["gold_score"] = self._score_target(
-            batch, memory_bank, src_lengths)
-        self.model.decoder.init_state(
-            src, memory_bank, enc_states, with_cache=True)
-
-        # (2) Repeat src objects `beam_size` times.
-        # We use now  batch_size x beam_size (same as fast mode)
-        #src_map = tile(batch.src_map, beam_size, dim=1)
-
-        self.model.decoder.map_state(
-            lambda state, dim: tile(state, beam_size, dim=dim))
-
-        if isinstance(memory_bank, tuple):
-            memory_bank = tuple(tile(x, beam_size, dim=1) for x in memory_bank)
-        else:
-            memory_bank = tile(memory_bank, beam_size, dim=1)
-        memory_lengths = tile(src_lengths, beam_size)
-
-        # (3) run the decoder to generate sentences, using beam search.
-        for i in range(self.max_length):
-            if all((b.done() for b in beam)):
-                break
-
-            # (a) Construct batch x beam_size nxt words.
-            # Get all the pending current beam words and arrange for forward.
-
-            inp = torch.stack([b.get_current_state() for b in beam])
-            inp = inp.view(1, -1, 1)
-
-            # (b) Decode and forward
-            out, beam_attn = \
-                self._decode_and_generate(inp, memory_bank, memory_lengths=memory_lengths, step=i)
-
-            out = out.view(batch_size, beam_size, -1)
-            beam_attn = beam_attn.view(batch_size, beam_size, -1)
-
-            # (c) Advance each beam.
-            select_indices_array = []
-            # Loop over the batch_size number of beam
-            for j, b in enumerate(beam):
-                b.advance(out[j, :],
-                          beam_attn.data[j, :, :memory_lengths[j]])
-                select_indices_array.append(
-                    b.get_current_origin() + j * beam_size)
-            select_indices = torch.cat(select_indices_array)
-
-            self.model.decoder.map_state(
-                lambda state, dim: state.index_select(dim, select_indices))
-
-        # (4) Extract sentences from beam.
-        for b in beam:
-            n_best = self.n_best
-            scores, ks = b.sort_finished(minimum=n_best)
-            hyps, attn = [], []
-            for i, (times, k) in enumerate(ks[:n_best]):
-                hyp, att = b.get_hyp(times, k)
-                hyps.append(hyp)
-                attn.append(att)
-            results["predictions"].append(hyps)
-            results["scores"].append(scores)
-            results["attention"].append(attn)
-
-        return results
