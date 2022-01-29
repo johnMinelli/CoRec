@@ -29,10 +29,11 @@ def controller(opt):
                                 -data data/preprocessed/top1000_data \
                                 -save_model models/CoRec_1000 \
                                 -batch_size 32 \
+                                -save_checkpoint_steps 200 \
                                 -optim adam \
                                 -learning_rate 0.001 \
                                 -dropout 0.1 \
-                                -train_steps 100000 \
+                                -train_steps 10000 \
                                 -total 22112 \
                                 -gpu"
 
