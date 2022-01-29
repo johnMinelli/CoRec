@@ -61,7 +61,7 @@ def controller(opt):
                             -output data/output/1000test.out \
                             -min_length 2 \
                             -max_length 30 \
-                            -batch_size 1 \
+                            -batch_size 32 \
                             -fast \
                             -mode 2 \
                             -lam_sem 0.8 \
