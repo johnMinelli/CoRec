@@ -2,7 +2,6 @@
 from __future__ import unicode_literals, print_function
 
 import torch
-import onmt.inputters as inputters
 from onmt.inputters.vocabulary import EOS_WORD, UNK
 
 
@@ -22,76 +21,59 @@ class TranslationBuilder(object):
        has_tgt (bool): will the batch have gold targets
     """
 
-    def __init__(self, data, n_best=1, replace_unk=False,
-                 has_tgt=False):
-        self.data = data
+    def __init__(self, dataset, vocab, n_best=1, replace_unk=False, has_tgt=False):
+        self.dataset = dataset
+        self.vocab = vocab
         self.n_best = n_best
         self.replace_unk = replace_unk
         self.has_tgt = has_tgt
 
-    def _build_target_tokens(self, src, src_vocab, src_raw, pred, attn):
-        vocab = self.fields["tgt"].vocab
+    def _build_target_tokens(self, src, src_raw, pred, attn):
         tokens = []
         for tok in pred:
-            if tok < len(vocab):
-                tokens.append(vocab.itos[tok])
-            else:
-                tokens.append(src_vocab.itos[tok - len(vocab)])
+            tokens.append(self.vocab.vocab.lookup_token(tok))
             if tokens[-1] == EOS_WORD:
                 tokens = tokens[:-1]
                 break
         if self.replace_unk and (attn is not None) and (src is not None):
             for i in range(len(tokens)):
-                if tokens[i] == vocab.itos[UNK]:
+                if tokens[i] == self.vocab.vocab[UNK]:
                     _, max_index = attn[i].max(0)
                     tokens[i] = src_raw[max_index.item()]
         return tokens
 
     def from_batch(self, translation_batch, batch_size):
         batch = translation_batch["batch"]
-        assert(len(translation_batch["gold_score"]) ==
-               len(translation_batch["predictions"]))
+        assert(len(translation_batch["gold_score"]) == len(translation_batch["predictions"]))
 
         preds, pred_score, attn, gold_score, indices = list(zip(
             *sorted(zip(translation_batch["predictions"],
                         translation_batch["scores"],
                         translation_batch["attention"],
                         translation_batch["gold_score"],
-                        batch["indexes"]), # not sure here, all indices?
+                        batch["indexes"]),
                     key=lambda x: x[-1])))
 
         # Sorting
         inds, perm = torch.sort(batch["indexes"])
-        data_type = 'text'
-
         src = batch["src_batch"][0].data.index_select(1, perm)
-        print(src)
-
 
         if self.has_tgt:
-            tgt = batch.tgt.data.index_select(1, perm)
+            tgt = batch["tgt_batch"].index_select(1, perm)
         else:
             tgt = None
 
         translations = []
         for b in range(batch_size):
-            if data_type == 'text':
-                src_vocab = self.data.src_vocabs[inds[b]] \
-                    if self.data.src_vocabs else None
-                src_raw = self.data.examples[inds[b]].src
-            else:
-                src_vocab = None
-                src_raw = None
+            src_raw = self.dataset[inds[b]][0]
             pred_sents = [self._build_target_tokens(
-                src[:, b] if src is not None else None,
-                src_vocab, src_raw,
+                src[:, b] if src is not None else None, src_raw,
                 preds[b][n], attn[b][n])
                 for n in range(self.n_best)]
             gold_sent = None
             if tgt is not None:
                 gold_sent = self._build_target_tokens(
-                    src[:, b] if src is not None else None,
-                    src_vocab, src_raw,
+                    src[:, b] if src is not None else None, src_raw,
                     tgt[1:, b] if tgt is not None else None, None)
 
             translation = Translation(src[:, b] if src is not None else None,

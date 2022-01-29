@@ -207,7 +207,7 @@ class DiffTranslator(object):
 
         test_loader = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size, shuffle_batches=False)
 
-        builder = TranslationBuilder(self.test_dataset, n_best, replace_unk)
+        builder = TranslationBuilder(self.test_dataset, self.test_vocab, n_best, replace_unk, len(self.test_dataset.target_texts)>0)
 
         # Statistics
         counter = count(1)
@@ -220,7 +220,7 @@ class DiffTranslator(object):
 
         for batch in test_loader:
             # batch here is ((encoder_batch, encoder_length), (decoder_batch, decoder_length), (sem_batch, sem_length))
-            batch_data = self.translate_batch(batch, batch_size, self.test_dataset, attn_debug=attn_debug)
+            batch_data = self.translate_batch(batch, batch_size, self.test_dataset, attn_debug=True)
 
             translations = builder.from_batch(batch_data, batch_size)
 
@@ -234,8 +234,10 @@ class DiffTranslator(object):
 
                 n_best_preds = [" ".join(pred) for pred in trans.pred_sents[:n_best]]
                 all_predictions += [n_best_preds]
-                out_file.write('\n'.join(n_best_preds) + '\n')
-                out_file.flush()
+                with open(out_file, 'a') as of:
+                    for msg in '\n'.join(n_best_preds) + '\n':
+                        of.write(msg)
+                        of.flush()
 
         return all_scores, all_predictions
 
@@ -258,9 +260,9 @@ class DiffTranslator(object):
         assert self.block_ngram_repeat == 0
         assert self.global_scorer.beta == 0
 
-        max_length = self.opt.max_length,
-        min_length = self.opt.min_length,
-        n_best = self.opt.n_best,
+        max_length = self.opt.max_length
+        min_length = self.opt.min_length
+        n_best = self.opt.n_best
         return_attention = attn_debug or self.opt.replace_unk
         beam_size = self.opt.beam_size
         start_token = self.test_vocab.vocab[vocabulary.BOS_WORD]
@@ -327,7 +329,7 @@ class DiffTranslator(object):
             # Structure that holds finished hypotheses.
             hypotheses = [[] for _ in range(batch_size)]  # noqa: F812
 
-            for step in range(max_length[0]):
+            for step in range(max_length):
                 decoder_input = alive_seq[:, -1].view(1, -1, 1)
 
                 log_probs, attn = self._decode_and_generate(decoder_input, memory_bank,
@@ -337,7 +339,7 @@ class DiffTranslator(object):
 
                 vocab_size = log_probs.size(-1)
 
-                if step < min_length[0]:
+                if step < min_length:
                     log_probs[:, end_token] = -1e20
 
                 # Multiply probs by the beam probability.
@@ -483,22 +485,21 @@ class DiffTranslator(object):
                 .fill_(memory_bank.size(0))
         return src, enc_states, memory_bank, src_lengths
 
-    def _score_target(self, batch, memory_bank, src_lengths, data):
+    def _score_target(self, batch, memory_bank, src_lengths):
         tgt_in = batch["tgt_batch"][:-1]
 
-        log_probs, attn = \
-            self._decode_and_generate(tgt_in, memory_bank, src_lengths, batch["sem_len"])
+        log_probs, attn = self._decode_and_generate(tgt_in, memory_bank, src_lengths)
         # tgt_pad = self.fields["tgt"].vocab.stoi[inputters.PAD_WORD]
         # not sure
-        tgt_pad = 0
+        tgt_pad = self.test_vocab.vocab[vocabulary.PAD_WORD]
         log_probs[:, :, tgt_pad] = 0
-        gold = batch[1][1:].unsqueeze(2)
+        gold = batch["tgt_batch"][1:]  # .unsqueeze(2)
         gold_scores = log_probs.gather(2, gold)
         gold_scores = gold_scores.sum(dim=0).view(-1)
 
         return gold_scores
 
-    def _decode_and_generate(self, decoder_input, memory_bank, memory_lengths, sem_lengths, sem_sc=None, step=None, sem_bank=None):
+    def _decode_and_generate(self, decoder_input, memory_bank, memory_lengths, sem_lengths=None, sem_sc=None, step=None, sem_bank=None):
 
         # Decoder forward, takes [tgt_len, batch, nfeats] as input
         # and [src_len, batch, hidden] as memory_bank
@@ -524,8 +525,8 @@ class DiffTranslator(object):
         # Generator forward.
 
         attn = dec_attn["std"]
-        log_probs = self.model.generator(dec_out.squeeze(0))
-        if self.sem_path:
+        log_probs = self.model.generator(dec_out.squeeze(0) if sem_sc is not None else dec_out)
+        if sem_sc is not None:
             # syn_probs = self.lam_syn * syn_sc.float() * torch.exp(self.model.generator(syn_out.squeeze(0)))
             sem_probs = self.lam_sem * sem_sc.float() * torch.exp(self.model.generator(sem_out.squeeze(0)))
             log_probs = torch.log(torch.tensor(torch.exp(log_probs)) + sem_probs)
