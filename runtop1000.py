@@ -4,7 +4,7 @@ import sys
 
 def controller(opt):
     if opt == "preprocess":
-        command = "python scripts/preprocess.py -train_src data/top1000/cleaned.train.diff \
+        command = "python preprocess.py -train_src data/top1000/cleaned.train.diff \
                         -train_tgt data/top1000/cleaned.train.msg \
                         -valid_src data/top1000/cleaned.valid.diff \
                         -valid_tgt data/top1000/cleaned.valid.msg \
@@ -18,7 +18,7 @@ def controller(opt):
         os.system(command)
 
     elif opt == "train":
-        command = "python scripts/train.py -word_vec_size 512 \
+        command = "python train.py -word_vec_size 512 \
                                 -enc_layers 2 \
                                 -dec_layers 2 \
                                 -rnn_size 512 \
@@ -40,7 +40,7 @@ def controller(opt):
         print("done.")
     elif opt == "translate":
         print("Retrieve similar commits...")
-        #command = "python scripts/translate.py -model models/CoRec_1000_step_100000.pt \
+        #command = "python translate.py -model models/CoRec_1000_step_100000.pt \
         #                                -src data/top1000/cleaned.test.diff \
         #                                -train_diff  data/top1000/cleaned.train.diff \
         #                                -train_msg data/top1000/cleaned.train.msg \
@@ -53,7 +53,7 @@ def controller(opt):
 
         #os.system(command)
         print("Begin translation...")
-        command = "python scripts/translate.py -model models/CoRec_1000_step_2.pt \
+        command = "python translate.py -model models/CoRec_1000_step_2.pt \
                             -src data/top1000/cleaned.test.diff \
                             -tgt data/top1000/cleaned.test.msg \
                             -sem_path data/top1000/sem.diff \
