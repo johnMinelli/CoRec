@@ -28,12 +28,13 @@ def controller(opt):
                                 -global_attention mlp \
                                 -data data/preprocessed/top1000_data \
                                 -save_model models/CoRec_1000 \
-                                -batch_size 64 \
+                                -batch_size 32 \
                                 -optim adam \
                                 -learning_rate 0.001 \
                                 -dropout 0.1 \
-                                -train_steps 2 \
-                                -total 22112"
+                                -train_steps 100000 \
+                                -total 22112 \
+                                -gpu"
 
         os.system(command)
         print("done.")
