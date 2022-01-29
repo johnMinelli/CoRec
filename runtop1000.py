@@ -45,6 +45,7 @@ def controller(opt):
                                         -src data/top1000/cleaned.test.diff \
                                         -train_diff data/top1000/cleaned.train.diff \
                                         -train_msg data/top1000/cleaned.train.msg \
+                                        -src_vocab data/preprocessed/top1000_data.vocab.pt \
                                         -semantic_out data/top1000 \
                                         -batch_size 32 \
                                         -gpu 0 \
