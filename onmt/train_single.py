@@ -108,10 +108,10 @@ def main(opt, device_id):
     trainer = build_trainer(opt, model, vocab, optim, model_saver)
 
     def train_iter_fct():
-        return build_dataset_iter(load_dataset("train", opt), vocab, opt.batch_size)
+        return build_dataset_iter(load_dataset("train", opt), vocab, opt.batch_size, gpu=opt.gpu)
 
     def valid_iter_fct():
-        return build_dataset_iter(load_dataset("valid", opt), vocab, opt.valid_batch_size)
+        return build_dataset_iter(load_dataset("valid", opt), vocab, opt.valid_batch_size, gpu=opt.gpu)
 
     # Do training.
     if opt.gpu:

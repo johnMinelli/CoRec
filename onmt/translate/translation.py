@@ -56,7 +56,7 @@ class TranslationBuilder(object):
 
         # Sorting
         inds, perm = torch.sort(batch["indexes"])
-        src = batch["src_batch"][0].data.index_select(1, perm)
+        src = batch["src_batch"].data.index_select(1, perm)
 
         if self.has_tgt:
             tgt = batch["tgt_batch"].index_select(1, perm)

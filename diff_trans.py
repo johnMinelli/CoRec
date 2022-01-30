@@ -59,6 +59,7 @@ class DiffTranslator(object):
         self.report_bleu = opt.report_bleu
         self.report_rouge = opt.report_rouge
         self.fast = opt.fast
+        self.gpu = opt.gpu
         # TODO copy attention ?
         self.copy_attn = model_opt.copy_attn
 
@@ -93,7 +94,7 @@ class DiffTranslator(object):
 
         # load/create dataset and create iterator
         ds = TextDataset(train_diff, None, src_max_len=max_sent_length)
-        data_iter = build_dataset_iter(ds, load_vocab(train_vocab, None) if train_vocab is not None else create_vocab(ds), batch_size, shuffle_batches=False)
+        data_iter = build_dataset_iter(ds, load_vocab(train_vocab, None) if train_vocab is not None else create_vocab(ds), batch_size, gpu=self.gpu, shuffle_batches=False)
 
         memories = []
         shard = 0
@@ -135,7 +136,7 @@ class DiffTranslator(object):
             train_diffs = td.readlines()
 
         # search the best (most similar) correspondence of test set encodings with computed training set encodings
-        data_iter = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size, shuffle_batches=False)
+        data_iter = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
         diffs = []
         msgs = []
@@ -205,7 +206,7 @@ class DiffTranslator(object):
         n_best = self.opt.n_best
         replace_unk = self.opt.replace_unk
 
-        test_loader = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size, shuffle_batches=False)
+        test_loader = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
         builder = TranslationBuilder(self.test_dataset, self.test_vocab, n_best, replace_unk, len(self.test_dataset.target_texts)>0)
 
@@ -303,8 +304,7 @@ class DiffTranslator(object):
 
             syn_sc, syn_lengths, syn_bank = None, None, None
             if self.sem_path:
-                print(batch["indexes"])
-                sem_sc = torch.index_select(self.sem_score.to(src.device), 0, batch["indexes"])  ##simi score
+                sem_sc = torch.index_select(self.sem_score.to(src.device), 0, batch["indexes"].to(src.device))  ##simi score
                 self.sem_decoder.map_state(lambda state, dim: tile(state, beam_size, dim=dim))
                 if isinstance(sem_bank, tuple):
                     sem_bank = tuple(tile(x, beam_size, dim=1) for x in sem_bank)

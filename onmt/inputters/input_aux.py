@@ -78,8 +78,8 @@ class MinPaddingSampler(Sampler):
         return self.batch_size
 
 
-def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
-    device = torch.device("cuda")
+def build_dataset_iter(dataset, vocabulary, batch_size, gpu=False, shuffle_batches=True):
+    device = torch.device("cuda" if gpu else "cpu")
     def generate_batch(data_batch):
         _, _, _, src_len, tgt_len = zip(*data_batch)
         # for padding
@@ -139,8 +139,8 @@ def build_dataset_iter(dataset, vocabulary, batch_size, shuffle_batches=True):
         src_batch = torch.cat([tensor.unsqueeze(1) for tensor in src_batch], 1).unsqueeze(2)
         tgt_batch = torch.cat([tensor.unsqueeze(1) for tensor in tgt_batch], 1).unsqueeze(2)
         sem_batch = torch.cat([tensor.unsqueeze(1) for tensor in sem_batch], 1).unsqueeze(2)
-        return {"src_batch": src_batch, "src_len": torch.tensor(src_len), "tgt_batch": tgt_batch, "tgt_len": torch.tensor(tgt_len),
-                "sem_batch": sem_batch, "sem_len": torch.tensor(sem_len), "indexes": torch.tensor(indexes)}
+        return {"src_batch": src_batch.to(device), "src_len": torch.tensor(src_len).to(device), "tgt_batch": tgt_batch.to(device), "tgt_len": torch.tensor(tgt_len).to(device),
+                "sem_batch": sem_batch.to(device), "sem_len": torch.tensor(sem_len).to(device), "indexes": torch.tensor(indexes)}
 
     sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches)
     return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch_sem_dataset if type(dataset) is SemTextDataset else generate_batch)
