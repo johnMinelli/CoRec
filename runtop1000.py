@@ -8,6 +8,8 @@ def controller(opt):
                         -train_tgt data/top1000/cleaned.train.msg \
                         -valid_src data/top1000/cleaned.valid.diff \
                         -valid_tgt data/top1000/cleaned.valid.msg \
+                        -test_src data/top1000/cleaned.test.diff \
+                        -test_tgt data/top1000/cleaned.test.msg \
                         -save_data data/preprocessed/top1000_data \
                         -src_seq_length 1000 \
                         -lower \
@@ -59,6 +61,7 @@ def controller(opt):
                             -sem_path data/top1000/sem/ \
                             -output data/output/1000test.out \
                             -min_length 2 \
+                            -src_vocab data/preprocessed/top1000_data.vocab.pt \
                             -max_length 30 \
                             -batch_size 32 \
                             -lam_sem 0.8 \

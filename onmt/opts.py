@@ -185,7 +185,11 @@ def preprocess_opts(parser):
 
     group.add('--valid_tgt', '-valid_tgt', required=True,
               help="Path to the validation target data")
+    group.add('--test_src', '-test_src', required=True,
+              help="Path to the test source data")
 
+    group.add('--test_tgt', '-test_tgt', required=True,
+              help="Path to the test target data")
     group.add('--src_dir', '-src_dir', default="",
               help="Source directory for image or audio files.")
 
@@ -504,6 +508,9 @@ def translate_opts(parser):
                        sequence)""")
     group.add('--tgt', '-tgt',
                        help='True target sequence (optional)')
+    group.add('--src_vocab', '-src_vocab', default="",
+              help="""Path to an existing source vocabulary. Format:
+                           one word per line.""")
     group.add('--output', '-output', default='pred.txt',
               help="""Path to output the predictions (each line will
                        be the decoded sequence""")

@@ -50,6 +50,7 @@ class DiffTranslator(object):
         self.shared_vocab_default = "shared_sem_vocab.pt"
         self.sem_diff_default = "sem.diff"
         self.sem_msg_default = "sem.msg"
+        self.src_vocab = opt.src_vocab
 
         if opt.sem_path is not None:
             files = os.listdir(opt.sem_path)
@@ -57,9 +58,11 @@ class DiffTranslator(object):
                 assert self.sem_msg_default in files and self.shared_vocab_default in files and self.sem_diff_default in files, \
                     "Empty the sem_path folder specified to recompute the data or check that all semantic files are present in the folder"
                 self.test_dataset = SemTextDataset(opt.src, opt.tgt, os.path.join(opt.sem_path, self.sem_diff_default), opt.max_sent_length)
-                self.shared_vocab = load_vocab(os.path.join(opt.sem_path, self.shared_vocab_default))
+
+                self.shared_vocab = load_vocab(os.path.join(opt.sem_path, self.shared_vocab_default) if not self.src_vocab else self.src_vocab)
             else:
                 self.test_dataset = TextDataset(opt.src, opt.tgt, opt.max_sent_length)
+
                 self.shared_vocab = None
 
         self.opt = opt
@@ -97,9 +100,12 @@ class DiffTranslator(object):
 
         # load/create dataset and create iterator
         ds = TextDataset(train_diff, train_msg, src_max_len=max_sent_length)
-        if self.shared_vocab is None:
+        if self.shared_vocab is None and not self.src_vocab:
             self.shared_vocab = create_vocab(ds, self.test_dataset)
             torch.save(self.shared_vocab, os.path.join(semantic_out, self.shared_vocab_default))
+
+        elif self.shared_vocab is None and not self.src_vocab:
+            self.shared_vocab = load_vocab(self.src_vocab)
         data_iter = build_dataset_iter(ds, self.shared_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
         memories = []
