@@ -48,7 +48,7 @@ def controller(opt):
                                         -src_vocab data/preprocessed/top1000_data.vocab.pt \
                                         -semantic_out data/top1000 \
                                         -batch_size 32 \
-                                        -gpu 0 \
+                                        -gpu \
                                         -fast \
                                         -mode 1 \
                                         -max_sent_length 100"
