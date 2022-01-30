@@ -30,8 +30,11 @@ class TranslationBuilder(object):
 
     def _build_target_tokens(self, src, src_raw, pred, attn):
         tokens = []
-        for tok in pred:
-            tokens.append(self.vocab.vocab.lookup_token(tok))
+        for index in pred:
+            if index < len(self.vocab):
+                tokens.append(self.vocab.lookup_token(index))
+            else:
+                tokens.append(" ")
             if tokens[-1] == EOS_WORD:
                 tokens = tokens[:-1]
                 break
