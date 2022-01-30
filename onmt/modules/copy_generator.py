@@ -90,7 +90,7 @@ class CopyGenerator(nn.Module):
 
         # Original probabilities.
         logits = self.linear(hidden)
-        logits[:, self.tgt_dict.vocab[PAD_WORD]] = -float('inf')
+        logits[:, self.tgt_dict.shared_vocab[PAD_WORD]] = -float('inf')
         prob = torch.softmax(logits, 1)
 
         # Probability of copying p(z=1) batch.

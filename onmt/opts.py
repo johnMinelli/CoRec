@@ -497,26 +497,11 @@ def translate_opts(parser):
               help='Path to model .pt file(s). '
               'Multiple models can be specified, '
               'for ensemble decoding.')
-    group.add('--avg_raw_probs', '-avg_raw_probs', action='store_true',
-              help="""If this is set, during ensembling scores from
-              different models will be combined by averaging their
-              raw probabilities and then taking the log. Otherwise,
-              the log probabilities will be averaged directly.
-              Necessary for models whose output layers can assign
-              zero probability.""")
 
     group = parser.add_argument_group('Data')
-    group.add('--data_type', '-data_type', default="text",
-              help="Type of the source input. Options: [text|img].")
-
-    group.add('--lang', '-lang', default="python",
-              help="Programming language.")
-
     group.add('--src', '-src', required=True,
                        help="""Source sequence to decode (one line per
                        sequence)""")
-    group.add('--src_dir', '-src_dir', default="",
-              help='Source directory for image or audio files')
     group.add('--tgt', '-tgt',
                        help='True target sequence (optional)')
     group.add('--output', '-output', default='pred.txt',
@@ -530,27 +515,14 @@ def translate_opts(parser):
                        call tools/test_rouge.py on command line""")
 
     # Options most relevant to summarization.
-    group.add('--src_vocab', '-src_vocab', default="",
-              help="""Path to an existing source vocabulary. Format:
-                       one word per line.""")
-    group.add('--dynamic_dict', '-dynamic_dict', action='store_true',
-              help="Create dynamic dictionaries")
-    group.add('--share_vocab', '-share_vocab', action='store_true',
-              help="Share source and target vocabulary")
-
-    group.add('--train_diff', '-train_diff', default="",
+    group.add('--train_diff', '-train_diff',
               help="path to train diff")
-    group.add('--train_msg', '-train_msg', default="",
+    group.add('--train_msg', '-train_msg',
               help="path to train msg")
-    group.add('--semantic_out', '-semantic_out', default="",
-              help="path to semantic output")
-    group.add('--syn_path', '-syn_path',
-              help="syn path")
     group.add('--sem_path', '-sem_path',
-              help="sem path")
-    group.add('--mode', '-mode', type=str, default="1", help="choose retrieval or translate")
-    group.add('--lam_syn', '-lam_syn', type=float, default=0.0,
-              help="lam of syn")
+              help="path to semantic data")
+    group.add('--semantic_only', '-semantic_only', action='store_true',
+              help="choose retrieval or translate")
     group.add('--lam_sem', '-lam_sem', type=float, default=0.0,
               help="lam of sem")
 

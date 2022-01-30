@@ -6,29 +6,13 @@ from onmt.inputters.text_dataset import SemTextDataset
 from onmt.utils.logging import logger
 from onmt.inputters.vocabulary import get_indices
 
-def load_vocabulary(vocabulary_path, tag=""):
-    """
-    Loads a vocabulary from the given path.
-    :param vocabulary_path: path to load vocabulary from
-    :param tag: tag for vocabulary (only used for logging)
-    :return: vocabulary or None if path is null
-    """
-    vocabulary = None
-    if vocabulary_path:
-        vocabulary = []
-        logger.info("Loading {} vocabulary from {}".format(tag, vocabulary_path))
-
-        if not os.path.exists(vocabulary_path):
-            raise RuntimeError("{} vocabulary not found at {}!".format(tag, vocabulary_path))
-        else:
-            with codecs.open(vocabulary_path, 'r', 'utf-8') as f:
-                for line in f:
-                    if len(line.strip()) == 0:
-                        continue
-                    word = line.strip().split()[0]
-                    vocabulary.append(word)
-    return vocabulary
-
+def load_vocab(vocab_file, checkpoint=None):
+    if checkpoint is not None:
+        logger.info('Loading vocab from checkpoint')
+        vocab = checkpoint['vocab']
+    else:
+        vocab = torch.load(vocab_file)
+    return vocab
 
 def load_dataset(corpus_type, opt):
     """
@@ -144,14 +128,5 @@ def build_dataset_iter(dataset, vocabulary, batch_size, gpu=False, shuffle_batch
 
     sampler = MinPaddingSampler(dataset, batch_size, shuffle_batches)
     return DataLoader(dataset, batch_sampler=sampler, collate_fn=generate_batch_sem_dataset if type(dataset) is SemTextDataset else generate_batch)
-
-
-def load_vocab(vocab_file, checkpoint):
-    if checkpoint is not None:
-        logger.info('Loading vocab from checkpoint')
-        vocab = checkpoint['vocab']
-    else:
-        vocab = torch.load(vocab_file)
-    return vocab
 
 

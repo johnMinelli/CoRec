@@ -45,12 +45,10 @@ def controller(opt):
                                         -src data/top1000/cleaned.test.diff \
                                         -train_diff data/top1000/cleaned.train.diff \
                                         -train_msg data/top1000/cleaned.train.msg \
-                                        -src_vocab data/preprocessed/top1000_data.vocab.pt \
-                                        -semantic_out data/top1000 \
+                                        -sem_path data/top1000/sem/ \
                                         -batch_size 32 \
-                                        -gpu 0 \
-                                        -fast \
-                                        -mode 1 \
+                                        -gpu \
+                                        -semantic_only \
                                         -max_sent_length 100"
 
         os.system(command)
@@ -58,13 +56,11 @@ def controller(opt):
         command = "python translate.py -model models/CoRec_1000_step_7800.pt \
                             -src data/top1000/cleaned.test.diff \
                             -tgt data/top1000/cleaned.test.msg \
-                            -sem_path data/top1000/sem.diff \
+                            -sem_path data/top1000/sem/ \
                             -output data/output/1000test.out \
                             -min_length 2 \
                             -max_length 30 \
                             -batch_size 32 \
-                            -fast \
-                            -mode 2 \
                             -lam_sem 0.8 \
                             -max_sent_length 100"
 

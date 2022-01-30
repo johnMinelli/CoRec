@@ -18,8 +18,8 @@ from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_voca
 from onmt.translate.beam import Beam
 from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_vocab
 from onmt.utils.misc import tile
-from onmt.translate.translation import TranslationBuilder
-from onmt.hashes.smooth import save_bleu_score
+from onmt.translate.translation_wrapper import TranslationBuilder
+from onmt.hashes.smooth import compute_bleu_score
 
 
 def build_translator(opt, report_score=True):
@@ -46,43 +46,46 @@ class DiffTranslator(object):
                  global_scorer=None,
                  report_score=True):
 
+        self.shard_dir_default = "data/sem_shard/"
+        self.shared_vocab_default = "shared_sem_vocab.pt"
+        self.sem_diff_default = "sem.diff"
+        self.sem_msg_default = "sem.msg"
+
+        if opt.sem_path is not None:
+            files = os.listdir(opt.sem_path)
+            if len(files) > 0:
+                assert self.sem_msg_default in files and self.shared_vocab_default in files and self.sem_diff_default in files, \
+                    "Empty the sem_path folder specified to recompute the data or check that all semantic files are present in the folder"
+                self.test_dataset = SemTextDataset(opt.src, opt.tgt, os.path.join(opt.sem_path, self.sem_diff_default), opt.max_sent_length)
+                self.shared_vocab = load_vocab(os.path.join(opt.sem_path, self.shared_vocab_default))
+            else:
+                self.test_dataset = TextDataset(opt.src, opt.tgt, opt.max_sent_length)
+                self.shared_vocab = None
+
         self.opt = opt
         self.model = model
-        self.test_dataset = SemTextDataset(opt.src, opt.tgt, opt.sem_path, opt.max_sent_length)
-        self.test_vocab = create_vocab(self.test_dataset)
-
-        self.stepwise_penalty = opt.stepwise_penalty
-        self.block_ngram_repeat = opt.block_ngram_repeat
-        self.ignore_when_blocking = set(opt.ignore_when_blocking)
-
+        self.gpu = opt.gpu
         self.verbose = opt.verbose
         self.report_bleu = opt.report_bleu
         self.report_rouge = opt.report_rouge
-        self.fast = opt.fast
-        self.gpu = opt.gpu
-        # TODO copy attention ?
         self.copy_attn = model_opt.copy_attn
 
         self.global_scorer = global_scorer
         self.report_score = report_score
-        self.use_filter_pred = False
 
-    def _init_extra_params(self):
-        if self.opt.mode == "2":  # absolutely that needs a refactor
-            self.lam_syn = self.opt.lam_syn
+        if not opt.semantic_only and opt.sem_path is not None:
             self.lam_sem = self.opt.lam_sem
-            self.syn_path = self.opt.syn_path
-            self.sem_path = self.opt.sem_path
-            ## syn : test additional searcher
-            self.syn_decoder = copy.deepcopy(self.model.decoder) if self.syn_path else None  ##simi score
-            self.sem_decoder = copy.deepcopy(self.model.decoder) if self.sem_path else None
-            self.sem_score = torch.tensor(save_bleu_score(self.sem_path, self.opt.src)) if self.sem_path else None
-            self.syn_score = torch.tensor(save_bleu_score(self.syn_path, self.opt.src)) if self.syn_path else None
+            self.syn_decoder = copy.deepcopy(self.model.decoder)  ##simi score
+            self.sem_decoder = copy.deepcopy(self.model.decoder)
+            self.sem_score = torch.tensor(compute_bleu_score(os.path.join(opt.sem_path, self.sem_diff_default), opt.src))
 
-
-    def semantic(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None, train_vocab=None, semantic_out=None, shard_dir=None):
+    def offline_semantic_retrieval(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None, semantic_out=None):
         """
-        save the semantic info
+        Saves the semantic info in three files: diffs and msgs of training set samples aligned with the test set samples
+        by similarity of encode and the shared vocabulary used for translation
+           sem.msg
+           sem.diff
+           shared_sem_vocab.pt
         """
         if test_diff is None or train_diff is None or train_msg is None:
             raise AssertionError("data files paths [--test_diff, --train_diff, --train_msg] must be specified")
@@ -93,13 +96,16 @@ class DiffTranslator(object):
         max_sent_length = self.opt.max_sent_length
 
         # load/create dataset and create iterator
-        ds = TextDataset(train_diff, None, src_max_len=max_sent_length)
-        data_iter = build_dataset_iter(ds, load_vocab(train_vocab, None) if train_vocab is not None else create_vocab(ds), batch_size, gpu=self.gpu, shuffle_batches=False)
+        ds = TextDataset(train_diff, train_msg, src_max_len=max_sent_length)
+        if self.shared_vocab is None:
+            self.shared_vocab = create_vocab(ds, self.test_dataset)
+            torch.save(self.shared_vocab, os.path.join(semantic_out, self.shared_vocab_default))
+        data_iter = build_dataset_iter(ds, self.shared_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
         memories = []
         shard = 0
-        if not os.path.exists(shard_dir):
-            os.makedirs(shard_dir)
+        if not os.path.exists(self.shard_dir_default):
+            os.makedirs(self.shard_dir_default)
         # run encoder
         for batch in data_iter:
             src = batch["src_batch"]
@@ -114,18 +120,19 @@ class DiffTranslator(object):
             # consider the memory, must shard
             if len(memories) % 200 == 0:  # save file
                 memories = torch.cat(memories)
-                torch.save(memories, shard_dir + "shard.%d" % shard)
-                print(f"Saving shard {shard_dir}shard.{shard}")
+                torch.save(memories, self.shard_dir_default + "shard.%d" % shard)
+                print(f"Saving shard {self.shard_dir_default}shard.{shard}")
                 memories = []
                 shard += 1
         if len(memories) > 0:
             memories = torch.cat(memories)
-            torch.save(memories, shard_dir + "shard.%d" % shard)
+            torch.save(memories, self.shard_dir_default + "shard.%d" % shard)
+            print(f"Saving shard {self.shard_dir_default}shard.{shard}")
             shard += 1
 
         train_encodings_indexes = []
-        for i in range(56):
-            shard_index = torch.load(shard_dir + "shard.%d" % i)
+        for i in range(shard):
+            shard_index = torch.load(self.shard_dir_default + "shard.%d" % i)
             train_encodings_indexes.append(shard_index)
         train_encodings_indexes = torch.cat(train_encodings_indexes)
 
@@ -136,7 +143,7 @@ class DiffTranslator(object):
             train_diffs = td.readlines()
 
         # search the best (most similar) correspondence of test set encodings with computed training set encodings
-        data_iter = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
+        data_iter = build_dataset_iter(self.test_dataset, self.shared_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
         diffs = []
         msgs = []
@@ -161,12 +168,12 @@ class DiffTranslator(object):
                 diffs.append(train_diffs[i].strip() + '\n')
                 msgs.append(train_msgs[i].strip() + '\n')
 
-        with open(os.path.join(semantic_out, "sem.msg"), 'w') as sm:
+        with open(os.path.join(semantic_out, self.sem_msg_default), 'w') as sm:
             for i in msgs:
                 sm.write(i)
                 sm.flush()
 
-        with open(os.path.join(semantic_out, "sem.diff"), 'w') as of:
+        with open(os.path.join(semantic_out, self.sem_diff_default), 'w') as of:
             for i in diffs:
                 of.write(i)
                 of.flush()
@@ -174,7 +181,7 @@ class DiffTranslator(object):
         return
 
 
-    def translate(self, test_diff=None, test_msg=None, batch_size=None, attn_debug=False, syn_path=None, sem_path=None, out_file=None):
+    def translate(self, test_diff=None, test_msg=None, sem_path=None, batch_size=None, attn_debug=False, out_file=None):
         """
         Translate content of `src_data_iter` (if not None) or `test_diff`
         and get gold scores if one of `tgt_data_iter` or `test_msg` is set.
@@ -198,17 +205,17 @@ class DiffTranslator(object):
                 of `n_best` predictions
         """
         assert test_diff is not None and out_file is not None
-        self._init_extra_params()
 
         if batch_size is None:
             raise ValueError("batch_size must be set")
 
         n_best = self.opt.n_best
         replace_unk = self.opt.replace_unk
+        vocab = self.shared_vocab if self.shared_vocab is not None else create_vocab(self.test_dataset)
 
-        test_loader = build_dataset_iter(self.test_dataset, self.test_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
+        test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
-        builder = TranslationBuilder(self.test_dataset, self.test_vocab, n_best, replace_unk, len(self.test_dataset.target_texts)>0)
+        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab, n_best, replace_unk, len(self.test_dataset.target_texts) > 0)
 
         # Statistics
         counter = count(1)
@@ -218,13 +225,12 @@ class DiffTranslator(object):
         all_scores = []
         all_predictions = []
 
-
         for batch in test_loader:
-            # batch here is ((encoder_batch, encoder_length), (decoder_batch, decoder_length), (sem_batch, sem_length))
-            batch_data = self.translate_batch(batch, batch_size, self.test_dataset, attn_debug=True)
-
-            translations = builder.from_batch(batch_data, batch_size)
-
+            # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
+            batch_data = self._process_batch(batch, batch_size, sem_path, vocab, attn_debug=attn_debug)
+            # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
+            translations = translation_wrapper_builder.from_batch(batch_data, batch_size)
+            # iter over the objects to build the sentences
             for trans in translations:
                 all_scores += [trans.pred_scores[:n_best]]
                 pred_score_total += trans.pred_scores[0]
@@ -235,15 +241,14 @@ class DiffTranslator(object):
 
                 n_best_preds = [" ".join(pred) for pred in trans.pred_sents[:n_best]]
                 all_predictions += [n_best_preds]
-                with open(out_file, 'a') as of:
+                with open(out_file, 'w') as of:
                     for msg in '\n'.join(n_best_preds) + '\n':
                         of.write(msg)
                         of.flush()
 
         return all_scores, all_predictions
 
-
-    def translate_batch(self, batch, batch_size, data, attn_debug):
+    def _process_batch(self, batch, batch_size, sem_path, vocab, attn_debug):
         """
         Translate a batch of sentences.
 
@@ -251,14 +256,9 @@ class DiffTranslator(object):
 
         Args:
            batch (:obj:`Batch`): a batch from a dataset object
-           data (:obj:`Dataset`): the dataset object
-           fast (bool): enables fast beam search (may not support all features)
 
         """
 
-        assert not self.opt.dump_beam
-        assert not self.use_filter_pred
-        assert self.block_ngram_repeat == 0
         assert self.global_scorer.beta == 0
 
         max_length = self.opt.max_length
@@ -266,17 +266,15 @@ class DiffTranslator(object):
         n_best = self.opt.n_best
         return_attention = attn_debug or self.opt.replace_unk
         beam_size = self.opt.beam_size
-        start_token = self.test_vocab.vocab[vocabulary.BOS_WORD]
-        end_token = self.test_vocab.vocab[vocabulary.EOS_WORD]
-        with torch.no_grad():
+        start_token = vocab.vocab[vocabulary.BOS_WORD]
+        end_token = vocab.vocab[vocabulary.EOS_WORD]
 
+        with torch.no_grad():
             # Encoder forward.
             src, enc_states, memory_bank, src_lengths = self._run_encoder(batch, batch_size)
             self.model.decoder.init_state(src, memory_bank, enc_states, with_cache=True)
-
-
-            if self.sem_path:
-                sem, sem_states, sem_bank, sem_lengths = self._run_ext_encoder(batch, 'text', "sem")
+            if sem_path:
+                sem, sem_states, sem_bank, sem_lengths = self._run_sem_encoder(batch, batch_size)
                 self.sem_decoder.init_state(sem, sem_bank, sem_states, with_cache=True)
             else:
                 sem, sem_states, sem_bank, sem_lengths = None, None, None, None
@@ -287,7 +285,7 @@ class DiffTranslator(object):
             results["attention"] = [[] for _ in range(batch_size)]  # noqa: F812
             results["batch"] = batch
             if batch["tgt_batch"] is not None:
-                results["gold_score"] = self._score_target(batch, memory_bank, src_lengths)
+                results["gold_score"] = self._score_target(batch, memory_bank, src_lengths, vocab)
                 self.model.decoder.init_state(src, memory_bank, enc_states, with_cache=True)
             else:
                 results["gold_score"] = [0] * batch_size
@@ -302,8 +300,7 @@ class DiffTranslator(object):
                 mb_device = memory_bank.device
             memory_lengths = tile(src_lengths, beam_size)
 
-            syn_sc, syn_lengths, syn_bank = None, None, None
-            if self.sem_path:
+            if sem_path:
                 sem_sc = torch.index_select(self.sem_score.to(src.device), 0, batch["indexes"].to(src.device))  ##simi score
                 self.sem_decoder.map_state(lambda state, dim: tile(state, beam_size, dim=dim))
                 if isinstance(sem_bank, tuple):
@@ -314,8 +311,6 @@ class DiffTranslator(object):
                 sem_sc = tile(sem_sc, beam_size).view(-1, 1)
             else:
                 sem_sc, sem_lengths, sem_bank = None, None, None
-
-            src_map = (tile(batch.src_map, beam_size, dim=1) if self.copy_attn else None)
 
             top_beam_finished = torch.zeros([batch_size], dtype=torch.uint8)
             batch_offset = torch.arange(batch_size, dtype=torch.long)
@@ -364,8 +359,6 @@ class DiffTranslator(object):
                 batch_index = (topk_beam_index + beam_offset[:topk_beam_index.size(0)].unsqueeze(1))
                 select_indices = batch_index.view(-1)
 
-
-
                 # Append last prediction.
                 alive_seq = torch.cat([alive_seq.index_select(0, select_indices), topk_ids.view(-1, 1)], -1)
 
@@ -403,8 +396,7 @@ class DiffTranslator(object):
                                 predictions[i, j, 1:],  # Ignore start_token.
                                 attention[:, i, j, :memory_lengths[i]]
                                 if attention is not None else None))
-                        # End condition is the top beam finished and we can return
-                        # n_best hypotheses.
+                        # With top beam finished as end condition we can return n_best hypotheses.
                         if top_beam_finished[i] and len(hypotheses[b]) >= n_best:
                             best_hyp = sorted(hypotheses[b], key=lambda x: x[0], reverse=True)
                             for n, (score, pred, attn) in enumerate(best_hyp):
@@ -439,8 +431,7 @@ class DiffTranslator(object):
 
                 memory_lengths = memory_lengths.index_select(0, select_indices)
 
-
-                if self.sem_path:
+                if sem_path:
                     if isinstance(sem_bank, tuple):
                         sem_bank = tuple(x.index_select(1, select_indices) for x in sem_bank)
                     else:
@@ -451,8 +442,6 @@ class DiffTranslator(object):
                     self.sem_decoder.map_state(lambda state, dim: state.index_select(dim, select_indices))
 
                 self.model.decoder.map_state(lambda state, dim: state.index_select(dim, select_indices))
-                if src_map is not None:
-                    src_map = src_map.index_select(1, select_indices)
 
             return results
 
@@ -464,57 +453,36 @@ class DiffTranslator(object):
             src_lengths = torch.Tensor(batch_size).type_as(memory_bank).long().fill_(memory_bank.size(0))
         return src, enc_states, memory_bank, src_lengths
 
-    def _run_ext_encoder(self, batch, data_type, side):
-        src, src_lengths = batch["tgt_batch"], batch["tgt_len"]
+    def _run_sem_encoder(self, batch, batch_size):
+        src = batch["sem_batch"]
+        src_lengths = batch["sem_len"]
 
         src_lengths, rank = src_lengths.sort(descending=True)
-        print(src.shape)
         src = src[:, rank, :]
-        enc_states, memory_bank, src_lengths = self.model.encoder(
-            src, src_lengths)
+        enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
         _, recover = rank.sort(descending=False)
         enc_states = (enc_states[0][:, recover, :], enc_states[1][:, recover, :])
         memory_bank = memory_bank[:, recover, :]
         src_lengths = src_lengths[recover]
         if src_lengths is None:
-            assert not isinstance(memory_bank, tuple), \
-                'Ensemble decoding only supported for text data'
-            src_lengths = torch.Tensor(batch.batch_size) \
-                .type_as(memory_bank) \
-                .long() \
-                .fill_(memory_bank.size(0))
+            assert not isinstance(memory_bank, tuple), 'Ensemble decoding only supported for text data'
+            src_lengths = torch.Tensor(batch_size).type_as(memory_bank).long().fill_(memory_bank.size(0))
         return src, enc_states, memory_bank, src_lengths
 
-    def _score_target(self, batch, memory_bank, src_lengths):
-        tgt_in = batch["tgt_batch"][:-1]
-
-        log_probs, attn = self._decode_and_generate(tgt_in, memory_bank, src_lengths)
-        # tgt_pad = self.fields["tgt"].vocab.stoi[inputters.PAD_WORD]
-        # not sure
-        tgt_pad = self.test_vocab.vocab[vocabulary.PAD_WORD]
-        log_probs[:, :, tgt_pad] = 0
-        gold = batch["tgt_batch"][1:]  # .unsqueeze(2)
-        gold_scores = log_probs.gather(2, gold)
-        gold_scores = gold_scores.sum(dim=0).view(-1)
-
-        return gold_scores
-
-    def _decode_and_generate(self, decoder_input, memory_bank, memory_lengths, sem_lengths=None, sem_sc=None, step=None, sem_bank=None):
+    def _decode_and_generate(self, decoder_input, memory_bank, memory_lengths, step=None, sem_lengths=None, sem_sc=None, sem_bank=None):
 
         # Decoder forward, takes [tgt_len, batch, nfeats] as input
         # and [src_len, batch, hidden] as memory_bank
         # in case of inference tgt_len = 1, batch = beam times batch_size
         # in case of Gold Scoring tgt_len = actual length, batch = 1 batch
         self.model.decoder.test = 1
-        if self.sem_path:
+        if self.opt.sem_path is not None:
             self.sem_decoder.test = 1
-
         dec_out, dec_attn = self.model.decoder(
             decoder_input,
             memory_bank,
             memory_lengths=memory_lengths,
             step=step)
-
         if sem_bank is not None:
             sem_out, sem_attn = self.sem_decoder(
                 decoder_input, sem_bank,
@@ -523,14 +491,26 @@ class DiffTranslator(object):
             )
 
         # Generator forward.
-
         attn = dec_attn["std"]
         log_probs = self.model.generator(dec_out.squeeze(0) if sem_sc is not None else dec_out)
         if sem_sc is not None:
-            # syn_probs = self.lam_syn * syn_sc.float() * torch.exp(self.model.generator(syn_out.squeeze(0)))
             sem_probs = self.lam_sem * sem_sc.float() * torch.exp(self.model.generator(sem_out.squeeze(0)))
             log_probs = torch.log(torch.tensor(torch.exp(log_probs)) + sem_probs)
         # returns [(batch_size x beam_size) , vocab ] when 1 step
         # or [ tgt_len, batch_size, vocab ] when full sentence
 
         return log_probs, attn
+
+    def _score_target(self, batch, memory_bank, src_lengths, vocab):
+        tgt_in = batch["tgt_batch"][:-1]
+
+        log_probs, attn = self._decode_and_generate(tgt_in, memory_bank, src_lengths)
+        # tgt_pad = self.fields["tgt"].vocab.stoi[inputters.PAD_WORD]
+        # not sure
+        tgt_pad = vocab.vocab[vocabulary.PAD_WORD]
+        log_probs[:, :, tgt_pad] = 0
+        gold = batch["tgt_batch"][1:]  # .unsqueeze(2)
+        gold_scores = log_probs.gather(2, gold)
+        gold_scores = gold_scores.sum(dim=0).view(-1)
+
+        return gold_scores

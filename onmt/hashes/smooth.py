@@ -18,10 +18,9 @@ def write_file(filename, data):
             f.write("%.4f\n" % i)
 
 
-def save_bleu_score(diff_path, test_diff):
-    print(test_diff)
-    test_diffs = read_file(test_diff)
-    sem_diffs = read_file(diff_path)
+def compute_bleu_score(sem_diff_path, test_diff_path):
+    test_diffs = read_file(test_diff_path)
+    sem_diffs = read_file(sem_diff_path)
     sem_scores = []
 
     for sem, test in zip(sem_diffs, test_diffs):
@@ -36,4 +35,4 @@ def save_bleu_score(diff_path, test_diff):
 if __name__ == '__main__':
     syn_diff_path = "data/new/test.syn.diff"
     sem_diff_path = "data/new/test_tf.sem.diff"
-    save_bleu_score(syn_diff_path, sem_diff_path)
+    compute_bleu_score(syn_diff_path, sem_diff_path)

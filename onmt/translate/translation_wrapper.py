@@ -7,7 +7,7 @@ from onmt.inputters.vocabulary import EOS_WORD, UNK
 
 class TranslationBuilder(object):
     """
-    Build a word-based translation from the batch output
+    Build a word-based translation TranslationWrapper from the batch output
     of translator and the underlying dictionaries.
 
     Replacement based on "Addressing the Rare Word
@@ -55,7 +55,7 @@ class TranslationBuilder(object):
                     key=lambda x: x[-1])))
 
         # Sorting
-        inds, perm = torch.sort(batch["indexes"])
+        inds, perm = torch.sort(batch["indexes"].to(batch["src_batch"].device))
         src = batch["src_batch"].data.index_select(1, perm)
 
         if self.has_tgt:
@@ -76,16 +76,16 @@ class TranslationBuilder(object):
                     src[:, b] if src is not None else None, src_raw,
                     tgt[1:, b] if tgt is not None else None, None)
 
-            translation = Translation(src[:, b] if src is not None else None,
-                                      src_raw, pred_sents,
-                                      attn[b], pred_score[b], gold_sent,
-                                      gold_score[b])
+            translation = TranslationWrapper(src[:, b] if src is not None else None,
+                                             src_raw, pred_sents,
+                                             attn[b], pred_score[b], gold_sent,
+                                             gold_score[b])
             translations.append(translation)
 
         return translations
 
 
-class Translation(object):
+class TranslationWrapper(object):
     """
     Container for a translated sentence.
 
