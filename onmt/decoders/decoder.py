@@ -241,7 +241,7 @@ class StdRNNDecoder(RNNDecoderBase):
         if isinstance(self.rnn, nn.GRU):
             rnn_output, dec_state = self.rnn(emb, self.state["hidden"][0])
         else:
-            print(self.state["hidden"])
+            print(self.state["hidden"].shape)
             rnn_output, dec_state = self.rnn(emb, self.state["hidden"])
 
         # Check
