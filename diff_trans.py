@@ -236,6 +236,7 @@ class DiffTranslator(object):
         for batch in test_loader:
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print("processing batch")
+            print(f"batch_size={batch_size}")
             batch_data = self._process_batch(batch, batch_size, sem_path, vocab, attn_debug=attn_debug)
             # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
             translations = translation_wrapper_builder.from_batch(batch_data, batch_size)
@@ -335,7 +336,7 @@ class DiffTranslator(object):
 
             for step in range(max_length):
                 decoder_input = alive_seq[:, -1].view(1, -1, 1)
-
+                print(f"sem_lengths= {sem_lengths}")
                 log_probs, attn = self._decode_and_generate(decoder_input, memory_bank,
                                               memory_lengths=memory_lengths,
                                               step=step,
