@@ -235,7 +235,7 @@ class DiffTranslator(object):
         counter = 0
         for batch in test_loader:
             print(counter)
-            counter += 0
+            counter += 1
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print("processing batch")
             batch_data = self._process_batch(batch, batch_size, sem_path, vocab, attn_debug=attn_debug)
