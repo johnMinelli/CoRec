@@ -272,6 +272,8 @@ class DiffTranslator(object):
 
         assert self.global_scorer.beta == 0
 
+        print(batch_size)
+
         max_length = self.opt.max_length
         min_length = self.opt.min_length
         n_best = self.opt.n_best
