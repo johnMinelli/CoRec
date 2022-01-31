@@ -53,6 +53,8 @@ class DiffTranslator(object):
         self.src_vocab = opt.src_vocab
 
         if opt.sem_path is not None:
+            if not os.path.isdir(opt.sem_path):
+                os.mkdir(opt.sem_path)
             files = os.listdir(opt.sem_path)
             if len(files) > 0:
                 assert self.sem_msg_default in files and self.shared_vocab_default in files and self.sem_diff_default in files, \
