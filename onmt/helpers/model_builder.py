@@ -85,6 +85,7 @@ def build_decoder(opt, embeddings):
     #                                opt.total,
     #                                opt.batch_size)
     # else:
+    print(opt.dec_rnn_size)
     return StdRNNDecoder(opt.rnn_type, opt.brnn,
                          opt.dec_layers, opt.dec_rnn_size,
                          opt.global_attention,
