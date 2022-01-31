@@ -235,6 +235,7 @@ class DiffTranslator(object):
 
         for batch in test_loader:
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
+            print("processing batch")
             batch_data = self._process_batch(batch, batch_size, sem_path, vocab, attn_debug=attn_debug)
             # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
             translations = translation_wrapper_builder.from_batch(batch_data, batch_size)
