@@ -240,6 +240,7 @@ class DiffTranslator(object):
             print("processing batch")
             batch_data = self._process_batch(batch, batch_size, sem_path, vocab, attn_debug=attn_debug)
             # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
+            print(batch_size)
             translations = translation_wrapper_builder.from_batch(batch_data, batch_size)
             # iter over the objects to build the sentences
             for trans in translations:
@@ -272,7 +273,6 @@ class DiffTranslator(object):
 
         assert self.global_scorer.beta == 0
 
-        print(batch_size)
 
         max_length = self.opt.max_length
         min_length = self.opt.min_length
