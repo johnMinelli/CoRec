@@ -7,7 +7,9 @@ import torch
 import torch.nn as nn
 
 from onmt.decoders.decoder import StdRNNDecoder
+from onmt.decoders.transformer import TransformerDecoder
 from onmt.encoders.rnn_encoder import RNNEncoder
+from onmt.encoders.transformer import TransformerEncoder
 from onmt.modules.copy_generator import CopyGenerator
 
 from onmt.models.embeddings import Embeddings
@@ -36,21 +38,21 @@ def build_encoder(opt, embeddings):
         opt: the option in current environment.
         embeddings (Embeddings): vocab embeddings for this encoder.
     """
-    # if opt.encoder_type == "transformer":
-    #     return TransformerEncoder(opt.enc_layers, opt.enc_rnn_size,
-    #                               opt.heads, opt.transformer_ff,
-    #                               opt.dropout, embeddings)
+    if opt.encoder_type == "transformer":
+        return TransformerEncoder(opt.enc_layers, opt.enc_rnn_size,
+                                  opt.heads, opt.transformer_ff,
+                                  opt.dropout, embeddings)
     # elif opt.encoder_type == "cnn":
     #     return CNNEncoder(opt.enc_layers, opt.enc_rnn_size,
     #                       opt.cnn_kernel_width,
     #                       opt.dropout, embeddings)
     # elif opt.encoder_type == "mean":
     #     return MeanEncoder(opt.enc_layers, embeddings)
-    # else:
-    #     # "rnn" or "brnn"
-    return RNNEncoder(opt.rnn_type, opt.brnn, opt.enc_layers,
-                      opt.enc_rnn_size, opt.dropout, embeddings,
-                      opt.bridge)
+    else:
+        # "rnn" or "brnn"
+        return RNNEncoder(opt.rnn_type, opt.brnn, opt.enc_layers,
+                          opt.enc_rnn_size, opt.dropout, embeddings,
+                          opt.bridge)
 
 def build_decoder(opt, embeddings):
     """
@@ -59,13 +61,13 @@ def build_decoder(opt, embeddings):
         opt: the option in current environment.
         embeddings (Embeddings): vocab embeddings for this decoder.
     """
-    
-    # if opt.decoder_type == "transformer":
-    #     return TransformerDecoder(opt.dec_layers, opt.dec_rnn_size,
-    #                               opt.heads, opt.transformer_ff,
-    #                               opt.global_attention, opt.copy_attn,
-    #                               opt.self_attn_type,
-    #                               opt.dropout, embeddings)
+
+    if opt.decoder_type == "transformer":
+        return TransformerDecoder(opt.dec_layers, opt.dec_rnn_size,
+                                  opt.heads, opt.transformer_ff,
+                                  opt.global_attention, opt.copy_attn,
+                                  opt.self_attn_type,
+                                  opt.dropout, embeddings)
     # elif opt.decoder_type == "cnn":
     #     return CNNDecoder(opt.dec_layers, opt.dec_rnn_size,
     #                       opt.global_attention, opt.copy_attn,
@@ -84,18 +86,18 @@ def build_decoder(opt, embeddings):
     #                                opt.reuse_copy_attn,
     #                                opt.total,
     #                                opt.batch_size)
-    # else:
-    return StdRNNDecoder(opt.rnn_type, opt.brnn,
-                         opt.dec_layers, opt.dec_rnn_size,
-                         opt.global_attention,
-                         opt.global_attention_function,
-                         opt.coverage_attn,
-                         opt.context_gate,
-                         opt.copy_attn,
-                         opt.dropout,
-                         embeddings,
-                         opt.reuse_copy_attn,
-                         opt.total)  #+++ opt.total
+    else:
+        return StdRNNDecoder(opt.rnn_type, opt.brnn,
+                             opt.dec_layers, opt.dec_rnn_size,
+                             opt.global_attention,
+                             opt.global_attention_function,
+                             opt.coverage_attn,
+                             opt.context_gate,
+                             opt.copy_attn,
+                             opt.dropout,
+                             embeddings,
+                             opt.reuse_copy_attn,
+                             opt.total)  #+++ opt.total
 
 def load_test_model(opt, dummy_opt, model_path=None):
     if model_path is None:

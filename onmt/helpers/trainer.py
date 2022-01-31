@@ -165,22 +165,23 @@ class Trainer(object):
         # Set model in validating mode.
         self.model.eval()
 
-        stats = onmt.utils.Statistics()
-        # why it doesn't use the with torch.no_grad():
-        for batch in valid_iter:
-            src = batch["src_batch"]
-            source_lengths = batch["src_len"]
-            tgt = batch["tgt_batch"]
-            tgt_lengths = batch["tgt_len"]
+        with torch.no_grad():
+            stats = onmt.utils.Statistics()
 
-            # F-prop through the model.
-            outputs, attention = self.model(src, tgt, source_lengths)
+            for batch in valid_iter:
+                src = batch["src_batch"]
+                source_lengths = batch["src_len"]
+                tgt = batch["tgt_batch"]
+                tgt_lengths = batch["tgt_len"]
 
-            # Compute loss.
-            batch_stats = self.valid_loss.monolithic_compute_loss(batch, outputs, attention)
+                # F-prop through the model.
+                outputs, attention = self.model(src, tgt, source_lengths)
 
-            # Update statistics.
-            stats.update(batch_stats)
+                # Compute loss.
+                batch_stats = self.valid_loss.monolithic_compute_loss(batch, outputs, attention)
+
+                # Update statistics.
+                stats.update(batch_stats)
 
         # Set model back to training mode.
         self.model.train()

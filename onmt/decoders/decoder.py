@@ -171,8 +171,7 @@ class RNNDecoderBase(nn.Module):
                         `[tgt_len x batch x src_len]`.
         """
         # Run the forward pass of the RNN.
-        dec_state, dec_outs, attns = self._run_forward_pass(
-            tgt, memory_bank, memory_lengths=memory_lengths)
+        dec_state, dec_outs, attns = self._run_forward_pass(tgt, memory_bank, memory_lengths=memory_lengths)
 
         # Update the state with the result.
         output = dec_outs[-1]
