@@ -78,6 +78,9 @@ class RNNDecoderBase(nn.Module):
         self.state = {}
 
         # Build the RNN.
+        print(f"input_size={self._input_size}")
+        print(f"hidden_size={hidden_size}")
+        print(f"num_layers={num_layers}")
         self.rnn = self._build_rnn(rnn_type,
                                    input_size=self._input_size,
                                    hidden_size=hidden_size,
