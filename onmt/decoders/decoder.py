@@ -78,9 +78,6 @@ class RNNDecoderBase(nn.Module):
         self.state = {}
 
         # Build the RNN.
-        print(f"input_size={self._input_size}")
-        print(f"hidden_size={hidden_size}")
-        print(f"num_layers={num_layers}")
         self.rnn = self._build_rnn(rnn_type,
                                    input_size=self._input_size,
                                    hidden_size=hidden_size,
@@ -131,6 +128,7 @@ class RNNDecoderBase(nn.Module):
         # Init the input feed.
         batch_size = self.state["hidden"][0].size(1)
         h_size = (batch_size, self.hidden_size)
+        print(f"LOL {self.state['hidden'][0].shape}")
         self.state["input_feed"] = \
             self.state["hidden"][0].data.new(*h_size).zero_().unsqueeze(0)
         self.state["coverage"] = None
