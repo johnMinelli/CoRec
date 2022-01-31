@@ -119,14 +119,13 @@ class RNNDecoderBase(nn.Module):
                                     hidden[1:hidden.size(0):2]], 2)
             return hidden
 
-        print(f"LOL {self.state['hidden'][0].shape}")
+
         if isinstance(encoder_final, tuple):  # LSTM
             self.state["hidden"] = tuple([_fix_enc_hidden(enc_hid)
                                           for enc_hid in encoder_final])
         else:  # GRU
             self.state["hidden"] = (_fix_enc_hidden(encoder_final), )
 
-        print(f"LOLaaaa {self.state['hidden'][0].shape}")
         # Init the input feed.
         batch_size = self.state["hidden"][0].size(1)
         h_size = (batch_size, self.hidden_size)
