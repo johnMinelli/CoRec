@@ -43,11 +43,12 @@ def controller(opt):
         print("done.")
     elif opt == "translate":
         print("Retrieve similar commits...")
-        command = "python translate.py -model models/CoRec_1000_step_7800.pt \
+        command = "python translate.py -model models/CoRec_1000_step_1000.pt \
                                         -src data/top1000/cleaned.test.diff \
                                         -train_diff data/top1000/cleaned.train.diff \
                                         -train_msg data/top1000/cleaned.train.msg \
                                         -sem_path data/top1000/sem/ \
+                                        -src_vocab data/preprocessed/top1000_data.vocab.pt \
                                         -batch_size 32 \
                                         -gpu \
                                         -semantic_only \
@@ -55,7 +56,7 @@ def controller(opt):
 
         os.system(command)
         print("Begin translation...")
-        command = "python translate.py -model models/CoRec_1000_step_7800.pt \
+        command = "python translate.py -model models/CoRec_1000_step_1000.pt \
                             -src data/top1000/cleaned.test.diff \
                             -tgt data/top1000/cleaned.test.msg \
                             -sem_path data/top1000/sem/ \
@@ -64,6 +65,7 @@ def controller(opt):
                             -src_vocab data/preprocessed/top1000_data.vocab.pt \
                             -max_length 30 \
                             -batch_size 32 \
+                            -gpu \
                             -lam_sem 0.8 \
                             -max_sent_length 100"
 

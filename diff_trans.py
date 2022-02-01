@@ -47,25 +47,23 @@ class DiffTranslator(object):
                  report_score=True):
 
         self.shard_dir_default = "data/sem_shard/"
-        self.shared_vocab_default = "shared_sem_vocab.pt"
         self.sem_diff_default = "sem.diff"
         self.sem_msg_default = "sem.msg"
-        self.src_vocab = opt.src_vocab
+        self.src_vocab = load_vocab(opt.src_vocab)
 
         if opt.sem_path is not None:
             if not os.path.isdir(opt.sem_path):
                 os.mkdir(opt.sem_path)
             files = os.listdir(opt.sem_path)
             if len(files) > 0:
-                assert self.sem_msg_default in files and self.shared_vocab_default in files and self.sem_diff_default in files, \
+                assert self.sem_msg_default in files and self.sem_diff_default in files, \
                     "Empty the sem_path folder specified to recompute the data or check that all semantic files are present in the folder"
                 self.test_dataset = SemTextDataset(opt.src, opt.tgt, os.path.join(opt.sem_path, self.sem_diff_default), opt.max_sent_length)
 
-                self.shared_vocab = load_vocab(os.path.join(opt.sem_path, self.shared_vocab_default) if not self.src_vocab else self.src_vocab)
             else:
                 self.test_dataset = TextDataset(opt.src, opt.tgt, opt.max_sent_length)
-
-                self.shared_vocab = None
+        else:
+            self.test_dataset = TextDataset(opt.src, opt.tgt, opt.max_sent_length)
 
         self.opt = opt
         self.model = model
@@ -77,6 +75,25 @@ class DiffTranslator(object):
 
         self.global_scorer = global_scorer
         self.report_score = report_score
+
+        #self.decode_strategy = BeamSearch(
+        #    self.beam_size,
+        #    batch_size=batch.batch_size,
+        #    pad=self._tgt_pad_idx,
+        #    bos=self._tgt_bos_idx,
+        #    eos=self._tgt_eos_idx,
+        #    unk=self._tgt_unk_idx,
+        #    n_best=self.n_best,
+        #    global_scorer=self.global_scorer,
+        #    min_length=self.min_length,
+        #    max_length=self.max_length,
+        #    return_attention=attn_debug or self.replace_unk,
+        #    block_ngram_repeat=self.block_ngram_repeat,
+        #    exclusion_tokens=self._exclusion_idxs,
+        #    stepwise_penalty=self.stepwise_penalty,
+        #    ratio=self.ratio,
+        #    ban_unk_token=self.ban_unk_token,
+        #)
 
         if not opt.semantic_only and opt.sem_path is not None:
             self.lam_sem = self.opt.lam_sem
@@ -101,14 +118,9 @@ class DiffTranslator(object):
         max_sent_length = self.opt.max_sent_length
 
         # load/create dataset and create iterator
-        ds = TextDataset(train_diff, train_msg, src_max_len=max_sent_length)
-        if self.shared_vocab is None and not self.src_vocab:
-            self.shared_vocab = create_vocab(ds, self.test_dataset)
-            torch.save(self.shared_vocab, os.path.join(semantic_out, self.shared_vocab_default))
+        ds = TextDataset(train_diff, src_max_len=max_sent_length)
 
-        elif self.shared_vocab is None and not self.src_vocab:
-            self.shared_vocab = load_vocab(self.src_vocab)
-        data_iter = build_dataset_iter(ds, self.shared_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
+        data_iter = build_dataset_iter(ds, self.src_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
         memories = []
         shard = 0
@@ -151,7 +163,7 @@ class DiffTranslator(object):
             train_diffs = td.readlines()
 
         # search the best (most similar) correspondence of test set encodings with computed training set encodings
-        data_iter = build_dataset_iter(self.test_dataset, self.shared_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
+        data_iter = build_dataset_iter(self.test_dataset, self.src_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
         diffs = []
         msgs = []
@@ -217,9 +229,12 @@ class DiffTranslator(object):
         if batch_size is None:
             raise ValueError("batch_size must be set")
 
+        with open(out_file, 'w') as of:
+            of.write("")
+
         n_best = self.opt.n_best
         replace_unk = self.opt.replace_unk
-        vocab = self.shared_vocab if self.shared_vocab is not None else create_vocab(self.test_dataset)
+        vocab = self.src_vocab
 
         test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
@@ -342,10 +357,10 @@ class DiffTranslator(object):
                                               step=step,
                                               sem_sc=sem_sc, sem_lengths=sem_lengths, sem_bank=sem_bank)
 
-                vocab_size = log_probs.size(-1)
+                vocab_size = len(self.src_vocab)
 
                 if step < min_length:
-                    log_probs[:, end_token] = -1e20
+                    log_probs[:, :, end_token] = -1e20
 
                 # Multiply probs by the beam probability.
                 log_probs += topk_log_probs.view(-1).unsqueeze(1)
@@ -502,7 +517,7 @@ class DiffTranslator(object):
 
         # Generator forward.
         attn = dec_attn["std"]
-        log_probs = self.model.generator(dec_out.squeeze(0) if sem_sc is not None else dec_out)
+        log_probs = self.model.generator(dec_out)
         if sem_sc is not None:
             sem_probs = self.lam_sem * sem_sc.float() * torch.exp(self.model.generator(sem_out.squeeze(0)))
             log_probs = torch.log(torch.tensor(torch.exp(log_probs)) + sem_probs)
