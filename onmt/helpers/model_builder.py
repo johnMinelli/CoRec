@@ -22,7 +22,7 @@ import onmt.modules
 # from onmt.encoders.cnn_encoder import CNNEncoder
 # from onmt.encoders.mean_encoder import MeanEncoder
 # 
-# from onmt.decoders.decoder import InputFeedRNNDecoder, StdRNNDecoder
+from onmt.decoders.decoder import InputFeedRNNDecoder
 # from onmt.decoders.transformer import TransformerDecoder
 # from onmt.decoders.cnn_decoder import CNNDecoder
 # 
@@ -73,31 +73,31 @@ def build_decoder(opt, embeddings):
     #                       opt.global_attention, opt.copy_attn,
     #                       opt.cnn_kernel_width, opt.dropout,
     #                       embeddings)
-    # elif opt.input_feed:
-    #     return InputFeedRNNDecoder(opt.rnn_type, opt.brnn,
-    #                                opt.dec_layers, opt.dec_rnn_size,
-    #                                opt.global_attention,
-    #                                opt.global_attention_function,
-    #                                opt.coverage_attn,
-    #                                opt.context_gate,
-    #                                opt.copy_attn,
-    #                                opt.dropout,
-    #                                embeddings,
-    #                                opt.reuse_copy_attn,
-    #                                opt.total,
-    #                                opt.batch_size)
-    else:
-        return StdRNNDecoder(opt.rnn_type, opt.brnn,
-                             opt.dec_layers, opt.dec_rnn_size,
-                             opt.global_attention,
-                             opt.global_attention_function,
-                             opt.coverage_attn,
-                             opt.context_gate,
-                             opt.copy_attn,
-                             opt.dropout,
-                             embeddings,
-                             opt.reuse_copy_attn,
-                             opt.total)  #+++ opt.total
+    elif opt.input_feed:
+         return InputFeedRNNDecoder(opt.rnn_type, opt.brnn,
+                                    opt.dec_layers, opt.dec_rnn_size,
+                                    opt.global_attention,
+                                    opt.global_attention_function,
+                                    opt.coverage_attn,
+                                    opt.context_gate,
+                                    opt.copy_attn,
+                                    opt.dropout,
+                                    embeddings,
+                                    opt.reuse_copy_attn,
+                                    opt.total,
+                                    opt.batch_size)
+    #else:
+    #    return StdRNNDecoder(opt.rnn_type, opt.brnn,
+    #                         opt.dec_layers, opt.dec_rnn_size,
+    #                         opt.global_attention,
+    #                         opt.global_attention_function,
+    #                         opt.coverage_attn,
+    #                         opt.context_gate,
+    #                         opt.copy_attn,
+    #                         opt.dropout,
+    #                         embeddings,
+    #                         opt.reuse_copy_attn,
+    #                         opt.total)  #+++ opt.total
 
 def load_test_model(opt, dummy_opt, model_path=None):
     if model_path is None:
