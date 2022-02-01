@@ -234,13 +234,11 @@ class DiffTranslator(object):
         all_predictions = []
         counter = 0
         for batch in test_loader:
-            print(counter)
             counter += 1
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
-            print("processing batch")
+            print(f"processing {counter} batch")
             batch_data = self._process_batch(batch, batch_size, sem_path, vocab, attn_debug=attn_debug)
             # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
-            print(batch_size)
             translations = translation_wrapper_builder.from_batch(batch_data, batch_size)
             # iter over the objects to build the sentences
             for trans in translations:
@@ -253,7 +251,7 @@ class DiffTranslator(object):
 
                 n_best_preds = [" ".join(pred) for pred in trans.pred_sents[:n_best]]
                 all_predictions += [n_best_preds]
-                with open(out_file, 'w') as of:
+                with open(out_file, 'a+') as of:
                     for msg in '\n'.join(n_best_preds) + '\n':
                         of.write(msg)
                         of.flush()
