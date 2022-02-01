@@ -252,9 +252,8 @@ class DiffTranslator(object):
                 n_best_preds = [" ".join(pred) for pred in trans.pred_sents[:n_best]]
                 all_predictions += [n_best_preds]
                 with open(out_file, 'a+') as of:
-                    for msg in '\n'.join(n_best_preds) + '\n':
-                        of.write(msg)
-                        of.flush()
+                    of.write('\n'.join(n_best_preds) + '\n')
+                    of.flush()
 
         return all_scores, all_predictions
 
