@@ -336,7 +336,7 @@ class DiffTranslator(object):
                 sem_sc = tile(sem_sc, beam_size).view(-1, 1)
             else:
                 sem_sc, sem_lengths, sem_bank = None, None, None
-
+            # beam search aim is to make n hypothesis at the same time: expand the input data [1 x batch x 1] --> [1 x batch*beam x 1], decode, take the 'beam' top values (instead of just one): their indices in mod vocab_size is the n° of token predicted
             top_beam_finished = torch.zeros([batch_size], dtype=torch.uint8)
             batch_offset = torch.arange(batch_size, dtype=torch.long)
             beam_offset = torch.arange(0, batch_size * beam_size, step=beam_size, dtype=torch.long, device=mb_device)
@@ -359,7 +359,7 @@ class DiffTranslator(object):
                 vocab_size = len(self.src_vocab)
 
                 if step < min_length:
-                    log_probs[:, :, end_token] = -1e20
+                    log_probs[:, end_token] = -1e20
 
                 # Multiply probs by the beam probability.
                 log_probs += topk_log_probs.view(-1).unsqueeze(1)
@@ -370,20 +370,22 @@ class DiffTranslator(object):
                 # Flatten probs into a list of possibilities.
                 curr_scores = log_probs / length_penalty
                 curr_scores = curr_scores.reshape(-1, beam_size * vocab_size)
+                # each array are 'beam_size' decoder results of a single batch (concatenated), where each decoder output is the logprobability referred to each token in vocabulary
                 topk_scores, topk_ids = curr_scores.topk(beam_size, dim=-1)
 
                 # Recover log probs.
                 topk_log_probs = topk_scores * length_penalty
 
-                # Resolve beam origin and true word ids.
+                # Resolve beam origin and true word ids. e.g.[00000] tells that the top5 values were found in the beam 0
                 topk_beam_index = torch.tensor(topk_ids.div(vocab_size), dtype=torch.int64)
-                topk_ids = topk_ids.fmod(vocab_size)
+                topk_ids = topk_ids.fmod(vocab_size)  # specify the token index in the vocabulary
 
-                # Map beam_index to batch_index in the flat representation.
+                # Map beam_index to batch_index in the flat representation --> alive_seq has size beam*batch x seq_generation_step
                 batch_index = (topk_beam_index + beam_offset[:topk_beam_index.size(0)].unsqueeze(1))
                 select_indices = batch_index.view(-1)
 
-                # Append last prediction.
+                # Append last prediction --> the vocabulary token of a beam is appended to it's input sequence which generated it.
+                # If in a batch a beam input sequence obtained all topk values (all token different but same beam_index) the alive_seq will be reassigned with all starting input sequence equal but last token generated.
                 alive_seq = torch.cat([alive_seq.index_select(0, select_indices), topk_ids.view(-1, 1)], -1)
 
                 if return_attention:
@@ -516,7 +518,7 @@ class DiffTranslator(object):
 
         # Generator forward.
         attn = dec_attn["std"]
-        log_probs = self.model.generator(dec_out)
+        log_probs = self.model.generator(dec_out.squeeze(0))
         if sem_sc is not None:
             sem_probs = self.lam_sem * sem_sc.float() * torch.exp(self.model.generator(sem_out.squeeze(0)))
             log_probs = torch.log(torch.tensor(torch.exp(log_probs)) + sem_probs)
