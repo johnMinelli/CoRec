@@ -34,6 +34,7 @@ def create_vocab(*datasets):
     ordered_dict_words_tgt = OrderedDict(sorted_by_freq_words_tgt)
     final_vocab_src = vocab(ordered_dict_words_src)
     final_vocab_tgt = vocab(ordered_dict_words_tgt)
+
     final_vocab_src.set_default_index(get_max_index(final_vocab_src))
     final_vocab_tgt.set_default_index(get_max_index(final_vocab_tgt))
 
