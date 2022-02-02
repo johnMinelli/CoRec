@@ -2,6 +2,8 @@
 from __future__ import unicode_literals, print_function
 
 import torch
+
+from onmt.hashes.smooth import get_bleu
 from onmt.inputters.vocabulary import EOS_WORD, UNK
 
 
@@ -114,7 +116,7 @@ class TranslationWrapper(object):
         self.gold_sent = tgt_sent
         self.gold_score = gold_score
 
-    def log(self, sent_number):
+    def log(self, sent_number, rouge=None):
         """
         Log translation.
         """
@@ -131,6 +133,8 @@ class TranslationWrapper(object):
             tgt_sent = ' '.join(self.gold_sent)
             output += 'GOLD {}: {}\n'.format(sent_number, tgt_sent)
             output += ("GOLD SCORE: {:.4f}\n".format(self.gold_score))
+            output += ("BLEU SCORE: {:.4f}\n".format(get_bleu(pred_sent, tgt_sent)))
+            if rouge: output += ("ROUGE SCORE: {:.4f}\n".format(rouge.score(pred_sent, tgt_sent)))
         if len(self.pred_sents) > 1:
             output += '\nBEST HYP:\n'
             for score, sent in zip(self.pred_scores, self.pred_sents):

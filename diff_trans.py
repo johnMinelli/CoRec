@@ -1,22 +1,20 @@
 #!/usr/bin/env python
 import copy
+import math
 import os.path
 
 import configargparse
-import codecs
 import torch
-#import onmt.model_builder
-#import onmt.translate.beam
-from onmt.helpers.model_builder import load_test_model
+
+from onmt.utils.logging import logger
 from itertools import count
 import onmt.opts as opts
 from onmt.inputters import vocabulary
-from onmt.translate.beam import GNMTGlobalScorer
 from onmt.helpers.model_builder import load_test_model
 from onmt.inputters.text_dataset import SemTextDataset, TextDataset
 from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab
-from onmt.translate.beam import Beam
 from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_vocab
+from rouge_score import rouge_scorer as rouge_metric
 from onmt.utils.misc import tile
 from onmt.translate.translation_wrapper import TranslationBuilder
 from onmt.hashes.smooth import compute_bleu_score
@@ -30,9 +28,7 @@ def build_translator(opt, report_score=True):
 
     model, model_opt = load_test_model(opt, dummy_opt.__dict__)
 
-    scorer = GNMTGlobalScorer(opt)
-
-    translator = DiffTranslator(model, opt, model_opt, global_scorer=scorer, report_score=report_score)
+    translator = DiffTranslator(model, opt, model_opt, report_score=report_score)
 
     return translator
 
@@ -43,7 +39,6 @@ class DiffTranslator(object):
                  model,
                  opt,
                  model_opt,
-                 global_scorer=None,
                  report_score=True):
 
         self.shard_dir_default = "data/sem_shard/"
@@ -69,31 +64,10 @@ class DiffTranslator(object):
         self.model = model
         self.gpu = opt.gpu
         self.verbose = opt.verbose
-        self.report_bleu = opt.report_bleu
-        self.report_rouge = opt.report_rouge
         self.copy_attn = model_opt.copy_attn
 
-        self.global_scorer = global_scorer
         self.report_score = report_score
-
-        #self.decode_strategy = BeamSearch(
-        #    self.beam_size,
-        #    batch_size=batch.batch_size,
-        #    pad=self._tgt_pad_idx,
-        #    bos=self._tgt_bos_idx,
-        #    eos=self._tgt_eos_idx,
-        #    unk=self._tgt_unk_idx,
-        #    n_best=self.n_best,
-        #    global_scorer=self.global_scorer,
-        #    min_length=self.min_length,
-        #    max_length=self.max_length,
-        #    return_attention=attn_debug or self.replace_unk,
-        #    block_ngram_repeat=self.block_ngram_repeat,
-        #    exclusion_tokens=self._exclusion_idxs,
-        #    stepwise_penalty=self.stepwise_penalty,
-        #    ratio=self.ratio,
-        #    ban_unk_token=self.ban_unk_token,
-        #)
+        self.rouge_scorer = rouge_metric.RougeScorer(['rouge4', 'rougeL'], use_stemmer=True)
 
         if not opt.semantic_only and opt.sem_path is not None:
             self.lam_sem = self.opt.lam_sem
@@ -229,8 +203,8 @@ class DiffTranslator(object):
         if batch_size is None:
             raise ValueError("batch_size must be set")
 
-        with open(out_file, 'w') as of:
-            of.write("")
+        os.remove(out_file)
+        os.remove(out_file+".log")
 
         n_best = self.opt.n_best
         replace_unk = self.opt.replace_unk
@@ -241,22 +215,22 @@ class DiffTranslator(object):
         translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab, n_best, replace_unk, len(self.test_dataset.target_texts) > 0)
 
         # Statistics
-        counter = count(1)
+        batch_counter = count(1)
         pred_score_total, pred_words_total = 0, 0
         gold_score_total, gold_words_total = 0, 0
 
         all_scores = []
         all_predictions = []
-        counter = 0
+        batch_counter = 0
         for batch in test_loader:
-            counter += 1
+            batch_counter += 1
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
-            print(f"processing {counter} batch")
+            print(f"processing {batch_counter} batch")
             batch_data = self._process_batch(batch, batch_size, sem_path, vocab, attn_debug=attn_debug)
             # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
             translations = translation_wrapper_builder.from_batch(batch_data, batch_size)
             # iter over the objects to build the sentences
-            for trans in translations:
+            for i, trans in enumerate(translations):
                 all_scores += [trans.pred_scores[:n_best]]
                 pred_score_total += trans.pred_scores[0]
                 pred_words_total += len(trans.pred_sents[0])
@@ -267,10 +241,31 @@ class DiffTranslator(object):
                 n_best_preds = [" ".join(pred) for pred in trans.pred_sents[:n_best]]
                 all_predictions += [n_best_preds]
                 with open(out_file, 'a+') as of:
+<<<<<<< HEAD
                     for msg in '\n'.join(n_best_preds) + '\n':
                         of.write(msg)
                         of.flush()
+=======
+                    of.write('\n'.join(n_best_preds) + '\n')
+                    of.flush()
+                with open(out_file+".log", 'a+') as of:
+                    of.write('\n'.join(trans.log((batch_counter*i)+i), self.rouge_scorer) + '\n')
+                    of.flush()
+>>>>>>> 92f75e79df9db62ae06a2f26d40d84307467abff
 
+            if self.report_score:
+                msg = self._report_score('PRED', pred_score_total, pred_words_total)
+                if logger:
+                    logger.info(msg)
+                else:
+                    print(msg)
+                if test_msg is not None:
+                    msg = self._report_score('GOLD', gold_score_total, gold_words_total)
+                    if logger:
+                        logger.info(msg)
+                    else:
+                        print(msg)
+        # compute_bleu_score(out_file, test_msg)
         return all_scores, all_predictions
 
     def _process_batch(self, batch, batch_size, sem_path, vocab, attn_debug):
@@ -541,3 +536,12 @@ class DiffTranslator(object):
         gold_scores = gold_scores.sum(dim=0).view(-1)
 
         return gold_scores
+
+    def _report_score(self, name, score_total, words_total):
+        if words_total == 0:
+            msg = "%s No words predicted" % (name,)
+        else:
+            msg = ("%s AVG SCORE: %.4f, %s PPL: %.4f" % (
+                name, score_total / words_total,
+                name, math.exp(-score_total / words_total)))
+        return msg
