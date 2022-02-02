@@ -21,7 +21,6 @@ from onmt.hashes.smooth import compute_bleu_score
 
 
 def build_translator(opt, report_score=True):
-
     dummy_parser = configargparse.ArgumentParser(description='train.py')
     opts.model_opts(dummy_parser)
     dummy_opt = dummy_parser.parse_known_args([])[0]
@@ -53,7 +52,8 @@ class DiffTranslator(object):
             if len(files) > 0:
                 assert self.sem_msg_default in files and self.sem_diff_default in files, \
                     "Empty the sem_path folder specified to recompute the data or check that all semantic files are present in the folder"
-                self.test_dataset = SemTextDataset(opt.src, opt.tgt, os.path.join(opt.sem_path, self.sem_diff_default), opt.max_sent_length)
+                self.test_dataset = SemTextDataset(opt.src, opt.tgt, os.path.join(opt.sem_path, self.sem_diff_default),
+                                                   opt.max_sent_length)
 
             else:
                 self.test_dataset = TextDataset(opt.src, opt.tgt, opt.max_sent_length)
@@ -73,9 +73,11 @@ class DiffTranslator(object):
             self.lam_sem = self.opt.lam_sem
             self.syn_decoder = copy.deepcopy(self.model.decoder)  ##simi score
             self.sem_decoder = copy.deepcopy(self.model.decoder)
-            self.sem_score = torch.tensor(compute_bleu_score(os.path.join(opt.sem_path, self.sem_diff_default), opt.src))
+            self.sem_score = torch.tensor(
+                compute_bleu_score(os.path.join(opt.sem_path, self.sem_diff_default), opt.src))
 
-    def offline_semantic_retrieval(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None, semantic_out=None):
+    def offline_semantic_retrieval(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None,
+                                   semantic_out=None):
         """
         Saves the semantic info in three files: diffs and msgs of training set samples aligned with the test set samples
         by similarity of encode and the shared vocabulary used for translation
@@ -137,7 +139,8 @@ class DiffTranslator(object):
             train_diffs = td.readlines()
 
         # search the best (most similar) correspondence of test set encodings with computed training set encodings
-        data_iter = build_dataset_iter(self.test_dataset, self.src_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
+        data_iter = build_dataset_iter(self.test_dataset, self.src_vocab, batch_size, gpu=self.gpu,
+                                       shuffle_batches=False)
 
         diffs = []
         msgs = []
@@ -149,11 +152,12 @@ class DiffTranslator(object):
             # get the token with maximum attention for all samples in batch
             feature = torch.max(memory_bank, 0)[0]
             # reorder attention results as the order of samples in dataset
-            _,  rank = torch.sort(batch_indices, descending=False)
+            _, rank = torch.sort(batch_indices, descending=False)
             feature = feature[rank]
             # compute similarities
             numerator = torch.mm(feature, train_encodings_indexes.transpose(0, 1))
-            denominator = torch.mm(feature.norm(2, 1).unsqueeze(1), train_encodings_indexes.norm(2, 1).unsqueeze(1).transpose(0, 1))
+            denominator = torch.mm(feature.norm(2, 1).unsqueeze(1),
+                                   train_encodings_indexes.norm(2, 1).unsqueeze(1).transpose(0, 1))
             sims = torch.div(numerator, denominator)
             # get indices of most similar
             tops = torch.topk(sims, 1, dim=1)
@@ -173,7 +177,6 @@ class DiffTranslator(object):
                 of.flush()
 
         return
-
 
     def translate(self, test_diff=None, test_msg=None, sem_path=None, batch_size=None, attn_debug=False, out_file=None):
         """
@@ -203,8 +206,8 @@ class DiffTranslator(object):
         if batch_size is None:
             raise ValueError("batch_size must be set")
 
-        os.remove(out_file)
-        os.remove(out_file+".log")
+        if os.path.isfile(out_file): os.remove(out_file)
+        if os.path.isfile(out_file + ".log"): os.remove(out_file + ".log")
 
         n_best = self.opt.n_best
         replace_unk = self.opt.replace_unk
@@ -212,7 +215,8 @@ class DiffTranslator(object):
 
         test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
-        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab, n_best, replace_unk, len(self.test_dataset.target_texts) > 0)
+        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab, n_best, replace_unk,
+                                                         len(self.test_dataset.target_texts) > 0)
 
         # Statistics
         batch_counter = count(1)
@@ -241,17 +245,11 @@ class DiffTranslator(object):
                 n_best_preds = [" ".join(pred) for pred in trans.pred_sents[:n_best]]
                 all_predictions += [n_best_preds]
                 with open(out_file, 'a+') as of:
-<<<<<<< HEAD
-                    for msg in '\n'.join(n_best_preds) + '\n':
-                        of.write(msg)
-                        of.flush()
-=======
                     of.write('\n'.join(n_best_preds) + '\n')
                     of.flush()
-                with open(out_file+".log", 'a+') as of:
-                    of.write('\n'.join(trans.log((batch_counter*i)+i), self.rouge_scorer) + '\n')
+                with open(out_file + ".log", 'a+') as of:
+                    of.write('\n'.join(trans.log((batch_counter * i) + i), self.rouge_scorer) + '\n')
                     of.flush()
->>>>>>> 92f75e79df9db62ae06a2f26d40d84307467abff
 
             if self.report_score:
                 msg = self._report_score('PRED', pred_score_total, pred_words_total)
@@ -280,7 +278,6 @@ class DiffTranslator(object):
         """
 
         assert self.global_scorer.beta == 0
-
 
         max_length = self.opt.max_length
         min_length = self.opt.min_length
@@ -322,7 +319,8 @@ class DiffTranslator(object):
             memory_lengths = tile(src_lengths, beam_size)
 
             if sem_path:
-                sem_sc = torch.index_select(self.sem_score.to(src.device), 0, batch["indexes"].to(src.device))  ##simi score
+                sem_sc = torch.index_select(self.sem_score.to(src.device), 0,
+                                            batch["indexes"].to(src.device))  ##simi score
                 self.sem_decoder.map_state(lambda state, dim: tile(state, beam_size, dim=dim))
                 if isinstance(sem_bank, tuple):
                     sem_bank = tuple(tile(x, beam_size, dim=1) for x in sem_bank)
@@ -340,7 +338,8 @@ class DiffTranslator(object):
             alive_attn = None
 
             # Give full probability to the first beam on the first step.
-            topk_log_probs = (torch.tensor([0.0] + [float("-inf")] * (beam_size - 1), device=mb_device).repeat(batch_size))
+            topk_log_probs = (
+                torch.tensor([0.0] + [float("-inf")] * (beam_size - 1), device=mb_device).repeat(batch_size))
 
             # Structure that holds finished hypotheses.
             hypotheses = [[] for _ in range(batch_size)]  # noqa: F812
@@ -348,9 +347,9 @@ class DiffTranslator(object):
             for step in range(max_length):
                 decoder_input = alive_seq[:, -1].view(1, -1, 1)
                 log_probs, attn = self._decode_and_generate(decoder_input, memory_bank,
-                                              memory_lengths=memory_lengths,
-                                              step=step,
-                                              sem_sc=sem_sc, sem_lengths=sem_lengths, sem_bank=sem_bank)
+                                                            memory_lengths=memory_lengths,
+                                                            step=step,
+                                                            sem_sc=sem_sc, sem_lengths=sem_lengths, sem_bank=sem_bank)
 
                 vocab_size = len(self.src_vocab)
 
@@ -443,7 +442,8 @@ class DiffTranslator(object):
                     select_indices = batch_index.view(-1)
                     alive_seq = predictions.index_select(0, non_finished).view(-1, alive_seq.size(-1))
                     if alive_attn is not None:
-                        alive_attn = attention.index_select(1, non_finished).view(alive_attn.size(0), -1, alive_attn.size(-1))
+                        alive_attn = attention.index_select(1, non_finished).view(alive_attn.size(0), -1,
+                                                                                  alive_attn.size(-1))
 
                 # Reorder states.
                 if isinstance(memory_bank, tuple):
@@ -491,7 +491,8 @@ class DiffTranslator(object):
             src_lengths = torch.Tensor(batch_size).type_as(memory_bank).long().fill_(memory_bank.size(0))
         return src, enc_states, memory_bank, src_lengths
 
-    def _decode_and_generate(self, decoder_input, memory_bank, memory_lengths, step=None, sem_lengths=None, sem_sc=None, sem_bank=None):
+    def _decode_and_generate(self, decoder_input, memory_bank, memory_lengths, step=None, sem_lengths=None, sem_sc=None,
+                             sem_bank=None):
 
         # Decoder forward, takes [tgt_len, batch, nfeats] as input
         # and [src_len, batch, hidden] as memory_bank
