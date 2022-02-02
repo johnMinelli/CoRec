@@ -248,7 +248,7 @@ class DiffTranslator(object):
                     of.write('\n'.join(n_best_preds) + '\n')
                     of.flush()
                 with open(out_file + ".log", 'a+') as of:
-                    of.write('\n'.join(trans.log((batch_counter * i) + i), self.rouge_scorer) + '\n')
+                    of.write(''.join(trans.log((batch_counter * i) + i, self.rouge_scorer) + '\n'))
                     of.flush()
 
             if self.report_score:
@@ -263,7 +263,7 @@ class DiffTranslator(object):
                         logger.info(msg)
                     else:
                         print(msg)
-        # compute_bleu_score(out_file, test_msg)
+        compute_bleu_score(out_file, test_msg)
         return all_scores, all_predictions
 
     def _process_batch(self, batch, batch_size, sem_path, vocab, attn_debug):
@@ -276,8 +276,6 @@ class DiffTranslator(object):
            batch (:obj:`Batch`): a batch from a dataset object
 
         """
-
-        assert self.global_scorer.beta == 0
 
         max_length = self.opt.max_length
         min_length = self.opt.min_length
@@ -359,7 +357,7 @@ class DiffTranslator(object):
                 # Multiply probs by the beam probability.
                 log_probs += topk_log_probs.view(-1).unsqueeze(1)
 
-                alpha = self.global_scorer.alpha
+                alpha = 0
                 length_penalty = ((5.0 + (step + 1)) / 6.0) ** alpha
 
                 # Flatten probs into a list of possibilities.
