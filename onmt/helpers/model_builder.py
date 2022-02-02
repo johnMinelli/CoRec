@@ -137,7 +137,7 @@ def build_model(model_opt, vocab, gpu, checkpoint=None):
     # Build encoder.
     src_dict = vocab["src"]
     src_embeddings = Embeddings(word_vec_size=model_opt.src_word_vec_size,
-                                word_vocab_size=len(src_dict)+2,
+                                word_vocab_size=len(src_dict),
                                 word_padding_idx=src_dict.vocab[PAD_WORD],
                                 position_encoding=model_opt.position_encoding,
                                 dropout=model_opt.dropout,
@@ -147,7 +147,7 @@ def build_model(model_opt, vocab, gpu, checkpoint=None):
     # Build decoder.
     tgt_dict = vocab["tgt"]
     tgt_embeddings = Embeddings(word_vec_size=model_opt.tgt_word_vec_size,
-                                word_vocab_size=len(tgt_dict)+2,
+                                word_vocab_size=len(tgt_dict),
                                 word_padding_idx=tgt_dict.vocab[PAD_WORD],
                                 position_encoding=model_opt.position_encoding,
                                 dropout=model_opt.dropout,
@@ -172,7 +172,7 @@ def build_model(model_opt, vocab, gpu, checkpoint=None):
             gen_func = onmt.modules.sparse_activations.LogSparsemax(dim=-1)
         else:
             gen_func = nn.LogSoftmax(dim=-1)
-        generator = nn.Sequential(nn.Linear(model_opt.dec_rnn_size, len(tgt_dict)+2), gen_func)
+        generator = nn.Sequential(nn.Linear(model_opt.dec_rnn_size, len(tgt_dict)), gen_func)
         if model_opt.share_decoder_embeddings:
             generator[0].weight = decoder.embeddings.word_lut.weight
     else:

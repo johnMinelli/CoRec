@@ -283,7 +283,7 @@ class DiffTranslator(object):
         max_length = self.opt.max_length
         min_length = self.opt.min_length
         n_best = self.opt.n_best
-        return_attention = attn_debug or self.opt.replace_unk
+        return_attention = attn_debug
         beam_size = self.opt.beam_size
         start_token = vocab.vocab[vocabulary.BOS_WORD]
         end_token = vocab.vocab[vocabulary.EOS_WORD]
@@ -352,7 +352,7 @@ class DiffTranslator(object):
                                                             step=step,
                                                             sem_sc=sem_sc, sem_lengths=sem_lengths, sem_bank=sem_bank)
 
-                vocab_size = len(vocab)+2
+                vocab_size = len(vocab)
 
                 if step < min_length:
                     log_probs[:, end_token] = -1e20

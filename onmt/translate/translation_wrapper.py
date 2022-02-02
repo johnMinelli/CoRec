@@ -19,7 +19,6 @@ class TranslationBuilder(object):
        data (DataSet):
        fields (dict of Fields): data fields
        n_best (int): number of translations produced
-       replace_unk (bool): replace unknown words using attention
        has_tgt (bool): will the batch have gold targets
     """
 
