@@ -46,16 +46,16 @@ class MinPaddingSampler(Sampler):
         # sort dataset indices by decreasing length, so that
         # batches contain texts with close lengths, and padding should
         indices = sorted(indices, key=lambda x: x[1], reverse=True)
-        pooled_indices = []
+        #pooled_indices = []
         # create pool of indexes of examples with similar lengths
-        for i in range(0, len(indices), self.batch_size * 100):
-            pooled_indices.extend(indices[i:i + self.batch_size * 100])
+        #for i in range(0, len(indices), self.batch_size * 100):
+        #    pooled_indices.extend(indices[i:i + self.batch_size * 100])
         # select only the actual indexes, not lengths
-        pooled_indices = [x[0] for x in pooled_indices]
-        batches = RandomShuffler()(range(0, len(pooled_indices), self.batch_size)) if self.shuffle_batches else \
-                range(0, len(pooled_indices), self.batch_size)
+        indices = [x[0] for x in indices]
+        batches = RandomShuffler()(range(0, len(indices), self.batch_size)) if self.shuffle_batches else \
+                range(0, len(indices), self.batch_size)
         for i in batches:
-            yield pooled_indices[i:i + self.batch_size]
+            yield indices[i:i + self.batch_size]
 
     def __len__(self):
         # each time batch size elements are sampled
@@ -74,20 +74,20 @@ def build_dataset_iter(dataset, vocabulary, batch_size, gpu=False, shuffle_batch
 
             indexes.append(index)
             # encode source
-            src_tensor = torch.tensor(get_indices(vocabulary, src_item))
+            src_tensor = torch.tensor(get_indices(vocabulary["src"], src_item))
             if src_item_len != max_src_len:
                 # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                padding = torch.full((1, max_src_len - src_item_len), get_indices(vocabulary, [PAD_WORD])[0],
+                padding = torch.full((1, max_src_len - src_item_len), get_indices(vocabulary["src"], [PAD_WORD])[0],
                                      dtype=torch.int)
                 src_tensor = torch.cat((src_tensor, padding[0]))
             # encode target
             if tgt_item is None:
                 tgt_tensor = torch.tensor([])
             else:
-                tgt_tensor = torch.tensor(get_indices(vocabulary, tgt_item))
+                tgt_tensor = torch.tensor(get_indices(vocabulary["tgt"], tgt_item))
                 if tgt_item_len != max_tgt_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                    padding = torch.full((1, max_tgt_len - tgt_item_len), get_indices(vocabulary, [PAD_WORD])[0], dtype=torch.int)
+                    padding = torch.full((1, max_tgt_len - tgt_item_len), get_indices(vocabulary["tgt"], [PAD_WORD])[0], dtype=torch.int)
                     tgt_tensor = torch.cat((tgt_tensor, padding[0]))
             src_batch.append(src_tensor)
             tgt_batch.append(tgt_tensor)
@@ -108,28 +108,28 @@ def build_dataset_iter(dataset, vocabulary, batch_size, gpu=False, shuffle_batch
             indexes.append(index)
 
             # encode source
-            src_tensor = torch.tensor(get_indices(vocabulary, src_item))
+            src_tensor = torch.tensor(get_indices(vocabulary["src"], src_item))
             if src_item_len != max_src_len:
                 # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                padding = torch.full((1, max_src_len - src_item_len), get_indices(vocabulary, [PAD_WORD])[0],
+                padding = torch.full((1, max_src_len - src_item_len), get_indices(vocabulary["src"], [PAD_WORD])[0],
                                      dtype=torch.int)
                 src_tensor = torch.cat((src_tensor, padding[0]))
             if tgt_item is None:
                 tgt_tensor = torch.tensor([])
             else:
-                tgt_tensor = torch.tensor(get_indices(vocabulary, tgt_item))
+                tgt_tensor = torch.tensor(get_indices(vocabulary["tgt"], tgt_item))
                 if tgt_item_len != max_tgt_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                    padding = torch.full((1, max_tgt_len - tgt_item_len), get_indices(vocabulary, [PAD_WORD])[0],
+                    padding = torch.full((1, max_tgt_len - tgt_item_len), get_indices(vocabulary["tgt"], [PAD_WORD])[0],
                                          dtype=torch.int)
                     tgt_tensor = torch.cat((tgt_tensor, padding[0]))
             if sem_item is None:
                 sem_tensor = torch.tensor([])
             else:
-                sem_tensor = torch.tensor(get_indices(vocabulary, sem_item))
+                sem_tensor = torch.tensor(get_indices(vocabulary["src"], sem_item))
                 if sem_item_len != max_sem_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                    padding = torch.full((1, max_sem_len - sem_item_len), get_indices(vocabulary, [PAD_WORD])[0],
+                    padding = torch.full((1, max_sem_len - sem_item_len), get_indices(vocabulary["src"], [PAD_WORD])[0],
                                          dtype=torch.int)
                     sem_tensor = torch.cat((sem_tensor, padding[0]))
             src_batch.append(src_tensor)

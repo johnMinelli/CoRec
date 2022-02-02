@@ -135,7 +135,7 @@ def build_model(model_opt, vocab, gpu, checkpoint=None):
             raise AssertionError("""We do not support different encoder and decoder rnn sizes for translation now.""")
 
     # Build encoder.
-    src_dict = vocab
+    src_dict = vocab["src"]
     src_embeddings = Embeddings(word_vec_size=model_opt.src_word_vec_size,
                                 word_vocab_size=len(src_dict),
                                 word_padding_idx=src_dict.vocab[PAD_WORD],
@@ -145,7 +145,7 @@ def build_model(model_opt, vocab, gpu, checkpoint=None):
     encoder = build_encoder(model_opt, src_embeddings)
 
     # Build decoder.
-    tgt_dict = vocab
+    tgt_dict = vocab["tgt"]
     tgt_embeddings = Embeddings(word_vec_size=model_opt.tgt_word_vec_size,
                                 word_vocab_size=len(tgt_dict),
                                 word_padding_idx=tgt_dict.vocab[PAD_WORD],

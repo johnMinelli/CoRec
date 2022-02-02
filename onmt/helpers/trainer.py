@@ -29,8 +29,8 @@ def build_trainer(opt, model, vocab, optim, model_saver):
         model_saver(:obj:`onmt.models.ModelSaverBase`): the utility object
             used to save the model
     """
-    train_loss = build_loss_compute(model, vocab, opt)
-    valid_loss = build_loss_compute(model, vocab, opt, train=False)
+    train_loss = build_loss_compute(model, vocab["tgt"], opt)
+    valid_loss = build_loss_compute(model, vocab["tgt"], opt, train=False)
 
     trunc_size = opt.truncated_decoder  # Badly named...
     shard_size = opt.max_generator_batches

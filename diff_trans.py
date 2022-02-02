@@ -71,7 +71,6 @@ class DiffTranslator(object):
 
         if not opt.semantic_only and opt.sem_path is not None:
             self.lam_sem = self.opt.lam_sem
-            self.syn_decoder = copy.deepcopy(self.model.decoder)  ##simi score
             self.sem_decoder = copy.deepcopy(self.model.decoder)
             self.sem_score = torch.tensor(
                 compute_bleu_score(os.path.join(opt.sem_path, self.sem_diff_default), opt.src))

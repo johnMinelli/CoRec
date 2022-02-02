@@ -69,15 +69,15 @@ def main():
     logger.info(" * saving %s dataset to %s." % ("valid", valid_pt_file))
     torch.save(valid_dataset, valid_pt_file)
 
-    test_dataset = TextDataset(opt.test_src, opt.test_tgt, opt.src_seq_length, opt.tgt_seq_length)
-    test_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "test")
-    logger.info(" * saving %s dataset to %s." % ("test", test_pt_file))
-    torch.save(test_dataset, test_pt_file)
+    #test_dataset = TextDataset(opt.test_src, opt.test_tgt, opt.src_seq_length, opt.tgt_seq_length)
+    #test_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "test")
+    #logger.info(" * saving %s dataset to %s." % ("test", test_pt_file))
+    #torch.save(test_dataset, test_pt_file)
 
-    vocab = create_vocab(train_dataset, valid_dataset, test_dataset)
+    vocab_src, vocab_tgt = create_vocab(train_dataset)
     vocab_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "vocab")
     logger.info(" * saving vocabulary to %s." % (vocab_pt_file, ))
-    torch.save(vocab, vocab_pt_file)
+    torch.save({"src": vocab_src, "tgt": vocab_tgt}, vocab_pt_file)
 
 
 if __name__ == "__main__":
