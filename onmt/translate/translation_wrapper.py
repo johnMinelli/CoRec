@@ -23,14 +23,13 @@ class TranslationBuilder(object):
        has_tgt (bool): will the batch have gold targets
     """
 
-    def __init__(self, dataset, vocab, n_best=1, replace_unk=False, has_tgt=False):
+    def __init__(self, dataset, vocab, n_best=1, has_tgt=False):
         self.dataset = dataset
         self.vocab = vocab
         self.n_best = n_best
-        self.replace_unk = replace_unk
         self.has_tgt = has_tgt
 
-    def _build_target_tokens(self, src, src_raw, pred, attn):
+    def _build_target_tokens(self, pred):
         tokens = []
         for index in pred:
             if index < len(self.vocab):
@@ -40,11 +39,6 @@ class TranslationBuilder(object):
             if tokens[-1] == EOS_WORD:
                 tokens = tokens[:-1]
                 break
-        if self.replace_unk and (attn is not None) and (src is not None):
-            for i in range(len(tokens)):
-                if tokens[i] == self.vocab.vocab[UNK]:
-                    _, max_index = attn[i].max(0)
-                    tokens[i] = src_raw[max_index.item()]
         return tokens
 
     def from_batch(self, translation_batch, batch_size):
@@ -71,15 +65,10 @@ class TranslationBuilder(object):
         translations = []
         for b in range(batch_size):
             src_raw = self.dataset[inds[b]][0]
-            pred_sents = [self._build_target_tokens(
-                src[:, b] if src is not None else None, src_raw,
-                preds[b][n], attn[b][n])
-                for n in range(self.n_best)]
+            pred_sents = [self._build_target_tokens(preds[b][n]) for n in range(self.n_best)]
             gold_sent = None
             if tgt is not None:
-                gold_sent = self._build_target_tokens(
-                    src[:, b] if src is not None else None, src_raw,
-                    tgt[1:, b] if tgt is not None else None, None)
+                gold_sent = self._build_target_tokens(tgt[1:, b] if tgt is not None else None)
 
             translation = TranslationWrapper(src[:, b] if src is not None else None,
                                              src_raw, pred_sents,

@@ -67,7 +67,7 @@ class DiffTranslator(object):
         self.copy_attn = model_opt.copy_attn
 
         self.report_score = report_score
-        self.rouge_scorer = rouge_metric.RougeScorer(['rouge4', 'rougeL'], use_stemmer=True)
+        self.rouge_scorer = rouge_metric.RougeScorer(['rouge1', 'rougeL'], use_stemmer=True)
 
         if not opt.semantic_only and opt.sem_path is not None:
             self.lam_sem = self.opt.lam_sem
@@ -209,16 +209,13 @@ class DiffTranslator(object):
         if os.path.isfile(out_file + ".log"): os.remove(out_file + ".log")
 
         n_best = self.opt.n_best
-        replace_unk = self.opt.replace_unk
         vocab = self.src_vocab
 
         test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
-        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab, n_best, replace_unk,
-                                                         len(self.test_dataset.target_texts) > 0)
+        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab, n_best, len(self.test_dataset.target_texts) > 0)
 
         # Statistics
-        batch_counter = count(1)
         pred_score_total, pred_words_total = 0, 0
         gold_score_total, gold_words_total = 0, 0
 
@@ -226,7 +223,6 @@ class DiffTranslator(object):
         all_predictions = []
         batch_counter = 0
         for batch in test_loader:
-            batch_counter += 1
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print(f"processing {batch_counter} batch")
             batch_data = self._process_batch(batch, batch_size, sem_path, vocab, attn_debug=attn_debug)
@@ -262,6 +258,7 @@ class DiffTranslator(object):
                         logger.info(msg)
                     else:
                         print(msg)
+            batch_counter += 1
         compute_bleu_score(out_file, test_msg)
         return all_scores, all_predictions
 
