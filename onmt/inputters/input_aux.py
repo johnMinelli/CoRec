@@ -1,7 +1,7 @@
 ﻿import torch, os, codecs
 from torch.utils.data import DataLoader, Sampler
 from torchtext.data.utils import RandomShuffler
-
+from onmt.inputters.vocabulary import PAD_WORD
 from onmt.inputters.text_dataset import SemTextDataset
 from onmt.utils.logging import logger
 from onmt.inputters.vocabulary import get_indices
@@ -76,14 +76,19 @@ def build_dataset_iter(dataset, vocabulary, batch_size, gpu=False, shuffle_batch
             # encode source
             src_tensor = torch.tensor(get_indices(vocabulary, src_item))
             if src_item_len != max_src_len:
-                src_tensor = torch.cat((src_tensor, torch.zeros(max_src_len - src_item_len, dtype=torch.int)))
+                # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
+                padding = torch.full((1, max_src_len - src_item_len), get_indices(vocabulary, [PAD_WORD])[0],
+                                     dtype=torch.int)
+                src_tensor = torch.cat((src_tensor, padding[0]))
             # encode target
             if tgt_item is None:
                 tgt_tensor = torch.tensor([])
             else:
                 tgt_tensor = torch.tensor(get_indices(vocabulary, tgt_item))
                 if tgt_item_len != max_tgt_len:
-                    tgt_tensor = torch.cat((tgt_tensor, torch.zeros(max_tgt_len - tgt_item_len, dtype=torch.int)))
+                    # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
+                    padding = torch.full((1, max_tgt_len - tgt_item_len), get_indices(vocabulary, [PAD_WORD])[0], dtype=torch.int)
+                    tgt_tensor = torch.cat((tgt_tensor, padding[0]))
             src_batch.append(src_tensor)
             tgt_batch.append(tgt_tensor)
         src_batch = torch.cat([tensor.unsqueeze(1) for tensor in src_batch], 1).unsqueeze(2)
@@ -101,22 +106,32 @@ def build_dataset_iter(dataset, vocabulary, batch_size, gpu=False, shuffle_batch
         for (src_item, tgt_item, sem_item, index, src_item_len, tgt_item_len, sem_item_len) in data_batch:
 
             indexes.append(index)
+
             # encode source
             src_tensor = torch.tensor(get_indices(vocabulary, src_item))
             if src_item_len != max_src_len:
-                src_tensor = torch.cat((src_tensor, torch.zeros(max_src_len - src_item_len, dtype=torch.int)))
+                # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
+                padding = torch.full((1, max_src_len - src_item_len), get_indices(vocabulary, [PAD_WORD])[0],
+                                     dtype=torch.int)
+                src_tensor = torch.cat((src_tensor, padding[0]))
             if tgt_item is None:
                 tgt_tensor = torch.tensor([])
             else:
                 tgt_tensor = torch.tensor(get_indices(vocabulary, tgt_item))
                 if tgt_item_len != max_tgt_len:
-                    tgt_tensor = torch.cat((tgt_tensor, torch.zeros(max_tgt_len - tgt_item_len, dtype=torch.int)))
+                    # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
+                    padding = torch.full((1, max_tgt_len - tgt_item_len), get_indices(vocabulary, [PAD_WORD])[0],
+                                         dtype=torch.int)
+                    tgt_tensor = torch.cat((tgt_tensor, padding[0]))
             if sem_item is None:
                 sem_tensor = torch.tensor([])
             else:
                 sem_tensor = torch.tensor(get_indices(vocabulary, sem_item))
                 if sem_item_len != max_sem_len:
-                    sem_tensor = torch.cat((sem_tensor, torch.zeros(max_sem_len - sem_item_len, dtype=torch.int)))
+                    # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
+                    padding = torch.full((1, max_sem_len - sem_item_len), get_indices(vocabulary, [PAD_WORD])[0],
+                                         dtype=torch.int)
+                    sem_tensor = torch.cat((sem_tensor, padding[0]))
             src_batch.append(src_tensor)
             tgt_batch.append(tgt_tensor)
             sem_batch.append(sem_tensor)

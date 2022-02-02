@@ -13,7 +13,7 @@ def get_bleu(query, test):
 
 
 def write_file(filename, data):
-    with open(filename, 'w') as f:
+    with open(filename, 'a+') as f:
         for i in data:
             f.write("%.4f\n" % i)
 
@@ -29,7 +29,7 @@ def compute_bleu_score(sem_diff_path, test_diff_path):
         sem_scores.append(bleu_score_sem)
 
     # write_file("data/new/syn_bleu.score", syn_scores)
-    # write_file("data/new/sem_bleu.score", sem_scores)
+    write_file("data/new/sem_bleu.score", sem_scores)
     return sem_scores
 
 if __name__ == '__main__':

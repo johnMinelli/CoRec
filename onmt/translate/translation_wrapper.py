@@ -134,7 +134,7 @@ class TranslationWrapper(object):
             output += 'GOLD {}: {}\n'.format(sent_number, tgt_sent)
             output += ("GOLD SCORE: {:.4f}\n".format(self.gold_score))
             output += ("BLEU SCORE: {:.4f}\n".format(get_bleu(pred_sent, tgt_sent)))
-            if rouge: output += ("ROUGE SCORE: {:.4f}\n".format(rouge.score(pred_sent, tgt_sent)))
+            if rouge: output += f"ROUGE SCORE: {rouge.score(pred_sent, tgt_sent)}\n"
         if len(self.pred_sents) > 1:
             output += '\nBEST HYP:\n'
             for score, sent in zip(self.pred_scores, self.pred_sents):

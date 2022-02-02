@@ -35,6 +35,7 @@ def controller(opt):
                                 -learning_rate 0.001 \
                                 -dropout 0.1 \
                                 -train_steps 10000 \
+                                -valid_steps 250 \
                                 -total 22112 \
                                 -gpu \
                                 -input_feed 1"
