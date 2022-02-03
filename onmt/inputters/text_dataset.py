@@ -22,12 +22,12 @@ class TextDataset(Dataset):
         self.target_texts = []
         with codecs.open(src_path, "r", "utf-8") as cf:
             for i, line in enumerate(cf):
-                self.src_texts.append(line.strip().split()[:src_max_len])
+                self.src_texts.append([w.lower() for w in line.strip().split()[:src_max_len]])
                 self.indexes.append(i)
         if target_path is not None:
             with codecs.open(target_path, "r", "utf-8") as cf:
                 for line in cf:
-                    self.target_texts.append(line.strip().split()[:target_max_len])
+                    self.target_texts.append([w.lower() for w in line.strip().split()[:target_max_len]])
 
     def __len__(self):
         return len(self.src_texts)
@@ -46,7 +46,7 @@ class SemTextDataset(TextDataset):
         if sem_path is not None:
             with codecs.open(sem_path, "r", "utf-8") as cf:
                 for i, line in enumerate(cf):
-                    self.sem_texts.append(line.strip().split())
+                    self.sem_texts.append([w.lower() for w in line.strip().split()])
 
     def __getitem__(self, idx):
         return self.src_texts[idx],\

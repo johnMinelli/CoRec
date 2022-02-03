@@ -24,7 +24,7 @@ def compute_bleu_score(sem_diff_path, test_diff_path):
     sem_scores = []
 
     for sem, test in zip(sem_diffs, test_diffs):
-        bleu_score_sem = get_bleu(sem, test)
+        bleu_score_sem = get_bleu([w.lower() for w in sem], [w.lower() for w in test])
 
         sem_scores.append(bleu_score_sem)
 

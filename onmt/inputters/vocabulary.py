@@ -19,12 +19,12 @@ def create_vocab(opt, *datasets):
     for dataset in datasets:
         if type(dataset) is SemTextDataset:
             for src_text, target_txt, _, _, _, _, _ in dataset:
-                counter_src.update([t.lower() for t in src_text])
-                counter_tgt.update([t.lower() for t in target_txt])
+                counter_src.update(src_text)
+                counter_tgt.update(target_txt)
         else:
             for src_text, target_txt, _, _, _ in dataset:
-                counter_src.update([t.lower() for t in src_text])
-                counter_tgt.update([t.lower() for t in target_txt])
+                counter_src.update(src_text)
+                counter_tgt.update(target_txt)
     sorted_by_freq_words_src = sorted(counter_src.items(), key=lambda x: x[1], reverse=True)
     sorted_by_freq_words_tgt = sorted(counter_tgt.items(), key=lambda x: x[1], reverse=True)
     ordered_dict_words_src = OrderedDict(sorted_by_freq_words_src)
