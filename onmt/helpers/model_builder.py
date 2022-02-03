@@ -15,7 +15,7 @@ from onmt.modules.copy_generator import CopyGenerator
 from onmt.models.embeddings import Embeddings
 from torch.nn.init import xavier_uniform_
 from onmt.inputters.vocabulary import (UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD)
-
+from onmt.inputters.input_aux import load_vocab
 import onmt.modules
 # from onmt.encoders.rnn_encoder import RNNEncoder
 # from onmt.encoders.transformer import TransformerEncoder
@@ -105,7 +105,7 @@ def load_test_model(opt, dummy_opt, model_path=None):
     checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
 
     model_opt = checkpoint['opt']
-    vocab = checkpoint['vocab']
+    vocab = load_vocab(opt.src_vocab)
     # copy newly specified parameters in old model parameters dict
     for arg in dummy_opt:
         if arg not in model_opt:
