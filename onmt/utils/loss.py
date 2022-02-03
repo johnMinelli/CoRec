@@ -31,7 +31,7 @@ def build_loss_compute(model, tgt_vocab, opt, train=True):
     if opt.copy_attn:
         criterion = onmt.modules.copy_generator.CopyGeneratorLoss(
             len(tgt_vocab), opt.copy_attn_force,
-            unk_index=vocabulary.UNK, ignore_index=padding_idx
+            unk_index=tgt_vocab.get_default_index(), ignore_index=padding_idx
         )
     elif opt.label_smoothing > 0 and train:
         criterion = LabelSmoothingLoss(

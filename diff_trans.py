@@ -67,14 +67,12 @@ class DiffTranslator(object):
         self.copy_attn = model_opt.copy_attn
 
         self.report_score = report_score
-        self.rouge_scorer = rouge_metric.RougeScorer(['rouge4', 'rougeL'], use_stemmer=True)
+        self.rouge_scorer = rouge_metric.RougeScorer(['rouge1', 'rougeL'], use_stemmer=True)
 
         if not opt.semantic_only and opt.sem_path is not None:
             self.lam_sem = self.opt.lam_sem
-            self.syn_decoder = copy.deepcopy(self.model.decoder)  ##simi score
             self.sem_decoder = copy.deepcopy(self.model.decoder)
-            self.sem_score = torch.tensor(
-                compute_bleu_score(os.path.join(opt.sem_path, self.sem_diff_default), opt.src))
+
 
     def offline_semantic_retrieval(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None,
                                    semantic_out=None):
@@ -176,6 +174,8 @@ class DiffTranslator(object):
                 of.write(i)
                 of.flush()
 
+
+
         return
 
     def translate(self, test_diff=None, test_msg=None, sem_path=None, batch_size=None, attn_debug=False, out_file=None):
@@ -209,17 +209,20 @@ class DiffTranslator(object):
         if os.path.isfile(out_file): os.remove(out_file)
         if os.path.isfile(out_file + ".log"): os.remove(out_file + ".log")
 
+        if sem_path is not None:
+            self.sem_score = torch.tensor(
+                compute_bleu_score(os.path.join(sem_path, self.sem_diff_default), test_diff))
+            self.test_dataset = SemTextDataset(test_diff, test_msg, os.path.join(sem_path, self.sem_diff_default),
+                                               self.opt.max_sent_length)
+
         n_best = self.opt.n_best
-        replace_unk = self.opt.replace_unk
         vocab = self.src_vocab
 
         test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
-        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab, n_best, replace_unk,
-                                                         len(self.test_dataset.target_texts) > 0)
+        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, len(self.test_dataset.target_texts) > 0)
 
         # Statistics
-        batch_counter = count(1)
         pred_score_total, pred_words_total = 0, 0
         gold_score_total, gold_words_total = 0, 0
 
@@ -227,10 +230,9 @@ class DiffTranslator(object):
         all_predictions = []
         batch_counter = 0
         for batch in test_loader:
-            batch_counter += 1
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print(f"processing {batch_counter} batch")
-            batch_data = self._process_batch(batch, batch_size, sem_path, vocab, attn_debug=attn_debug)
+            batch_data = self._process_batch(batch, batch_size, sem_path, vocab["tgt"], attn_debug=attn_debug)
             # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
             translations = translation_wrapper_builder.from_batch(batch_data, batch_size)
             # iter over the objects to build the sentences
@@ -263,7 +265,8 @@ class DiffTranslator(object):
                         logger.info(msg)
                     else:
                         print(msg)
-        compute_bleu_score(out_file, test_msg)
+            batch_counter += 1
+        print(compute_bleu_score(out_file, test_msg))
         return all_scores, all_predictions
 
     def _process_batch(self, batch, batch_size, sem_path, vocab, attn_debug):
@@ -280,7 +283,7 @@ class DiffTranslator(object):
         max_length = self.opt.max_length
         min_length = self.opt.min_length
         n_best = self.opt.n_best
-        return_attention = attn_debug or self.opt.replace_unk
+        return_attention = attn_debug
         beam_size = self.opt.beam_size
         start_token = vocab.vocab[vocabulary.BOS_WORD]
         end_token = vocab.vocab[vocabulary.EOS_WORD]
@@ -349,7 +352,7 @@ class DiffTranslator(object):
                                                             step=step,
                                                             sem_sc=sem_sc, sem_lengths=sem_lengths, sem_bank=sem_bank)
 
-                vocab_size = len(self.src_vocab)
+                vocab_size = len(vocab)
 
                 if step < min_length:
                     log_probs[:, end_token] = -1e20

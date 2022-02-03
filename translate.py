@@ -13,7 +13,7 @@ import onmt.opts as opts
 def main(opt):
     translator = build_translator(opt, report_score=True)
     if opt.sem_path is not None and len(os.listdir(opt.sem_path)) == 0:
-        assert opt.train_diff is not None and opt.train_diff is not None, 'No semantic data found and no training data specified to compute the semantic similarities'
+        assert opt.train_diff is not None and opt.train_msg is not None, 'No semantic data found and no training data specified to compute the semantic similarities'
 
         translator.offline_semantic_retrieval(test_diff=opt.src,  # cleaned.test.diff
                             train_diff=opt.train_diff,
