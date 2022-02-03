@@ -29,7 +29,7 @@ def compute_bleu_score(sem_diff_path, test_diff_path):
         sem_scores.append(bleu_score_sem)
 
     # write_file("data/new/syn_bleu.score", syn_scores)
-    write_file("data/new/sem_bleu.score", sem_scores)
+    # write_file("data/new/sem_bleu.score", sem_scores)
     return sem_scores
 
 if __name__ == '__main__':

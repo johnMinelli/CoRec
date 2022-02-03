@@ -526,8 +526,8 @@ class DiffTranslator(object):
         return log_probs, attn
 
     def _score_target(self, batch, memory_bank, src_lengths, vocab):
-        tgt_in = batch["tgt_batch"][:-1]
-
+        tgt_in = batch["tgt_batch"][:-1]  # FIXME are we sure ? <START> Ciao come <END> <PAD>
+                                          #                     <START> Ciao come stai <END>
         log_probs, attn = self._decode_and_generate(tgt_in, memory_bank, src_lengths)
         # tgt_pad = self.fields["tgt"].vocab.stoi[inputters.PAD_WORD]
         # not sure

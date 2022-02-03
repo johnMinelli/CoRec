@@ -1,7 +1,7 @@
 ﻿import torch, os, codecs
 from torch.utils.data import DataLoader, Sampler
 from torchtext.data.utils import RandomShuffler
-from onmt.inputters.vocabulary import PAD_WORD
+from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD
 from onmt.inputters.text_dataset import SemTextDataset
 from onmt.utils.logging import logger
 from onmt.inputters.vocabulary import get_indices
@@ -62,34 +62,33 @@ class MinPaddingSampler(Sampler):
         return self.batch_size
 
 
-def build_dataset_iter(dataset, vocabulary, batch_size, gpu=False, shuffle_batches=True):
+def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=True):
     device = torch.device("cuda" if gpu else "cpu")
     def generate_batch(data_batch):
         _, _, _, src_len, tgt_len = zip(*data_batch)
         # for padding
         max_src_len = max(src_len)
         max_tgt_len = max(tgt_len)
-        tgt_batch, src_batch, indexes = [], [], []
+        src_batch, tgt_batch, indexes = [], [], []
         for (src_item, tgt_item, index, src_item_len, tgt_item_len) in data_batch:
 
             indexes.append(index)
             # encode source
-            src_tensor = torch.tensor(get_indices(vocabulary["src"], src_item))
+            src_tensor = torch.tensor(get_indices(vocabs["src"], src_item+[EOS_WORD]))
             if src_item_len != max_src_len:
                 # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                padding = torch.full((1, max_src_len - src_item_len), get_indices(vocabulary["src"], [PAD_WORD])[0],
-                                     dtype=torch.int)
+                padding = torch.full((1, max_src_len - src_item_len), vocabs["src"][PAD_WORD], dtype=torch.int)
                 src_tensor = torch.cat((src_tensor, padding[0]))
 
             # encode target
             if tgt_item is None:
                 tgt_tensor = torch.tensor([])
             else:
-                tgt_tensor = torch.tensor(get_indices(vocabulary["tgt"], tgt_item))
+                tgt_tensor = torch.tensor(get_indices(vocabs["tgt"], [BOS_WORD]+tgt_item+[EOS_WORD]))
                 if tgt_item_len != max_tgt_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                    padding = torch.full((1, max_tgt_len - tgt_item_len), get_indices(vocabulary["tgt"], [PAD_WORD])[0], dtype=torch.int)
-                    tgt_tensor = torch.cat((tgt_tensor, padding[0]))
+                    padding = torch.full((1, max_tgt_len - tgt_item_len), vocabs["tgt"][PAD_WORD], dtype=torch.int)[0]
+                    tgt_tensor = torch.cat((tgt_tensor, padding))
             src_batch.append(src_tensor)
             tgt_batch.append(tgt_tensor)
         src_batch = torch.cat([tensor.unsqueeze(1) for tensor in src_batch], 1).unsqueeze(2)
@@ -107,32 +106,28 @@ def build_dataset_iter(dataset, vocabulary, batch_size, gpu=False, shuffle_batch
         for (src_item, tgt_item, sem_item, index, src_item_len, tgt_item_len, sem_item_len) in data_batch:
 
             indexes.append(index)
-
             # encode source
-            src_tensor = torch.tensor(get_indices(vocabulary["src"], src_item))
+            src_tensor = torch.tensor(get_indices(vocabs["src"], src_item+[EOS_WORD]))
             if src_item_len != max_src_len:
                 # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                padding = torch.full((1, max_src_len - src_item_len), get_indices(vocabulary["src"], [PAD_WORD])[0],
-                                     dtype=torch.int)
-                src_tensor = torch.cat((src_tensor, padding[0]))
+                padding = torch.full((1, max_src_len - src_item_len), vocabs["src"][PAD_WORD], dtype=torch.int)[0]
+                src_tensor = torch.cat((src_tensor, padding))
             if tgt_item is None:
                 tgt_tensor = torch.tensor([])
             else:
-                tgt_tensor = torch.tensor(get_indices(vocabulary["tgt"], tgt_item))
+                tgt_tensor = torch.tensor(get_indices(vocabs["tgt"], [BOS_WORD]+tgt_item+[EOS_WORD]))
                 if tgt_item_len != max_tgt_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                    padding = torch.full((1, max_tgt_len - tgt_item_len), get_indices(vocabulary["tgt"], [PAD_WORD])[0],
-                                         dtype=torch.int)
-                    tgt_tensor = torch.cat((tgt_tensor, padding[0]))
+                    padding = torch.full((1, max_tgt_len - tgt_item_len), vocabs["tgt"][PAD_WORD], dtype=torch.int)[0]
+                    tgt_tensor = torch.cat((tgt_tensor, padding))
             if sem_item is None:
                 sem_tensor = torch.tensor([])
             else:
-                sem_tensor = torch.tensor(get_indices(vocabulary["src"], sem_item))
+                sem_tensor = torch.tensor(get_indices(vocabs["src"], sem_item+[EOS_WORD]))
                 if sem_item_len != max_sem_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
-                    padding = torch.full((1, max_sem_len - sem_item_len), get_indices(vocabulary["src"], [PAD_WORD])[0],
-                                         dtype=torch.int)
-                    sem_tensor = torch.cat((sem_tensor, padding[0]))
+                    padding = torch.full((1, max_sem_len - sem_item_len), vocabs["src"][PAD_WORD], dtype=torch.int)[0]
+                    sem_tensor = torch.cat((sem_tensor, padding))
             src_batch.append(src_tensor)
             tgt_batch.append(tgt_tensor)
             sem_batch.append(sem_tensor)
