@@ -80,6 +80,7 @@ def build_dataset_iter(dataset, vocabulary, batch_size, gpu=False, shuffle_batch
                 padding = torch.full((1, max_src_len - src_item_len), get_indices(vocabulary, [PAD_WORD])[0],
                                      dtype=torch.int)
                 src_tensor = torch.cat((src_tensor, padding[0]))
+
             # encode target
             if tgt_item is None:
                 tgt_tensor = torch.tensor([])
