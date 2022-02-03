@@ -136,6 +136,7 @@ def build_model(model_opt, vocab, gpu, checkpoint=None):
 
     # Build encoder.
     src_dict = vocab["src"]
+
     src_embeddings = Embeddings(word_vec_size=model_opt.src_word_vec_size,
                                 word_vocab_size=len(src_dict),
                                 word_padding_idx=src_dict.vocab[PAD_WORD],

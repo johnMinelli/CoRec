@@ -4,7 +4,7 @@ from __future__ import unicode_literals, print_function
 import torch
 
 from onmt.hashes.smooth import get_bleu
-from onmt.inputters.vocabulary import EOS_WORD, UNK
+from onmt.inputters.vocabulary import EOS_WORD
 
 
 class TranslationBuilder(object):

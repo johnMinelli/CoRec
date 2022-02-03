@@ -9,7 +9,7 @@ BOS_WORD = '<s>'
 EOS_WORD = '</s>'
 
 
-def create_vocab(*datasets):
+def create_vocab(opt, *datasets, min_freq=1):
     """Creates a torchtext vocabulary of source and target
     datasets texts. Indices go from most to least frequent word"""
 
@@ -20,20 +20,46 @@ def create_vocab(*datasets):
             for src_text, target_txt, sem_txt, _, _, _, _ in dataset:
                 counter_src.update(src_text)
                 counter_tgt.update(target_txt)
-                #counter.update(sem_txt)
+                # counter.update(sem_txt)
         else:
             for src_text, target_txt, _, _, _ in dataset:
                 counter_src.update(src_text)
                 counter_tgt.update(target_txt)
     sorted_by_freq_words_src = sorted(counter_src.items(), key=lambda x: x[1], reverse=True)
     sorted_by_freq_words_tgt = sorted(counter_tgt.items(), key=lambda x: x[1], reverse=True)
-    ordered_dict_words_src = OrderedDict(sorted_by_freq_words_src)
-    ordered_dict_words_tgt = OrderedDict(sorted_by_freq_words_tgt)
+
+    specials_src = list([UNK_WORD, PAD_WORD])
+    specials_tgt = specials_src + [BOS_WORD, EOS_WORD]
+
+    max_size_src = opt.src_vocab_size
+    max_size_tgt = opt.tgt_vocab_size
+
+    itos_src = list()
+    itos_tgt = list()
+
+    for word, freq in sorted_by_freq_words_src:
+        if freq < min_freq or len(itos_src) == max_size_src:
+            break
+        itos_src.append((word, freq))
+
+    for word, freq in sorted_by_freq_words_tgt:
+        if freq < min_freq or len(itos_tgt) == max_size_tgt:
+            break
+        itos_tgt.append((word, freq))
+
+
+    ordered_dict_words_src = OrderedDict(itos_src)
+    ordered_dict_words_tgt = OrderedDict(itos_tgt)
+
     final_vocab_src = vocab(ordered_dict_words_src)
     final_vocab_tgt = vocab(ordered_dict_words_tgt)
-    for i, t in enumerate([PAD_WORD, UNK_WORD, BOS_WORD, EOS_WORD]):
+
+    for i, t in enumerate(specials_src):
         final_vocab_src.insert_token(t, i)
+
+    for i, t in enumerate(specials_tgt):
         final_vocab_tgt.insert_token(t, i)
+
     final_vocab_src.set_default_index(final_vocab_src[UNK_WORD])
     final_vocab_tgt.set_default_index(final_vocab_tgt[UNK_WORD])
 
