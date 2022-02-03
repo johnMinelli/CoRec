@@ -98,7 +98,10 @@ class TransformerEncoder(EncoderBase):
         emb = self.embeddings(src)
 
         out = emb.transpose(0, 1).contiguous()
-        mask = ~self._sequence_mask(lengths).unsqueeze(1)
+        words = src[:, :, 0].transpose(0, 1)
+        w_batch, w_len = words.size()
+        padding_idx = self.embeddings.word_padding_idx
+        mask = words.data.eq(padding_idx).unsqueeze(1)  # [B, 1, T]
         # Run the forward pass of every layer of the tranformer.
         for layer in self.transformer:
             out = layer(out, mask)  # TODO check mask dim because there is an inconsistency in 2° dim in library versions

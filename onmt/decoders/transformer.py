@@ -69,7 +69,7 @@ class TransformerDecoderLayer(nn.Module):
                                           :tgt_pad_mask.size(-1)], 0)
 
         input_norm = self.layer_norm_1(inputs)
-
+        all_input = input_norm
         if self.self_attn_type == "scaled-dot":
             query, attn = self.self_attn(input_norm, input_norm, input_norm,
                                          mask=dec_mask,
@@ -88,7 +88,7 @@ class TransformerDecoderLayer(nn.Module):
                                       type="context")
         output = self.feed_forward(self.drop(mid) + query)
 
-        return output, attn
+        return output, attn, all_input
 
     def _get_attn_subsequent_mask(self, size):
         """
@@ -244,7 +244,6 @@ class TransformerDecoder(nn.Module):
             output, attn, all_input = self.transformer_layers[i](
                     output, src_memory_bank,
                     src_pad_mask, tgt_pad_mask,
-                    previous_input=prev_layer_input,
                     layer_cache=self.state["cache"]["layer_{}".format(i)]
                     if self.state["cache"] is not None else None,
                     step=step)

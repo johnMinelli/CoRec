@@ -486,6 +486,7 @@ class DiffTranslator(object):
         enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
         _, recover = rank.sort(descending=False)
         enc_states = (enc_states[0][:, recover, :], enc_states[1][:, recover, :])
+        # enc_states = (enc_states[:, recover, :], enc_states[:, recover, :])  # for transformers
         memory_bank = memory_bank[:, recover, :]
         src_lengths = src_lengths[recover]
         if src_lengths is None:
