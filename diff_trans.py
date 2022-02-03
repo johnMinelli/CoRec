@@ -18,6 +18,7 @@ from rouge_score import rouge_scorer as rouge_metric
 from onmt.utils.misc import tile
 from onmt.translate.translation_wrapper import TranslationBuilder
 from onmt.hashes.smooth import compute_bleu_score
+from onmt.utils.statistics import TranslationStatistics
 
 
 def build_translator(opt, report_score=True):
@@ -174,8 +175,6 @@ class DiffTranslator(object):
                 of.write(i)
                 of.flush()
 
-
-
         return
 
     def translate(self, test_diff=None, test_msg=None, sem_path=None, batch_size=None, attn_debug=False, out_file=None):
@@ -217,10 +216,11 @@ class DiffTranslator(object):
 
         n_best = self.opt.n_best
         vocab = self.src_vocab
+        stats = TranslationStatistics()
 
         test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
-        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, len(self.test_dataset.target_texts) > 0)
+        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, stats, len(self.test_dataset.target_texts) > 0)
 
         # Statistics
         pred_score_total, pred_words_total = 0, 0
@@ -267,8 +267,7 @@ class DiffTranslator(object):
                         print(msg)
             batch_counter += 1
 
-        blue_scores = compute_bleu_score(out_file, test_msg)
-        print(blue_scores)
+        print("Bleu over the test set", stats.get_avg_bleu())
         return all_scores, all_predictions
 
     def _process_batch(self, batch, batch_size, sem_path, vocab, attn_debug):

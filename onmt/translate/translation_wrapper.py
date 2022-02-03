@@ -22,10 +22,11 @@ class TranslationBuilder(object):
        has_tgt (bool): will the batch have gold targets
     """
 
-    def __init__(self, dataset, vocab, n_best=1, has_tgt=False):
+    def __init__(self, dataset, vocab, n_best=1, stats=None, has_tgt=False):
         self.dataset = dataset
         self.vocab = vocab
         self.n_best = n_best
+        self.stats = stats
         self.has_tgt = has_tgt
 
     def _build_target_tokens(self, pred):
@@ -74,7 +75,8 @@ class TranslationBuilder(object):
                                              attn[b], pred_score[b], gold_sent,
                                              gold_score[b])
             translations.append(translation)
-
+            if self.stats is not None:
+                self.stats.bleu += [get_bleu(' '.join(gold_sent), ' '.join(pred_sents[0]))]
         return translations
 
 
