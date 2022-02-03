@@ -5,7 +5,7 @@ import os.path
 
 import configargparse
 import torch
-
+from statistics import mean
 from onmt.utils.logging import logger
 from itertools import count
 import onmt.opts as opts
@@ -266,7 +266,9 @@ class DiffTranslator(object):
                     else:
                         print(msg)
             batch_counter += 1
-        print(compute_bleu_score(out_file, test_msg))
+
+        blue_scores = compute_bleu_score(out_file, test_msg)
+        print(blue_scores)
         return all_scores, all_predictions
 
     def _process_batch(self, batch, batch_size, sem_path, vocab, attn_debug):
