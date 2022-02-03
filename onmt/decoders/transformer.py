@@ -9,6 +9,7 @@ import numpy as np
 from onmt.modules.average_attn import AverageAttention
 from onmt.modules.multi_headed_attn import MultiHeadedAttention
 from onmt.modules.position_ffn import PositionwiseFeedForward
+from onmt.modules.global_attention import  GlobalAttention
 
 MAX_SIZE = 5000
 
@@ -155,7 +156,7 @@ class TransformerDecoder(nn.Module):
         # Set up a separated copy attention layer, if needed.
         self._copy = False
         if copy_attn:
-            self.copy_attn = onmt.modules.GlobalAttention(
+            self.copy_attn = GlobalAttention(
                 d_model, attn_type=attn_type)
             self._copy = True
         self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
@@ -219,10 +220,9 @@ class TransformerDecoder(nn.Module):
         # Run the forward pass of the TransformerDecoder.
         # If the pre-computed target embeddings were passed in kwargs, 
         # use them instead of the target sequence embeddings.
-        if 'tf_emb' in kwargs.keys() and kwargs['tf_emb'] is not None:
-            emb = kwargs['tf_emb']
-        else:
-            emb = self.embeddings(tgt, step=step)
+        #if 'tf_emb' in kwargs.keys() and kwargs['tf_emb'] is not None:
+        #    emb = kwargs['tf_emb']
+        emb = self.embeddings(tgt, step=step)
 
         assert emb.dim() == 3  # len x batch x embedding_dim
 
