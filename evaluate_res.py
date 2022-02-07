@@ -1,5 +1,6 @@
-from pycocoevalcap.meteor.meteor import Meteor
-from pycocoevalcap.rouge.rouge import Rouge
+from onmt.evaluation.pycocoevalcap.meteor.meteor import Meteor
+from onmt.evaluation.pycocoevalcap.rouge.rouge import Rouge
+from onmt.evaluation.pycocoevalcap.bleu.bleu import Bleu
 import numpy as np
 
 from onmt.hashes.smooth import compute_bleu_score
@@ -21,14 +22,22 @@ def main(hyp, ref):
     print("ROUGE: %s" % score_Rouge)
 
     #TODO Find correct bleu implementation used for the evaluation
-    print("Bleu: %s" % np.mean(compute_bleu_score(ref,pred)))
+    score_Bleu, scores_Bleu = Bleu().compute_score(tgt, res)
+    print("Bleu: %s" % score_Bleu)
 
 
 if __name__ == '__main__':
     # put your path here to not import their results in github or whatever 
-    pred = "../result/CoRec/cleaned.test.msg"
-    ref = "../result/ref/cleaned.test.msg"
-    main(pred, ref)
+    pred_CoRec = "result/CoRec/cleaned.test.msg"
+    pred_ptg = "result/ptg/cleaned.test.msg"
+    pred_nngen = "result/nngen/cleaned.test.msg"
+    ref = "result/ref/cleaned.test.msg"
+    print("CoRec")
+    main(pred_CoRec, ref)
+    print("PTG")
+    main(pred_ptg, ref)
+    print("NNGEN")
+    main(pred_nngen, ref)
 
 #TODO once found the right evaluation scripts we can try to understand how
 #       they obtained such file they put in the folder or results: maybe we will discover that the results alredy obtained
