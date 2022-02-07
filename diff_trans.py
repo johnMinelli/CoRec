@@ -531,11 +531,9 @@ class DiffTranslator(object):
         tgt_in = batch["tgt_batch"][:-1]
 
         log_probs, attn = self._decode_and_generate(tgt_in, memory_bank, src_lengths)
-        # tgt_pad = self.fields["tgt"].vocab.stoi[inputters.PAD_WORD]
-        # not sure
         tgt_pad = vocab.vocab[vocabulary.PAD_WORD]
         log_probs[:, :, tgt_pad] = 0
-        gold = batch["tgt_batch"][1:]  # .unsqueeze(2)
+        gold = batch["tgt_batch"][1:]
         gold_scores = log_probs.gather(2, gold)
         gold_scores = gold_scores.sum(dim=0).view(-1)
 

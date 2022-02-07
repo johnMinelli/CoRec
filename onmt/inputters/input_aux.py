@@ -44,18 +44,17 @@ class MinPaddingSampler(Sampler):
     def __iter__(self):
         indices = [(i, s[self.dataset.sort_index]) for i, s in enumerate(self.dataset)]
         # sort dataset indices by decreasing length, so that
-        # batches contain texts with close lengths, and padding should
-        indices = sorted(indices, key=lambda x: x[1], reverse=True)
-        #pooled_indices = []
-        # create pool of indexes of examples with similar lengths
-        #for i in range(0, len(indices), self.batch_size * 100):
-        #    pooled_indices.extend(indices[i:i + self.batch_size * 100])
-        # select only the actual indexes, not lengths
-        indices = [x[0] for x in indices]
-        batches = RandomShuffler()(range(0, len(indices), self.batch_size)) if self.shuffle_batches else \
-                range(0, len(indices), self.batch_size)
-        for i in batches:
-            yield indices[i:i + self.batch_size]
+        # batches contain texts with close lengths, and low padding
+        if self.shuffle_batches:
+            sorted_indices = sorted(indices, key=lambda x: x[1], reverse=True)
+            # select only the actual indexes, not lengths
+            sorted_indices = [x[0] for x in sorted_indices]
+            for i in RandomShuffler()(range(0, len(indices), self.batch_size)):
+                yield sorted_indices[i:i + self.batch_size]
+        else:
+            for i in range(0, len(indices), self.batch_size):
+                sorted_indices = sorted(indices[i:i + self.batch_size], key=lambda x: x[1], reverse=True)
+                yield [x[0] for x in sorted_indices]
 
     def __len__(self):
         # each time batch size elements are sampled
