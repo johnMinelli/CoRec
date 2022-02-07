@@ -1,3 +1,6 @@
+import math
+import statistics
+
 from onmt.evaluation.pycocoevalcap.meteor.meteor import Meteor
 from onmt.evaluation.pycocoevalcap.rouge.rouge import Rouge
 from onmt.evaluation.pycocoevalcap.bleu.bleu import Bleu
@@ -23,7 +26,7 @@ def main(hyp, ref):
 
     #TODO Find correct bleu implementation used for the evaluation
     score_Bleu, scores_Bleu = Bleu().compute_score(tgt, res)
-    print("Bleu: %s" % score_Bleu)
+    print(f"Bleu: {score_Bleu}, Bleu mean {statistics.mean(score_Bleu)}")
 
 
 if __name__ == '__main__':
