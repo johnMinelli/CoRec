@@ -4,6 +4,7 @@ import math
 import os.path
 
 import configargparse
+import numpy as np
 import torch
 from statistics import mean
 from onmt.utils.logging import logger
@@ -232,9 +233,10 @@ class DiffTranslator(object):
         for batch in test_loader:
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print(f"processing {batch_counter} batch")
-            batch_data = self._process_batch(batch, batch_size, sem_path, vocab["tgt"], attn_debug=attn_debug)
+            real_batch_size=len(batch['indexes'])
+            batch_data = self._process_batch(batch, real_batch_size, sem_path, vocab["tgt"], attn_debug=attn_debug)
             # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
-            translations = translation_wrapper_builder.from_batch(batch_data, batch_size)
+            translations = translation_wrapper_builder.from_batch(batch_data, real_batch_size)
             # iter over the objects to build the sentences
             for i, trans in enumerate(translations):
                 all_scores += [trans.pred_scores[:n_best]]

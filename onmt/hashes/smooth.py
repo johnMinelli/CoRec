@@ -8,8 +8,8 @@ import  nltk.translate.bleu_score as bleu
 def get_bleu(reference, hypothesis):
     gts = {0: [reference]}
     res = {0: [hypothesis]}
-    score_Bleu, scores_Bleu = Bleu(1).compute_score(gts, res)
-    return np.around(np.mean(score_Bleu), 4)
+    gmean, score_Bleu, scores_Bleu = Bleu(4).compute_score(gts, res)
+    return np.around(gmean, 4)
 
 
 def write_file(filename, data):
