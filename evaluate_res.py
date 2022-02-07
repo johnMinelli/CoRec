@@ -1,5 +1,5 @@
-from onmt.evaluation.pycocoevalcap.meteor.meteor import Meteor
-from onmt.evaluation.pycocoevalcap.rouge.rouge import Rouge
+from pycocoevalcap.meteor.meteor import Meteor
+from pycocoevalcap.rouge.rouge import Rouge
 import numpy as np
 
 from onmt.hashes.smooth import compute_bleu_score
@@ -26,8 +26,8 @@ def main(hyp, ref):
 
 if __name__ == '__main__':
     # put your path here to not import their results in github or whatever 
-    pred = "C:/Users/Gio/PycharmProjects/CoRec/result/CoRec/cleaned.test.msg"
-    ref = "C:/Users/Gio/PycharmProjects/CoRec/result/ref/cleaned.test.msg"
+    pred = "../result/CoRec/cleaned.test.msg"
+    ref = "../result/ref/cleaned.test.msg"
     main(pred, ref)
 
 #TODO once found the right evaluation scripts we can try to understand how
