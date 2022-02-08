@@ -16,10 +16,10 @@ def main(opt):
         assert opt.train_diff is not None and opt.train_msg is not None, 'No semantic data found and no training data specified to compute the semantic similarities'
 
         translator.offline_semantic_retrieval(test_diff=opt.src,  # cleaned.test.diff
-                            train_diff=opt.train_diff,
-                            train_msg=opt.train_msg,
-                            batch_size=opt.batch_size,
-                            semantic_out=opt.sem_path)
+                                              train_diff=opt.train_diff,
+                                              train_msg=opt.train_msg,
+                                              batch_size=opt.batch_size,
+                                              semantic_out_dir=opt.sem_path)
 
     if not opt.semantic_only:
         translator.translate(test_diff=opt.src,  # cleaned.test.diff

@@ -58,7 +58,7 @@ def build_trainer(opt, model, vocab, optim, model_saver):
     scheduled_softmax_alpha = opt.transformer_scheduled_alpha
     ###
 
-    report_manager = build_report_manager(opt)
+    report_manager = build_report_manager(opt, "train")
     trainer = Trainer(model, train_loss, valid_loss, optim, trunc_size,
                       shard_size, grad_accum_count,
                       gpu_verbose_level, report_manager,

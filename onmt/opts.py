@@ -594,6 +594,15 @@ def translate_opts(parser):
     group.add('--n_best', '-n_best', type=int, default=1,
               help="""If verbose is set, will output the n_best
                        decoded sentences""")
+    # Use TensorboardX for visualization during training
+    group.add('--tensorboard', '-tensorboard', action="store_true",
+              help="""Use tensorboardX for visualization during training.
+                       Must have the library tensorboardX.""")
+    group.add_argument("-tensorboard_log_dir", type=str,
+                       default="runs/onmt",
+                       help="""Log directory for Tensorboard.
+                       This is also the name of the run.
+                       """)
 
     group = parser.add_argument_group('Efficiency')
     group.add('--batch_size', '-batch_size', type=int, default=30,
