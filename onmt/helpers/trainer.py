@@ -20,6 +20,7 @@ from onmt.helpers.report_manager import build_report_manager
 from onmt.utils.logging import logger
 from onmt.utils.loss import build_loss_compute
 
+
 def build_trainer(opt, model, vocab, optim, model_saver):
     """
     Simplify `Trainer` creation based on user `opt`s*
@@ -427,14 +428,17 @@ class TransformerTrainer(Trainer):
                 accum += 1
                 if accum == self.grad_accum_count:
 
+                    start_decay = 4500
                     batch_teacher_forcing_ratio = \
-                        self._calc_teacher_forcing_ratio(step)
+                        self._calc_teacher_forcing_ratio(step, start_decay)
 
                     # print('TRANSF_GRAD: step: ', step)
+                    if step % 200 == 0:
+                        print(f"batch_teacher_forcing_ratio: {batch_teacher_forcing_ratio}")
 
                     self._train_batch(
                         batch, normalization, total_stats, report_stats,
-                        batch_teacher_forcing_ratio, step
+                        batch_teacher_forcing_ratio, start_decay, step
                     )
 
                     report_stats = self._maybe_report_training(
@@ -469,31 +473,20 @@ class TransformerTrainer(Trainer):
 
         return total_stats
 
-    def _calc_teacher_forcing_ratio(self, step):
-        if self._sampling_type == "teacher_forcing":
+    def _calc_teacher_forcing_ratio(self, step, start_decay):
+        if self._sampling_type == "teacher_forcing" or step <= start_decay:
             return 1.0
         elif self._sampling_type == "scheduled":  # scheduled sampling
-            if self._scheduled_sampling_decay == "exp":
-                scheduled_ratio = self._scheduled_sampling_k ** step
-            elif self._scheduled_sampling_decay == "sigmoid":
-                if step / self._scheduled_sampling_k > 700:
-                    scheduled_ratio = 0
-                else:
-                    scheduled_ratio = self._scheduled_sampling_k / (
-                            self._scheduled_sampling_k
-                            + math.exp(step / self._scheduled_sampling_k)
-                    )
-            else:  # linear
-                scheduled_ratio = self._scheduled_sampling_k - \
-                                  self._scheduled_sampling_c * step
+            # linear decay
+            scheduled_ratio = self._scheduled_sampling_k - self._scheduled_sampling_c * (step - start_decay)
             scheduled_ratio = max(self._scheduled_sampling_limit, scheduled_ratio)
             return scheduled_ratio
         else:  # always sample from the model predictions
             return 0.0
 
     def _train_batch(self, batch, normalization, total_stats, report_stats,
-                     teacher_forcing_ratio, step=None):
-        target_size = batch["tgt_len"].size(0)
+                     teacher_forcing_ratio, start_decay, step=None ):
+        target_size = batch["tgt_batch"].size(0)
         trunc_size = self.trunc_size if self.trunc_size else target_size
 
         src = batch["src_batch"]
@@ -510,161 +503,90 @@ class TransformerTrainer(Trainer):
             # 1. Create truncated target.
             tgt = tgt_outer[j: j + trunc_size]
 
-            # 2. F-prop all but generator.
-            self.model.zero_grad()
-            if teacher_forcing_ratio >= 1:
+            # Two pass process
+            tf_tgt_section = round(target_size * teacher_forcing_ratio)
+            if tf_tgt_section >= target_size:
+                # The standard model
                 outputs, attns = self.model(src, tgt, src_lengths)
-                # bpop important note: the output layer has not been applied to
-                # these outputs yet, so you can't use the outputs tensor by
-                # itself to get the model's next prediction.
-            elif self._twopass:
-                tf_tgt_section = round(target_size * teacher_forcing_ratio)
-                if tf_tgt_section >= target_size:
-                    # The standard model
-                    outputs, attns = self.model(src, tgt, src_lengths)
-                else:
-                    tgt = tgt[:-1]
-
-                    # 1. Go through the encoder
-                    enc_state, memory_bank, lengths = \
-                        self.model.encoder(src, src_lengths)
-                    self.model.decoder.init_state(src, memory_bank, enc_state)
-
-                    # This part can be with grad or no_grad
-                    if self._passone_nograd:
-                        with torch.no_grad():
-                            outputs, attns = self.model.decoder(tgt, memory_bank,
-                                                                memory_lengths=lengths)
-                            logits = self.model.generator[0](outputs)
-
-                    else:
-                        outputs, attns = self.model.decoder(tgt, memory_bank,
-                                                            memory_lengths=lengths)
-
-                        logits = self.model.generator[0](outputs)
-
-                    # 2. Get the embeddings from the model predictions
-                    if self._mixture_type and 'topk' in self._mixture_type:
-                        k = self._k
-                        emb_weights, top_k_tgt = logits.topk(k, dim=-1)
-
-                        # Needed for getting the embeddings
-                        top_k_tgt = top_k_tgt.unsqueeze(-2)
-
-                        # k_embs: batch x k x emb size
-                        k_embs = self.model.decoder.embeddings(top_k_tgt, step=0).transpose(2, 3)
-                        # weights: batch x sequence length x k x 1
-                        # Normalize the weights
-                        emb_weights /= emb_weights.sum(dim=-1).unsqueeze(2)
-                        weights = emb_weights.unsqueeze(3)
-                        emb_size = k_embs.shape[2]
-                        embeddings = self.model.decoder.embeddings(top_k_tgt, step=0)
-                        model_prediction_emb = torch.bmm(k_embs.view(-1, emb_size, k),
-                                                         weights.view(-1, k, 1))  # .transpose(0, 1)
-                        model_prediction_emb = model_prediction_emb.view(batch.batch_size, -1, emb_size).transpose(0, 1)
-                    elif self._mixture_type and 'all' in self._mixture_type:
-                        logits = self._scheduled_activation_function(logits)
-
-                        # weights = logits
-                        # Get the indices of all words in the vocabulary
-                        ind = torch.cuda.LongTensor([i for i in range(logits.shape[2])])
-                        # We need this format of the indices to ge tht embeddings from the decoder
-                        ind = ind.unsqueeze(0).unsqueeze(0).unsqueeze(0)
-                        embeddings = self.model.decoder.embeddings(ind, step=0)[0][0]
-
-                        # The predicted embedding is the weighted sum of the words in the vocabulary
-                        model_prediction_emb = torch.matmul(logits, embeddings)
-                    else:
-                        # Just get the argmax from the model predictions
-                        logits = self.model.generator[1](logits)
-                        model_predictions = logits.argmax(dim=2).unsqueeze(2)
-                        model_prediction_emb = self.model.decoder.embeddings(model_predictions)
-
-                    # Get the embeddings of the gold target sequence.
-                    tgt_emb = self.model.decoder.embeddings(tgt)
-
-                    # 3. Combine the gold target with the model predictions
-                    if self._peeling_back == 'strict':
-                        # Combine the two sequences with peelingback
-                        # First part from the gold, second part from the model predictions
-                        tf_tgt_emb = torch.cat((tgt_emb[:tf_tgt_section],
-                                                model_prediction_emb[tf_tgt_section:]))
-                    else:
-                        # Use scheduled sampling - on each step decide
-                        # whether to use teacher forcing or model predictions.
-                        tf_tgt_emb = [tgt_emb[i].unsqueeze(0) \
-                                          if random.random() <= teacher_forcing_ratio else \
-                                          model_prediction_emb[i].unsqueeze(0) for i in range(target_size - 1)]
-                        # tf_tgt_emb.append(tgt_emb[-1].unsqueeze(0))
-                        tf_tgt_emb = torch.cat((tf_tgt_emb), dim=0)
-                    # Rerun the forward pass with the new target context
-                    outputs, attns = self.model.decoder(tgt, memory_bank,
-                                                        memory_lengths=lengths, step=None, tf_emb=tf_tgt_emb)
-
             else:
-                # RNN
+                tgt = tgt[:-1]
+
+                # 1. Go through the encoder
                 enc_state, memory_bank, lengths = \
                     self.model.encoder(src, src_lengths)
                 self.model.decoder.init_state(src, memory_bank, enc_state)
 
-                tgt_input = tgt[0].unsqueeze(0)
-                out_list = []
-                for i in range(1, len(tgt)):
-                    dec_out, attns = self.model.decoder(
-                        tgt_input, memory_bank,
-                        memory_lengths=lengths,
-                        top_k_tgt=top_k_tgt,
-                        emb_weights=emb_weights,
-                        mixture_type=self._mixture_type,
-                        tf_gate_value=tf_gate_value,
-                        tf_ratio=teacher_forcing_ratio)
-                    out_list.append(dec_out)
+                # This part can be with grad or no_grad
+                if self._passone_nograd:
+                    with torch.no_grad():
+                        outputs, attns = self.model.decoder(tgt, memory_bank,
+                                                            memory_lengths=lengths)
+                        logits = self.model.generator[0](outputs)
 
-                    # flip a coin for teacher forcing
-                    use_tf = random.random() < teacher_forcing_ratio
+                else:
+                    outputs, attns = self.model.decoder(tgt, memory_bank,
+                                                        memory_lengths=lengths)
 
-                    # define whether the teacher forcing
-                    # depends on the position
-                    # in the sequence
-                    if self._peeling_back == 'strict':
-                        # strick peeling back means that the given teacher
-                        # forcing ratio
-                        # defines the part of the sequence that uses
-                        # teacher forcing
-                        use_tf = float(j) / target_size < teacher_forcing_ratio
+                    logits = self.model.generator[0](outputs)
 
-                    if use_tf:
-                        tgt_input = tgt[i].unsqueeze(0)
-                        emb_weights = None
-                        top_k_tgt = None
-                    elif self._mixture_type is None:
-                        # plain-old use of the model's own prediction
-                        logits = self.model.generator[0](dec_out)
-                        tgt_input = logits.argmax(dim=2).unsqueeze(2)
-                    else:
-                        tgt_input = tgt[i].unsqueeze(0)
-                        # mixture of target embeddings based on output probs
-                        gen_out = torch.exp(self.model.generator(dec_out))
-                        if 'topk' in self._mixture_type:
-                            k = self._k
-                        else:
-                            # getting the k for the sparsemax case,
-                            # where k is chosen accordding to the number of
-                            # nonzero elements.
-                            k = (gen_out > 0).sum(-1).max().item()
-                        emb_weights, top_k_tgt = gen_out.topk(k, dim=-1)
-                        if 'topk' in self._mixture_type:
-                            # normalize the weights (not necessary for
-                            # the all case because the k will include all the
-                            # probability mass)
-                            # (might be better to do something with softmax,
-                            # bpop is not sure)
-                            emb_weights /= emb_weights.sum(dim=-1).unsqueeze(2)
+                # 2. Get the embeddings from the model predictions
+                if self._mixture_type and 'topk' in self._mixture_type:
+                    k = self._k
+                    emb_weights, top_k_tgt = logits.topk(k, dim=-1)
 
-                        if 'tf_gate' in self._mixture_type:
-                            tf_gate_value = self.model.tf_gate(gen_out)
+                    # Needed for getting the embeddings
+                    top_k_tgt = top_k_tgt.unsqueeze(-2)
 
-                outputs = torch.cat(out_list)
+                    # k_embs: batch x k x emb size
+                    k_embs = self.model.decoder.embeddings(top_k_tgt, step=0).transpose(2, 3)
+                    # weights: batch x sequence length x k x 1
+                    # Normalize the weights
+                    emb_weights /= emb_weights.sum(dim=-1).unsqueeze(2)
+                    weights = emb_weights.unsqueeze(3)
+                    emb_size = k_embs.shape[2]
+                    embeddings = self.model.decoder.embeddings(top_k_tgt, step=0)
+                    model_prediction_emb = torch.bmm(k_embs.view(-1, emb_size, k),
+                                                     weights.view(-1, k, 1))  # .transpose(0, 1)
+                    model_prediction_emb = model_prediction_emb.view(batch["src_len"].size(0), -1, emb_size).transpose(
+                        0, 1)
+                elif self._mixture_type and 'all' in self._mixture_type:
+                    logits = self._scheduled_activation_function(logits)
+
+                    # weights = logits
+                    # Get the indices of all words in the vocabulary
+                    ind = torch.cuda.LongTensor([i for i in range(logits.shape[2])])
+                    # We need this format of the indices to ge tht embeddings from the decoder
+                    ind = ind.unsqueeze(0).unsqueeze(0).unsqueeze(0)
+                    embeddings = self.model.decoder.embeddings(ind, step=0)[0][0]
+
+                    # The predicted embedding is the weighted sum of the words in the vocabulary
+                    model_prediction_emb = torch.matmul(logits, embeddings)
+                else:
+                    # Just get the argmax from the model predictions
+                    logits = self.model.generator[1](logits)
+                    model_predictions = logits.argmax(dim=2).unsqueeze(2)
+                    model_prediction_emb = self.model.decoder.embeddings(model_predictions)
+
+                # Get the embeddings of the gold target sequence.
+                tgt_emb = self.model.decoder.embeddings(tgt)
+
+                # 3. Combine the gold target with the model predictions
+                if self._peeling_back == 'strict':
+                    # Combine the two sequences with peelingback
+                    # First part from the gold, second part from the model predictions
+                    tf_tgt_emb = torch.cat((tgt_emb[:tf_tgt_section],
+                                            model_prediction_emb[tf_tgt_section:]))
+                else:
+                    # Use scheduled sampling - on each step decide
+                    # whether to use teacher forcing or model predictions.
+                    tf_tgt_emb = [tgt_emb[i].unsqueeze(0) \
+                                      if random.random() <= teacher_forcing_ratio else \
+                                      model_prediction_emb[i].unsqueeze(0) for i in range(target_size - 1)]
+                    # tf_tgt_emb.append(tgt_emb[-1].unsqueeze(0))
+                    tf_tgt_emb = torch.cat((tf_tgt_emb), dim=0)
+                # Rerun the forward pass with the new target context
+                outputs, attns = self.model.decoder(tgt, memory_bank,
+                                                    memory_lengths=lengths, step=None, tf_emb=tf_tgt_emb)
 
             # 3. Compute loss in shards for memory efficiency.
             # print('memory sizes:', trunc_size, self.shard_size, len(batch), outputs.shape)
@@ -675,7 +597,6 @@ class TransformerTrainer(Trainer):
                 trunc_size, self.shard_size, normalization)
             total_stats.update(batch_stats)
             report_stats.update(batch_stats)
-
             # 4. Update the parameters and statistics.
 
             self.optim.step()
