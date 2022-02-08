@@ -382,7 +382,7 @@ class TransformerTrainer(Trainer):
 
         self.model.train()
 
-    def train(self, train_iter, valid_iter, train_steps, valid_steps):
+    def train(self, train_iter_fct, valid_iter_fct, train_steps, valid_steps):
         """
         The main training loops.
         by iterating over training data (i.e. `train_iter_fct`)
@@ -403,6 +403,7 @@ class TransformerTrainer(Trainer):
         true_batchs = []
         accum = 0
         normalization = 0
+        train_iter = train_iter_fct()
 
         total_stats = onmt.utils.Statistics()
         report_stats = onmt.utils.Statistics()
@@ -421,7 +422,7 @@ class TransformerTrainer(Trainer):
                         self.train_loss.padding_idx).sum()
                     normalization += num_tokens.item()
                 else:
-                    normalization += batch.batch_size
+                    normalization += batch["src_len"].size(0)
                 accum += 1
                 if accum == self.grad_accum_count:
 
@@ -447,16 +448,15 @@ class TransformerTrainer(Trainer):
                         if self.gpu_verbose_level > 0:
                             logger.info('GpuRank: validate step %d'
                                         % step)
+                        valid_iter = valid_iter_fct()
                         valid_stats = self.validate(valid_iter)
                         if self.gpu_verbose_level > 0:
                             logger.info('GpuRank: gather valid stat \
                                         step %d' % step)
-                        valid_stats = self._maybe_gather_stats(valid_stats)
                         if self.gpu_verbose_level > 0:
                             logger.info('GpuRank: report stat step %d'
                                         % step)
-                        self._report_step(self.optim.learning_rate,
-                                          step, valid_stats=valid_stats)
+                        self._report_step(self.optim.learning_rate, step, valid_stats=valid_stats)
 
                     self._maybe_save(step)
                     step += 1
@@ -492,7 +492,7 @@ class TransformerTrainer(Trainer):
 
     def _train_batch(self, batch, normalization, total_stats, report_stats,
                      teacher_forcing_ratio, step=None):
-        target_size = batch.tgt.size(0)
+        target_size = batch["tgt_len"].size(0)
         trunc_size = self.trunc_size if self.trunc_size else target_size
 
         src = batch["src_batch"]
@@ -692,21 +692,6 @@ class TransformerTrainer(Trainer):
                 self.report_manager.start()
             else:
                 self.report_manager.start_time = start_time
-
-    def _maybe_gather_stats(self, stat):
-        """
-        Gather statistics in multi-processes cases
-
-        Args:
-            stat(:obj:onmt.utils.Statistics): a Statistics object to gather
-                or None (it returns None in this case)
-
-        Returns:
-            stat: the updated (or unchanged) stat object
-        """
-        if stat is not None:
-            return onmt.utils.Statistics.all_gather_stats(stat)
-        return stat
 
     def _norm(self, batch):
         if self._norm_method == "tokens":
