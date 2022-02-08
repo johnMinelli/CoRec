@@ -127,5 +127,5 @@ class Statistics(object):
         writer.add_scalar(prefix + "/xent", self.xent(), step)
         writer.add_scalar(prefix + "/ppl", self.ppl(), step)
         writer.add_scalar(prefix + "/accuracy", self.accuracy(), step)
-        writer.add_scalar(prefix + "/tgtper", self.n_words / t, step)
+        writer.add_scalar(prefix + "/wrdpersec", self.n_words / t, step)
         writer.add_scalar(prefix + "/lr", learning_rate, step)

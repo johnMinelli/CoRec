@@ -47,7 +47,7 @@ class ModelSaverBase(object):
         if keep_checkpoint > 0:
             self.checkpoint_queue = deque([], maxlen=keep_checkpoint)
 
-    def maybe_save(self, step):
+    def maybe_save(self, step, historical_statistics=None):
         """
         Main entry point for model saver
         It wraps the `_save` method with checks and apply `keep_checkpoint`
@@ -59,7 +59,7 @@ class ModelSaverBase(object):
         if step % self.save_checkpoint_steps != 0:
             return
 
-        chkpt, chkpt_name = self._save(step)
+        chkpt, chkpt_name = self._save(step, historical_statistics)
 
         if self.keep_checkpoint > 0:
             if len(self.checkpoint_queue) == self.checkpoint_queue.maxlen:
@@ -67,7 +67,7 @@ class ModelSaverBase(object):
                 self._rm_checkpoint(todel)
             self.checkpoint_queue.append(chkpt_name)
 
-    def _save(self, step):
+    def _save(self, step, stat=None):
         """ Save a resumable checkpoint.
 
         Args:
@@ -101,7 +101,7 @@ class ModelSaver(ModelSaverBase):
             base_path, model, model_opt, vocab, optim,
             save_checkpoint_steps, keep_checkpoint)
 
-    def _save(self, step):
+    def _save(self, step, stats):
         real_model = (self.model.module
                       if isinstance(self.model, nn.DataParallel)
                       else self.model)
@@ -119,6 +119,7 @@ class ModelSaver(ModelSaverBase):
             'vocab': self.vocab,
             'opt': self.model_opt,
             'optim': self.optim,
+            'training_stats': stats,
         }
 
         logger.info("Saving checkpoint %s_step_%d.pt" % (self.base_path, step))
