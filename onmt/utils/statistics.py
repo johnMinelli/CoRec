@@ -7,16 +7,6 @@ import sys
 
 from torch.distributed import get_rank
 from onmt.utils.logging import logger
-import numpy as np
-
-
-class TranslationStatistics(object):
-    def __init__(self):
-        self.bleu = []
-
-    def get_avg_bleu(self):
-        return np.mean(self.bleu)
-
 
 class Statistics(object):
     """

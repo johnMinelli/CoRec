@@ -105,6 +105,7 @@ def load_test_model(opt, dummy_opt, model_path=None):
     checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
 
     model_opt = checkpoint['opt']
+    model_stats = checkpoint['training_stats'] if 'training_stats' in checkpoint else None
     vocab = load_vocab(opt.src_vocab)
     # copy newly specified parameters in old model parameters dict
     for arg in dummy_opt:
@@ -113,7 +114,7 @@ def load_test_model(opt, dummy_opt, model_path=None):
     model = build_model(model_opt, vocab, opt.gpu, checkpoint)
     model.eval()
     model.generator.eval()
-    return model, model_opt
+    return model, (model_opt, model_stats)
 
 def build_model(model_opt, vocab, gpu, checkpoint=None):
     """

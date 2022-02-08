@@ -7,6 +7,8 @@ import configargparse
 import numpy as np
 import torch
 from statistics import mean
+
+from onmt.helpers.report_manager import build_report_manager
 from onmt.utils.logging import logger
 from itertools import count
 import onmt.opts as opts
@@ -15,11 +17,9 @@ from onmt.helpers.model_builder import load_test_model
 from onmt.inputters.text_dataset import SemTextDataset, TextDataset
 from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab
 from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_vocab
-from rouge_score import rouge_scorer as rouge_metric
 from onmt.utils.misc import tile
 from onmt.translate.translation_wrapper import TranslationBuilder
 from onmt.hashes.smooth import compute_bleu_score
-from onmt.utils.statistics import TranslationStatistics
 
 
 def build_translator(opt, report_score=True):
@@ -27,9 +27,9 @@ def build_translator(opt, report_score=True):
     opts.model_opts(dummy_parser)
     dummy_opt = dummy_parser.parse_known_args([])[0]
 
-    model, model_opt = load_test_model(opt, dummy_opt.__dict__)
+    model, model_details = load_test_model(opt, dummy_opt.__dict__)
 
-    translator = DiffTranslator(model, opt, model_opt, report_score=report_score)
+    translator = DiffTranslator(model, opt, model_details, report_score=report_score)
 
     return translator
 
@@ -39,12 +39,13 @@ class DiffTranslator(object):
     def __init__(self,
                  model,
                  opt,
-                 model_opt,
+                 model_details,
                  report_score=True):
 
         self.shard_dir_default = "data/sem_shard/"
         self.sem_diff_default = "sem.diff"
         self.sem_msg_default = "sem.msg"
+        self.test_dataset = TextDataset(opt.src, opt.tgt, opt.max_sent_length)
         self.src_vocab = load_vocab(opt.src_vocab)
 
         if opt.sem_path is not None:
@@ -54,22 +55,17 @@ class DiffTranslator(object):
             if len(files) > 0:
                 assert self.sem_msg_default in files and self.sem_diff_default in files, \
                     "Empty the sem_path folder specified to recompute the data or check that all semantic files are present in the folder"
-                self.test_dataset = SemTextDataset(opt.src, opt.tgt, os.path.join(opt.sem_path, self.sem_diff_default),
-                                                   opt.max_sent_length)
-
-            else:
-                self.test_dataset = TextDataset(opt.src, opt.tgt, opt.max_sent_length)
-        else:
-            self.test_dataset = TextDataset(opt.src, opt.tgt, opt.max_sent_length)
 
         self.opt = opt
         self.model = model
         self.gpu = opt.gpu
         self.verbose = opt.verbose
-        self.copy_attn = model_opt.copy_attn
+        model_opts, model_train_stats = model_details
+        self.copy_attn = model_opts.copy_attn
 
         self.report_score = report_score
-        self.rouge_scorer = rouge_metric.RougeScorer(['rouge1', 'rougeL'], use_stemmer=True)
+        self.report_manager = build_report_manager(opt, "translate")
+        self.report_manager.report_model_details(model_stats=model_train_stats, semantic=opt.sem_path is not None)
 
         if not opt.semantic_only and opt.sem_path is not None:
             self.lam_sem = self.opt.lam_sem
@@ -77,7 +73,7 @@ class DiffTranslator(object):
 
 
     def offline_semantic_retrieval(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None,
-                                   semantic_out=None):
+                                   semantic_out_dir=None):
         """
         Saves the semantic info in three files: diffs and msgs of training set samples aligned with the test set samples
         by similarity of encode and the shared vocabulary used for translation
@@ -139,8 +135,7 @@ class DiffTranslator(object):
             train_diffs = td.readlines()
 
         # search the best (most similar) correspondence of test set encodings with computed training set encodings
-        data_iter = build_dataset_iter(self.test_dataset, self.src_vocab, batch_size, gpu=self.gpu,
-                                       shuffle_batches=False)
+        data_iter = build_dataset_iter(self.test_dataset, self.src_vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
         diffs = []
         msgs = []
@@ -166,12 +161,12 @@ class DiffTranslator(object):
                 diffs.append(train_diffs[i].strip() + '\n')
                 msgs.append(train_msgs[i].strip() + '\n')
 
-        with open(os.path.join(semantic_out, self.sem_msg_default), 'w') as sm:
+        with open(os.path.join(semantic_out_dir, self.sem_msg_default), 'w') as sm:
             for i in msgs:
                 sm.write(i)
                 sm.flush()
 
-        with open(os.path.join(semantic_out, self.sem_diff_default), 'w') as of:
+        with open(os.path.join(semantic_out_dir, self.sem_diff_default), 'w') as of:
             for i in diffs:
                 of.write(i)
                 of.flush()
@@ -207,7 +202,6 @@ class DiffTranslator(object):
             raise ValueError("batch_size must be set")
 
         if os.path.isfile(out_file): os.remove(out_file)
-        if os.path.isfile(out_file + ".log"): os.remove(out_file + ".log")
 
         if sem_path is not None:
             self.sem_score = torch.tensor(
@@ -217,11 +211,10 @@ class DiffTranslator(object):
 
         n_best = self.opt.n_best
         vocab = self.src_vocab
-        stats = TranslationStatistics()
 
         test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
-        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, stats, len(self.test_dataset.target_texts) > 0)
+        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, len(self.test_dataset.target_texts) > 0)
 
         # Statistics
         pred_score_total, pred_words_total = 0, 0
@@ -233,7 +226,7 @@ class DiffTranslator(object):
         for batch in test_loader:
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print(f"processing {batch_counter} batch")
-            real_batch_size=len(batch['indexes'])
+            real_batch_size = len(batch['indexes'])
             batch_data = self._process_batch(batch, real_batch_size, sem_path, vocab["tgt"], attn_debug=attn_debug)
             # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
             translations = translation_wrapper_builder.from_batch(batch_data, real_batch_size)
@@ -251,25 +244,14 @@ class DiffTranslator(object):
                 with open(out_file, 'a+') as of:
                     of.write('\n'.join(n_best_preds) + '\n')
                     of.flush()
-                with open(out_file + ".log", 'a+') as of:
-                    of.write(''.join(trans.log((batch_counter * i) + i, self.rouge_scorer) + '\n'))
-                    of.flush()
 
             if self.report_score:
-                msg = self._report_score('PRED', pred_score_total, pred_words_total)
-                if logger:
-                    logger.info(msg)
-                else:
-                    print(msg)
+                self.report_manager.report_trans_score('PRED', pred_score_total, pred_words_total)
                 if test_msg is not None:
-                    msg = self._report_score('GOLD', gold_score_total, gold_words_total)
-                    if logger:
-                        logger.info(msg)
-                    else:
-                        print(msg)
+                    self.report_manager.report_trans_score('GOLD', gold_score_total, gold_words_total)
             batch_counter += 1
 
-        print("Bleu over the test set", stats.get_avg_bleu())
+        self.report_manager.report_trans_eval(out_file, test_msg)
         return all_scores, all_predictions
 
     def _process_batch(self, batch, batch_size, sem_path, vocab, attn_debug):
@@ -487,8 +469,8 @@ class DiffTranslator(object):
         src = src[:, rank, :]
         enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
         _, recover = rank.sort(descending=False)
-        enc_states = (enc_states[0][:, recover, :], enc_states[1][:, recover, :])
-        # enc_states = (enc_states[:, recover, :], enc_states[:, recover, :])  # for transformers
+        # enc_states = (enc_states[0][:, recover, :], enc_states[1][:, recover, :])
+        enc_states = (enc_states[:, recover, :], enc_states[:, recover, :])  # for transformers
         memory_bank = memory_bank[:, recover, :]
         src_lengths = src_lengths[recover]
         if src_lengths is None:
@@ -540,12 +522,3 @@ class DiffTranslator(object):
         gold_scores = gold_scores.sum(dim=0).view(-1)
 
         return gold_scores
-
-    def _report_score(self, name, score_total, words_total):
-        if words_total == 0:
-            msg = "%s No words predicted" % (name,)
-        else:
-            msg = ("%s AVG SCORE: %.4f, %s PPL: %.4f" % (
-                name, score_total / words_total,
-                name, math.exp(-score_total / words_total)))
-        return msg

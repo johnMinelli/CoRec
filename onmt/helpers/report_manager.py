@@ -1,6 +1,8 @@
 ﻿# STANDARD
 """ Report manager utility """
 from __future__ import print_function
+
+import math
 import time
 from datetime import datetime
 
@@ -9,7 +11,7 @@ import onmt
 from onmt.utils.logging import logger
 
 
-def build_report_manager(opt):
+def build_report_manager(opt, action="train"):
     if opt.tensorboard:
         from tensorboardX import SummaryWriter
         tensorboard_log_dir = opt.tensorboard_log_dir
@@ -17,34 +19,35 @@ def build_report_manager(opt):
         if not opt.train_from:
             tensorboard_log_dir += datetime.now().strftime("/%b-%d_%H-%M-%S")
 
-        writer = SummaryWriter(tensorboard_log_dir,
-                               comment="Unmt")
+        writer = SummaryWriter(tensorboard_log_dir, comment=action)
     else:
         writer = None
 
-    report_mgr = ReportMgr(opt.report_every, start_time=-1,
-                           tensorboard_writer=writer)
+    if action == "train":
+        report_mgr = ReportMgrTraining(opt.report_every, start_time=-1, tensorboard_writer=writer)
+    elif action == "translate":
+        report_mgr = ReportMgrTranslation(tensorboard_writer=writer)
+
     return report_mgr
 
 
-class ReportMgrBase(object):
+class ReportMgrTraining(object):
     """
-    Report Manager Base class
-    Inherited classes should override:
-        * `_report_training`
-        * `_report_step`
+    Report Manager class for Training
     """
-
-    def __init__(self, report_every, start_time=-1.):
+    def __init__(self, report_every, start_time=-1., tensorboard_writer=None):
         """
         Args:
             report_every(int): Report status every this many sentences
             start_time(float): manually set report start time. Negative values
                 means that you will need to set it later or use `start()`
+            tensorboard_writer(:obj:`tensorboard.SummaryWriter`):
+                The TensorBoard Summary writer to use or None
         """
         self.report_every = report_every
         self.progress_step = 0
         self.start_time = start_time
+        self.tensorboard_writer = tensorboard_writer
 
     def start(self):
         self.start_time = time.time()
@@ -77,9 +80,14 @@ class ReportMgrBase(object):
         else:
             return report_stats
 
-    def _report_training(self, *args, **kwargs):
-        """ To be overridden """
-        raise NotImplementedError()
+    def _report_training(self, step, num_steps, learning_rate, report_stats):
+        """
+        See base class method `ReportMgrBase.report_training`.
+        """
+        report_stats.output(step, num_steps, learning_rate, self.start_time)
+
+        # Log the progress using the number of batches on the x-axis.
+        self.maybe_log_tensorboard(report_stats, "progress", learning_rate, self.progress_step)
 
     def report_step(self, lr, step, train_stats=None, valid_stats=None):
         """
@@ -91,40 +99,6 @@ class ReportMgrBase(object):
             lr(float): current learning rate
         """
         self._report_step(lr, step, train_stats=train_stats, valid_stats=valid_stats)
-
-    def _report_step(self, *args, **kwargs):
-        raise NotImplementedError()
-
-
-class ReportMgr(ReportMgrBase):
-    def __init__(self, report_every, start_time=-1., tensorboard_writer=None):
-        """
-        A report manager that writes statistics on standard output as well as
-        (optionally) TensorBoard
-
-        Args:
-            report_every(int): Report status every this many sentences
-            tensorboard_writer(:obj:`tensorboard.SummaryWriter`):
-                The TensorBoard Summary writer to use or None
-        """
-        super(ReportMgr, self).__init__(report_every, start_time)
-        self.tensorboard_writer = tensorboard_writer
-
-    def maybe_log_tensorboard(self, stats, prefix, learning_rate, step):
-        if self.tensorboard_writer is not None:
-            stats.log_tensorboard(prefix, self.tensorboard_writer, learning_rate, step)
-
-    def _report_training(self, step, num_steps, learning_rate, report_stats):
-        """
-        See base class method `ReportMgrBase.report_training`.
-        """
-        report_stats.output(step, num_steps, learning_rate, self.start_time)
-
-        # Log the progress using the number of batches on the x-axis.
-        self.maybe_log_tensorboard(report_stats, "progress", learning_rate, self.progress_step)
-        report_stats = onmt.utils.Statistics()
-
-        return report_stats
 
     def _report_step(self, lr, step, train_stats=None, valid_stats=None):
         """
@@ -141,3 +115,41 @@ class ReportMgr(ReportMgrBase):
             self.log('Validation accuracy: %g' % valid_stats.accuracy())
 
             self.maybe_log_tensorboard(valid_stats, "valid", lr, step)
+
+    def maybe_log_tensorboard(self, stats, prefix, learning_rate, step):
+        if self.tensorboard_writer is not None:
+            stats.log_tensorboard(prefix, self.tensorboard_writer, learning_rate, step)
+
+
+class ReportMgrTranslation(object):
+    def __init__(self, tensorboard_writer=None):
+        """
+        A report manager that writes statistics on standard output as well as (optionally) TensorBoard
+
+        Args:
+            tensorboard_writer(:obj:`tensorboard.SummaryWriter`): The TensorBoard Summary writer to use or None
+        """
+        self.tensorboard_writer = tensorboard_writer
+
+    def report_model_details(self, model_stats=None, semantic=None):
+        #TODO log stats details
+        logger.info("")
+        # if self.tensorboard_writer is not None:
+        #     stats.log_tensorboard(prefix, self.tensorboard_writer, learning_rate, step)
+
+
+    def report_trans_eval(self, translations_file, targets_file):
+        #TODO evaluate and log
+        logger.info("")
+        # if self.tensorboard_writer is not None:
+        #     stats.log_tensorboard(prefix, self.tensorboard_writer, learning_rate, step)
+
+    def report_trans_score(self, name, score_total, words_total):
+        if words_total == 0:
+            msg = "%s No words predicted" % (name,)
+        else:
+            msg = ("%s AVG SCORE: %.4f, %s PPL: %.4f" % (
+                name, score_total / words_total, name, math.exp(-score_total / words_total)))
+        logger.info(msg)
+
+
