@@ -527,7 +527,7 @@ def train_opts(parser):
               help="""Use tensorboardX for visualization during training.
                        Must have the library tensorboardX.""")
     group.add_argument("-tensorboard_log_dir", type=str,
-                       default="runs/onmt",
+                       default="runs",
                        help="""Log directory for Tensorboard.
                        This is also the name of the run.
                        """)
@@ -652,7 +652,7 @@ def translate_opts(parser):
               help="""Use tensorboardX for visualization during training.
                        Must have the library tensorboardX.""")
     group.add_argument("-tensorboard_log_dir", type=str,
-                       default="runs/onmt",
+                       default="runs",
                        help="""Log directory for Tensorboard.
                        This is also the name of the run.
                        """)

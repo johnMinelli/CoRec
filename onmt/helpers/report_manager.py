@@ -7,6 +7,9 @@ import time
 from datetime import datetime
 
 import onmt
+from onmt.evaluation.pycocoevalcap.bleu.bleu import Bleu
+from onmt.evaluation.pycocoevalcap.meteor.meteor import Meteor
+from onmt.evaluation.pycocoevalcap.rouge.rouge import Rouge
 
 from onmt.utils.logging import logger
 
@@ -16,8 +19,7 @@ def build_report_manager(opt, action="train"):
         from tensorboardX import SummaryWriter
         tensorboard_log_dir = opt.tensorboard_log_dir
 
-        if not opt.train_from:
-            tensorboard_log_dir += datetime.now().strftime("/%b-%d_%H-%M-%S")
+        tensorboard_log_dir += datetime.now().strftime("/"+".".join(opt.models[0].split(".")[:-1])+"_%b-%d_%H-%M-%S")
 
         writer = SummaryWriter(tensorboard_log_dir, comment=action)
     else:
@@ -87,7 +89,7 @@ class ReportMgrTraining(object):
         report_stats.output(step, num_steps, learning_rate, self.start_time)
 
         # Log the progress using the number of batches on the x-axis.
-        self.maybe_log_tensorboard(report_stats, "progress", learning_rate, self.progress_step)
+        self.maybe_log_tensorboard(report_stats, "training", learning_rate, self.progress_step)
 
     def report_step(self, lr, step, train_stats=None, valid_stats=None):
         """
@@ -108,13 +110,13 @@ class ReportMgrTraining(object):
             self.log('Train perplexity: %g' % train_stats.ppl())
             self.log('Train accuracy: %g' % train_stats.accuracy())
 
-            self.maybe_log_tensorboard(train_stats, "train", lr, step)
+            self.maybe_log_tensorboard(train_stats, "train_step", lr, step)
 
         if valid_stats is not None:
             self.log('Validation perplexity: %g' % valid_stats.ppl())
             self.log('Validation accuracy: %g' % valid_stats.accuracy())
 
-            self.maybe_log_tensorboard(valid_stats, "valid", lr, step)
+            self.maybe_log_tensorboard(valid_stats, "valid_step", lr, step)
 
     def maybe_log_tensorboard(self, stats, prefix, learning_rate, step):
         if self.tensorboard_writer is not None:
@@ -132,17 +134,43 @@ class ReportMgrTranslation(object):
         self.tensorboard_writer = tensorboard_writer
 
     def report_model_details(self, model_stats=None, semantic=None):
-        #TODO log stats details
-        logger.info("")
-        # if self.tensorboard_writer is not None:
-        #     stats.log_tensorboard(prefix, self.tensorboard_writer, learning_rate, step)
+        logger.info("Translation {} semantics".format("WITH" if semantic else "WITHOUT"))
+        if model_stats is not None:
+            train, val = model_stats
+            t_acc, t_ppl, t_xent = train.accuracy(), train.ppl(), train.xent()
+            v_acc, v_ppl, v_xent = val.accuracy(), val.ppl(), val.xent()
+            logger.info(f"Model stats: Training: {t_acc} acc, {t_ppl} ppl, {t_xent} xent"
+                                   f"  Validation: {v_acc} acc, {v_ppl} ppl, {v_xent} xent")
+            if self.tensorboard_writer is not None:
+                self.tensorboard_writer.add_scalars("translate/accuracy", {"train": t_acc, "val": v_acc}, 0)
+                self.tensorboard_writer.add_scalars("translate/ppl", {"train": t_ppl, "val": v_ppl}, 0)
+                self.tensorboard_writer.add_scalars("translate/xent", {"train": t_xent, "val": v_xent}, 0)
+                self.tensorboard_writer.add_scalar("translate/use_semantic", int(semantic), 0)
 
 
     def report_trans_eval(self, translations_file, targets_file):
-        #TODO evaluate and log
-        logger.info("")
-        # if self.tensorboard_writer is not None:
-        #     stats.log_tensorboard(prefix, self.tensorboard_writer, learning_rate, step)
+        with open(translations_file, 'r') as r:
+            hypothesis = r.readlines()
+            res = {k: [v.strip().lower()] for k, v in enumerate(hypothesis)}
+        with open(targets_file, 'r') as r:
+            references = r.readlines()
+            tgt = {k: [v.strip().lower()] for k, v in enumerate(references)}
+        meteor_score, _ = 0,0 # Meteor().compute_score(tgt, res)
+        rouge_score, _ = Rouge().compute_score(tgt, res)
+        bleu_score, bleu_ngrams, _ = Bleu().compute_score(tgt, res)
+        logger.info(f"TEST SET SCORES\n"
+                    f"Meteor: {meteor_score}\n"
+                    f"Rouge: {rouge_score}\n"
+                    f"Bleu: {bleu_ngrams}\n"
+                    f"Bleu mean {bleu_score}")
+        if self.tensorboard_writer is not None:
+            self.tensorboard_writer.add_scalar("translate/rouge", rouge_score, 0)
+            self.tensorboard_writer.add_scalar("translate/meteor", meteor_score, 0)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_score, 0)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[0], 1)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[1], 2)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[2], 3)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[3], 4)
 
     def report_trans_score(self, name, score_total, words_total):
         if words_total == 0:

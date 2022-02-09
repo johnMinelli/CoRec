@@ -182,14 +182,15 @@ class Trainer(object):
                     true_batchs = []
                     accum = 0
                     normalization = 0
+                    valid_stats = None
                     if (step % valid_steps == 0):
                         logger.info(f'Validate step {step}') if self.gpu_verbose_level > 0 else None
                         valid_iter = valid_iter_fct()
                         valid_stats = self.validate(valid_iter)
                         logger.info(f'Report stat step {step}') if self.gpu_verbose_level > 0 else None
-                        self._report_step(self.optim.learning_rate, step, valid_stats=valid_stats)
-
-                    self._maybe_save(step)
+                        self._maybe_report_step(self.optim.learning_rate, step, valid_stats=valid_stats)
+                    current_stats = total_stats, valid_stats
+                    self._maybe_save(step, current_stats)
                     step += 1
                     if step > train_steps:
                         break
@@ -297,7 +298,7 @@ class Trainer(object):
         if self.report_manager is not None:
             return self.report_manager.report_training(step, num_steps, learning_rate, report_stats)
 
-    def _report_step(self, learning_rate, step, train_stats=None, valid_stats=None):
+    def _maybe_report_step(self, learning_rate, step, train_stats=None, valid_stats=None):
         """
         Simple function to report stats (if report_manager is set)
         see `onmt.utils.ReportManagerBase.report_step` for doc
@@ -306,12 +307,12 @@ class Trainer(object):
             return self.report_manager.report_step(learning_rate, step, train_stats=train_stats,
                                                    valid_stats=valid_stats)
 
-    def _maybe_save(self, step):
+    def _maybe_save(self, step, historical_statistics=None):
         """
         Save the model if a model saver is set
         """
         if self.model_saver is not None:
-            self.model_saver.maybe_save(step)
+            self.model_saver.maybe_save(step, historical_statistics)
 
 
 class TransformerTrainer(Trainer):
@@ -456,7 +457,7 @@ class TransformerTrainer(Trainer):
                         if self.gpu_verbose_level > 0:
                             logger.info('GpuRank: report stat step %d'
                                         % step)
-                        self._report_step(self.optim.learning_rate, step, valid_stats=valid_stats)
+                        self._maybe_report_step(self.optim.learning_rate, step, valid_stats=valid_stats)
 
                     self._maybe_save(step)
                     step += 1
