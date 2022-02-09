@@ -16,7 +16,7 @@ from onmt.inputters import vocabulary
 from onmt.helpers.model_builder import load_test_model
 from onmt.inputters.text_dataset import SemTextDataset, TextDataset
 from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab
-from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_vocab
+from onmt.encoders.transformer import TransformerEncoder
 from onmt.utils.misc import tile
 from onmt.translate.translation_wrapper import TranslationBuilder
 from onmt.hashes.smooth import compute_bleu_score
@@ -467,10 +467,15 @@ class DiffTranslator(object):
 
         src_lengths, rank = src_lengths.sort(descending=True)
         src = src[:, rank, :]
+        # shape encoder states (src_length, batch_size, D*Hout) where
+        # D is 2 if bidirectional and Hout is the hidden state size
         enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
         _, recover = rank.sort(descending=False)
-        enc_states = (enc_states[0][:, recover, :], enc_states[1][:, recover, :])
-        # enc_states = (enc_states[:, recover, :], enc_states[:, recover, :])  # for transformers
+        if isinstance(self.model.encoder,TransformerEncoder):
+            enc_states = (enc_states[:, recover, :], enc_states[:, recover, :])  # for transformers
+        else:
+            enc_states = (enc_states[0][:, recover, :], enc_states[1][:, recover, :])
+
         memory_bank = memory_bank[:, recover, :]
         src_lengths = src_lengths[recover]
         if src_lengths is None:
