@@ -2,6 +2,7 @@
 import copy
 import math
 import os.path
+import os
 
 import configargparse
 import numpy as np
@@ -20,7 +21,7 @@ from onmt.encoders.transformer import TransformerEncoder
 from onmt.utils.misc import tile
 from onmt.translate.translation_wrapper import TranslationBuilder
 from onmt.hashes.smooth import compute_bleu_score
-
+from onmt.hashes.smooth import get_bleu
 
 def build_translator(opt, report_score=True):
     dummy_parser = configargparse.ArgumentParser(description='train.py')
@@ -201,7 +202,11 @@ class DiffTranslator(object):
         if batch_size is None:
             raise ValueError("batch_size must be set")
 
-        if os.path.isfile(out_file): os.remove(out_file)
+        out_log_filename = out_file + '.log'
+        if os.path.isfile(out_file):
+            os.remove(out_file)
+        if os.path.isfile(out_log_filename):
+            os.remove(out_log_filename)
 
         if sem_path is not None:
             self.sem_score = torch.tensor(
@@ -223,6 +228,9 @@ class DiffTranslator(object):
         all_scores = []
         all_predictions = []
         batch_counter = 0
+
+
+
         for batch in test_loader:
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print(f"processing {batch_counter} batch")
@@ -244,6 +252,12 @@ class DiffTranslator(object):
                 with open(out_file, 'a+') as of:
                     of.write('\n'.join(n_best_preds) + '\n')
                     of.flush()
+                with open(out_log_filename, 'a+') as log_of:
+                    log_of.write('Prediction: ' + '\n'.join(n_best_preds) + '\n'
+                                 + 'Gold: ' + ' '.join(trans.gold_sent) + '\n'
+                                 + 'Bleu: ' + str(get_bleu('\n'.join(n_best_preds), ' '.join(trans.gold_sent))) + '\n\n')
+                    log_of.flush()
+
 
             if self.report_score:
                 self.report_manager.report_trans_score('PRED', pred_score_total, pred_words_total)
