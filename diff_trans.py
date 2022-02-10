@@ -23,6 +23,8 @@ from onmt.translate.translation_wrapper import TranslationBuilder
 from onmt.hashes.smooth import compute_bleu_score
 from onmt.hashes.smooth import get_bleu
 
+from torchtext.data.metrics import bleu_score
+
 def build_translator(opt, report_score=True):
     dummy_parser = configargparse.ArgumentParser(description='train.py')
     opts.model_opts(dummy_parser)
@@ -255,7 +257,7 @@ class DiffTranslator(object):
                 with open(out_log_filename, 'a+') as log_of:
                     log_of.write('Prediction: ' + '\n'.join(n_best_preds) + '\n'
                                  + 'Gold: ' + ' '.join(trans.gold_sent) + '\n'
-                                 + 'Bleu: ' + str(get_bleu('\n'.join(n_best_preds), ' '.join(trans.gold_sent))) + '\n\n')
+                                 + 'Bleu: ' + str(bleu_score(trans.pred_sents, [[trans.gold_sent]], max_n=2, weights=[0.25,0.25])) + '\n\n')
                     log_of.flush()
 
 
