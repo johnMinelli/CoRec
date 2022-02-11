@@ -61,7 +61,7 @@ def controller(opt):
                             -src data/top1000/cleaned.test.diff \
                             -tgt data/top1000/cleaned.test.msg \
                             -sem_path data/top1000/sem/ \
-                            -output data/output/1000test.out \
+                            -output data/output/1000test.out.old.old \
                             -min_length 2 \
                             -src_vocab data/preprocessed/top1000_data.vocab.pt \
                             -max_length 30 \

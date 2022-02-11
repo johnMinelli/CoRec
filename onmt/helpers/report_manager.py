@@ -19,8 +19,8 @@ def build_report_manager(opt, action="train"):
         from tensorboardX import SummaryWriter
         tensorboard_log_dir = opt.tensorboard_log_dir
 
-        tensorboard_log_dir += datetime.now().strftime("/"+".".join(opt.models[0].split(".")[:-1])+"_%b-%d_%H-%M-%S")
-
+        tensorboard_log_dir += datetime.now().strftime("/"+(".".join((opt.models[0].split("/")[-1].split(".")[:-1])
+                                                                    if action=="translate" else "")) + "_%b-%d_%H-%M-%S")
         writer = SummaryWriter(tensorboard_log_dir, comment=action)
     else:
         writer = None

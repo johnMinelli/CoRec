@@ -214,7 +214,7 @@ class DiffTranslator(object):
 
         test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
-        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, len(self.test_dataset.target_texts) > 0)
+        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, len(self.test_dataset.target_texts) > 0, True)
 
         # Statistics
         pred_score_total, pred_words_total = 0, 0
@@ -226,10 +226,10 @@ class DiffTranslator(object):
         for batch in test_loader:
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print(f"processing {batch_counter} batch")
-            real_batch_size = len(batch['indexes'])
-            batch_data = self._process_batch(batch, real_batch_size, sem_path, vocab["tgt"], attn_debug=attn_debug)
+            current_batch_size = len(batch['indexes'])
+            batch_data = self._process_batch(batch, current_batch_size, sem_path, vocab["tgt"], attn_debug=True)
             # a batch of results returned from the model is obtained and processed to fit a TranslationWrapper object
-            translations = translation_wrapper_builder.from_batch(batch_data, real_batch_size)
+            translations = translation_wrapper_builder.from_batch(batch_data, current_batch_size)
             # iter over the objects to build the sentences
             for i, trans in enumerate(translations):
                 all_scores += [trans.pred_scores[:n_best]]
@@ -462,8 +462,7 @@ class DiffTranslator(object):
         return src, enc_states, memory_bank, src_lengths
 
     def _run_sem_encoder(self, batch, batch_size):
-        src = batch["sem_batch"]
-        src_lengths = batch["sem_len"]
+        src, src_lengths = batch["sem_batch"], batch["sem_len"]
 
         src_lengths, rank = src_lengths.sort(descending=True)
         src = src[:, rank, :]

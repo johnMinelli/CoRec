@@ -43,44 +43,45 @@ def build_trainer(opt, model, vocab, optim, model_saver):
 
     # From scheduled_sampling
     ###
-    norm_method = opt.normalization
-    twopass = opt.decoder_type == 'transformer'
-    sampling_type = opt.sampling_type
-    scheduled_sampling_decay = opt.scheduled_sampling_decay
-    scheduled_sampling_k = opt.scheduled_sampling_k
-    scheduled_sampling_c = opt.scheduled_sampling_c
-    scheduled_sampling_limit = opt.scheduled_sampling_limit
-    mixture_type = opt.mixture_type
-    topk_value = opt.topk_value
-    peeling_back = opt.peeling_back
-    passone_nograd = (not opt.transformer_passone) or \
-                     (opt.transformer_passone and opt.transformer_passone == 'nograd')
-    scheduled_activation = opt.transformer_scheduled_activation
-    scheduled_softmax_alpha = opt.transformer_scheduled_alpha
+    # norm_method = opt.normalization
+    # twopass = opt.decoder_type == 'transformer'
+    # sampling_type = opt.sampling_type
+    # scheduled_sampling_decay = opt.scheduled_sampling_decay
+    # scheduled_sampling_k = opt.scheduled_sampling_k
+    # scheduled_sampling_c = opt.scheduled_sampling_c
+    # scheduled_sampling_limit = opt.scheduled_sampling_limit
+    # mixture_type = opt.mixture_type
+    # topk_value = opt.topk_value
+    # peeling_back = opt.peeling_back
+    # passone_nograd = (not opt.transformer_passone) or \
+    #                  (opt.transformer_passone and opt.transformer_passone == 'nograd')
+    # scheduled_activation = opt.transformer_scheduled_activation
+    # scheduled_softmax_alpha = opt.transformer_scheduled_alpha
     ###
 
     report_manager = build_report_manager(opt, "train")
     trainer = Trainer(model, train_loss, valid_loss, optim, trunc_size,
                       shard_size, grad_accum_count,
                       gpu_verbose_level, report_manager,
-                      model_saver=model_saver) if opt.decoder_type != 'transformer' else \
-        TransformerTrainer(model, train_loss, valid_loss, optim, trunc_size,
-                           shard_size, norm_method,
-                           grad_accum_count,
-                           gpu_verbose_level, report_manager,
-                           model_saver=model_saver,
-                           sampling_type=sampling_type,
-                           scheduled_sampling_decay=scheduled_sampling_decay,
-                           scheduled_sampling_k=scheduled_sampling_k,
-                           scheduled_sampling_c=scheduled_sampling_c,
-                           scheduled_sampling_limit=scheduled_sampling_limit,
-                           mixture_type=mixture_type,
-                           topk_value=topk_value,
-                           peeling_back=peeling_back,
-                           twopass=twopass,
-                           passone_nograd=passone_nograd,
-                           scheduled_activation=scheduled_activation,
-                           scheduled_softmax_alpha=scheduled_softmax_alpha)
+                      model_saver=model_saver)
+        # if opt.decoder_type != 'transformer' else \
+        # TransformerTrainer(model, train_loss, valid_loss, optim, trunc_size,
+        #                    shard_size, norm_method,
+        #                    grad_accum_count,
+        #                    gpu_verbose_level, report_manager,
+        #                    model_saver=model_saver,
+        #                    sampling_type=sampling_type,
+        #                    scheduled_sampling_decay=scheduled_sampling_decay,
+        #                    scheduled_sampling_k=scheduled_sampling_k,
+        #                    scheduled_sampling_c=scheduled_sampling_c,
+        #                    scheduled_sampling_limit=scheduled_sampling_limit,
+        #                    mixture_type=mixture_type,
+        #                    topk_value=topk_value,
+        #                    peeling_back=peeling_back,
+        #                    twopass=twopass,
+        #                    passone_nograd=passone_nograd,
+        #                    scheduled_activation=scheduled_activation,
+        #                    scheduled_softmax_alpha=scheduled_softmax_alpha)
     return trainer
 
 

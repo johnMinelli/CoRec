@@ -9,7 +9,7 @@ import numpy as np
 from onmt.modules.average_attn import AverageAttention
 from onmt.modules.multi_headed_attn import MultiHeadedAttention
 from onmt.modules.position_ffn import PositionwiseFeedForward
-from onmt.modules.global_attention import  GlobalAttention
+from onmt.modules.global_attention import GlobalAttention
 
 MAX_SIZE = 5000
 

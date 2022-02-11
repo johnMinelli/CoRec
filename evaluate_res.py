@@ -21,7 +21,7 @@ def main(hyp, ref):
 
 
 if __name__ == '__main__':
-    pred_CoRec = "data/output/1000test.out"
+    pred_CoRec = "data/output/1000test.out.old.old"
     #pred_ptg = "result/ptg/cleaned.test.msg"
     #pred_nngen = "result/nngen/cleaned.test.msg"
     ref = "data/top1000/cleaned.test.msg"
