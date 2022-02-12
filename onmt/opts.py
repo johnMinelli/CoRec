@@ -355,7 +355,9 @@ def train_opts(parser):
               help="""Model filename (the model will be saved as
                        <save_model>_N.pt where N is the number
                        of steps""")
-
+    group.add('--start_decay', '-start_decay',
+              type=int, default=4500,
+              help="""Starts scheduled sampling after start_decay steps""")
     group.add('--save_checkpoint_steps', '-save_checkpoint_steps',
               type=int, default=1,
               help="""Save a checkpoint every X steps""")

@@ -160,20 +160,25 @@ class ReportMgrTranslation(object):
         #bleu_score, bleu_ngrams, _ = Bleu().compute_score(tgt, res)
         pred = [sent[0].strip().split(" ")  for k, sent in res.items()]
         tgt = [[sent[0].strip().split(" ")]  for k, sent in tgt.items()]
-        bleu = bleu_score(pred, tgt, max_n=1, weights=[0.25])
+        bleu1 = bleu_score(pred, tgt, max_n=1, weights=[0.25])
+        bleu2 = bleu_score(pred, tgt, max_n=2, weights=[0.25, 0.25])
+        bleu3 = bleu_score(pred, tgt, max_n=3, weights=[0.25, 0.25, 0.25])
+        bleu4 = bleu_score(pred, tgt, max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
+        bleu_ngrams = [bleu1, bleu2, bleu3, bleu4]
+        bleu = (bleu1 + bleu2 + bleu3 + bleu4) / 4
         logger.info(f"TEST SET SCORES\n"
                     f"Meteor: {meteor_score}\n"
                     f"Rouge: {rouge_score}\n"
-                    #f"Bleu: {bleu_ngrams}\n"
+                    f"Bleu: {bleu_ngrams}\n"
                     f"Bleu mean {bleu}")
         if self.tensorboard_writer is not None:
             self.tensorboard_writer.add_scalar("translate/rouge", rouge_score, 0)
             self.tensorboard_writer.add_scalar("translate/meteor", meteor_score, 0)
             self.tensorboard_writer.add_scalar("translate/bleu", bleu, 0)
-            #self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[0], 1)
-            #self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[1], 2)
-            #self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[2], 3)
-            #self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[3], 4)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[0], 1)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[1], 2)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[2], 3)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[3], 4)
 
     def report_trans_score(self, name, score_total, words_total):
         if words_total == 0:

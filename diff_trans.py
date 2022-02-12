@@ -22,7 +22,7 @@ from onmt.utils.misc import tile
 from onmt.translate.translation_wrapper import TranslationBuilder
 from onmt.hashes.smooth import compute_bleu_score
 from onmt.hashes.smooth import get_bleu
-
+from bert_score import BERTScorer
 from torchtext.data.metrics import bleu_score
 
 def build_translator(opt, report_score=True):
@@ -254,13 +254,27 @@ class DiffTranslator(object):
                 with open(out_file, 'a+') as of:
                     of.write('\n'.join(n_best_preds) + '\n')
                     of.flush()
+
+                references = [[token.lower() for token in sent] for sent in trans.pred_sents]
+                hypothesis = [[[gold_token.lower() for gold_token in trans.gold_sent]]]
+                bleu1 = bleu_score(references, hypothesis, max_n=1, weights=[0.25])
+                bleu2 = bleu_score(references, hypothesis, max_n=2, weights=[0.25, 0.25])
+                bleu3 = bleu_score(references, hypothesis, max_n=3, weights=[0.25, 0.25, 0.25])
+                bleu4 = bleu_score(references, hypothesis, max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
+                bleu_ngrams = [bleu1, bleu2, bleu3, bleu4]
+                bleu = (bleu1 + bleu2 + bleu3 + bleu4) / 4
+                # precision, recall, f1 = BERTScorer(lang="en", rescale_with_baseline=True).score(n_best_preds, hypothesis_bert)
                 with open(out_log_filename, 'a+') as log_of:
                     log_of.write('Prediction: ' + '\n'.join(n_best_preds) + '\n'
                                  + 'Gold: ' + ' '.join(trans.gold_sent) + '\n'
-                                 + 'Bleu: ' + str(bleu_score([[token.lower() for token in sent] for sent in trans.pred_sents],
-                                                             [[[gold_token.lower() for gold_token in trans.gold_sent]]], max_n=1, weights=[0.25])) + '\n\n')
-                    log_of.flush()
+                                 + 'Bleu: ' + str(" ".join([str(bleu_ngram) for bleu_ngram in bleu_ngrams])) +'\n'
+                                + 'Bleu mean: ' + str(bleu) + '\n'
+                #                 + 'Precision BertScore: ' + str(precision) + '\n'
+                #                 + 'Recall BertScore: ' + str(recall) + '\n'
+                #                 + 'F1 BertScore: ' + str(f1) + '\n'
+                                 + '\n\n')
 
+                    log_of.flush()
 
             if self.report_score:
                 self.report_manager.report_trans_score('PRED', pred_score_total, pred_words_total)
