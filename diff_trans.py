@@ -257,7 +257,8 @@ class DiffTranslator(object):
                 with open(out_log_filename, 'a+') as log_of:
                     log_of.write('Prediction: ' + '\n'.join(n_best_preds) + '\n'
                                  + 'Gold: ' + ' '.join(trans.gold_sent) + '\n'
-                                 + 'Bleu: ' + str(bleu_score(trans.pred_sents, [[trans.gold_sent]], max_n=2, weights=[0.25,0.25])) + '\n\n')
+                                 + 'Bleu: ' + str(bleu_score([[token.lower() for token in sent] for sent in trans.pred_sents],
+                                                             [[[gold_token.lower() for gold_token in trans.gold_sent]]], max_n=1, weights=[0.25])) + '\n\n')
                     log_of.flush()
 
 
