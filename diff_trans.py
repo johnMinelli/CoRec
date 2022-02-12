@@ -21,9 +21,9 @@ from onmt.encoders.transformer import TransformerEncoder
 from onmt.utils.misc import tile
 from onmt.translate.translation_wrapper import TranslationBuilder
 from onmt.hashes.smooth import compute_bleu_score
-from onmt.hashes.smooth import get_bleu
-from bert_score import BERTScorer
+from nltk.translate.meteor_score import single_meteor_score
 from torchtext.data.metrics import bleu_score
+from nltk.translate.nist_score import sentence_nist
 
 def build_translator(opt, report_score=True):
     dummy_parser = configargparse.ArgumentParser(description='train.py')
@@ -255,20 +255,24 @@ class DiffTranslator(object):
                     of.write('\n'.join(n_best_preds) + '\n')
                     of.flush()
 
-                references = [[token.lower() for token in sent] for sent in trans.pred_sents]
-                hypothesis = [[[gold_token.lower() for gold_token in trans.gold_sent]]]
-                bleu1 = bleu_score(references, hypothesis, max_n=1, weights=[0.25])
-                bleu2 = bleu_score(references, hypothesis, max_n=2, weights=[0.25, 0.25])
-                bleu3 = bleu_score(references, hypothesis, max_n=3, weights=[0.25, 0.25, 0.25])
-                bleu4 = bleu_score(references, hypothesis, max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
+                hypothesis = [[token.lower() for token in sent] for sent in trans.pred_sents]
+                references = [[[gold_token.lower() for gold_token in trans.gold_sent]]]
+                bleu1 = bleu_score(hypothesis, references, max_n=1, weights=[0.25])
+                bleu2 = bleu_score(hypothesis, references, max_n=2, weights=[0.25, 0.25])
+                bleu3 = bleu_score(hypothesis, references, max_n=3, weights=[0.25, 0.25, 0.25])
+                bleu4 = bleu_score(hypothesis, references, max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
+                meteor = single_meteor_score(references[0][0], hypothesis[0])
                 bleu_ngrams = [bleu1, bleu2, bleu3, bleu4]
                 bleu = (bleu1 + bleu2 + bleu3 + bleu4) / 4
+                nist = sentence_nist(references[0], hypothesis[0], n=1)
                 # precision, recall, f1 = BERTScorer(lang="en", rescale_with_baseline=True).score(n_best_preds, hypothesis_bert)
                 with open(out_log_filename, 'a+') as log_of:
                     log_of.write('Prediction: ' + '\n'.join(n_best_preds) + '\n'
                                  + 'Gold: ' + ' '.join(trans.gold_sent) + '\n'
                                  + 'Bleu: ' + str(" ".join([str(bleu_ngram) for bleu_ngram in bleu_ngrams])) +'\n'
                                 + 'Bleu mean: ' + str(bleu) + '\n'
+                                 + 'Meteor: ' + str(meteor) + '\n'
+                                 + 'Nist: ' + str(nist) + '\n'
                 #                 + 'Precision BertScore: ' + str(precision) + '\n'
                 #                 + 'Recall BertScore: ' + str(recall) + '\n'
                 #                 + 'F1 BertScore: ' + str(f1) + '\n'

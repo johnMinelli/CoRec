@@ -13,7 +13,6 @@ from onmt.evaluation.pycocoevalcap.rouge.rouge import Rouge
 from torchtext.data.metrics import bleu_score
 from onmt.utils.logging import logger
 
-
 def build_report_manager(opt, action="train"):
     if opt.tensorboard:
         from tensorboardX import SummaryWriter
@@ -173,7 +172,7 @@ class ReportMgrTranslation(object):
                     f"Bleu: {bleu_ngrams}\n"
                     f"Bleu mean {bleu}")
         if self.tensorboard_writer is not None:
-            self.tensorboard_writer.add_scalar("translate/rouge", rouge_score, 0)
+            self.tensorboard_writer.add_scalar("translate/nist", rouge_score, 0)
             self.tensorboard_writer.add_scalar("translate/meteor", meteor_score, 0)
             self.tensorboard_writer.add_scalar("translate/bleu", bleu, 0)
             self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[0], 1)
