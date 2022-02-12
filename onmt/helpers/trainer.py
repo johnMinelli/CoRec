@@ -153,6 +153,7 @@ class Trainer(object):
         step = self.optim._step + 1
         true_batchs = []
         accum = 0
+        batch_teacher_forcing_ratio = 1
         normalization = 0
         train_iter = train_iter_fct()
 
@@ -176,8 +177,7 @@ class Trainer(object):
                         f"Reduce_counter: {reduce_counter} n_minibatch {len(true_batchs)}") if self.gpu_verbose_level > 0 else None
 
                     self._gradient_accumulation(true_batchs, normalization, total_stats, report_stats, step)
-                    report_stats = self._maybe_report_training(step, train_steps, self.optim.learning_rate,
-                                                               report_stats)
+                    report_stats = self._maybe_report_training(step, train_steps, self.optim.learning_rate, batch_teacher_forcing_ratio, report_stats)
 
                     true_batchs = []
                     accum = 0
@@ -263,9 +263,7 @@ class Trainer(object):
                 outputs, attention = self.model(src, tgt, source_lengths)
 
                 # 3. Compute loss in shards for memory efficiency.
-                batch_stats = self.train_loss.sharded_compute_loss(batch, outputs, attention, j, trunc_size,
-                                                                   self.shard_size,
-                                                                   normalization)  # probably normalization value is wrong
+                batch_stats = self.train_loss.sharded_compute_loss(batch, outputs, attention, j, trunc_size, self.shard_size, normalization)
                 total_stats.update(batch_stats)
                 report_stats.update(batch_stats)
 
@@ -290,13 +288,13 @@ class Trainer(object):
             else:
                 self.report_manager.start_time = start_time
 
-    def _maybe_report_training(self, step, num_steps, learning_rate, report_stats):
+    def _maybe_report_training(self, step, num_steps, learning_rate, teacher_forcing_factor, report_stats):
         """
         Simple function to report training stats (if report_manager is set)
         see `onmt.utils.ReportManagerBase.report_training` for doc
         """
         if self.report_manager is not None:
-            return self.report_manager.report_training(step, num_steps, learning_rate, report_stats)
+            return self.report_manager.report_training(step, num_steps, learning_rate, teacher_forcing_factor, report_stats)
 
     def _maybe_report_step(self, learning_rate, step, train_stats=None, valid_stats=None):
         """
@@ -304,8 +302,7 @@ class Trainer(object):
         see `onmt.utils.ReportManagerBase.report_step` for doc
         """
         if self.report_manager is not None:
-            return self.report_manager.report_step(learning_rate, step, train_stats=train_stats,
-                                                   valid_stats=valid_stats)
+            return self.report_manager.report_step(learning_rate, step, train_stats=train_stats, valid_stats=valid_stats)
 
     def _maybe_save(self, step, historical_statistics=None):
         """
@@ -372,11 +369,9 @@ class TransformerTrainer(Trainer):
         if scheduled_activation == "sparsemax":
             self._scheduled_activation_function = onmt.modules.sparse_activations.Sparsemax(dim=-1)
         elif scheduled_activation == "gumbel":
-            self._scheduled_activation_function = onmt.modules.softmax_extended.GumbelSoftmax(dim=-1,
-                                                                                              alpha=scheduled_softmax_alpha)
+            self._scheduled_activation_function = onmt.modules.softmax_extended.GumbelSoftmax(dim=-1, alpha=scheduled_softmax_alpha)
         elif scheduled_activation == "softmax_temp":
-            self._scheduled_activation_function = onmt.modules.softmax_extended.SoftmaxWithTemperature(dim=-1,
-                                                                                                       alpha=scheduled_softmax_alpha)
+            self._scheduled_activation_function = onmt.modules.softmax_extended.SoftmaxWithTemperature(dim=-1, alpha=scheduled_softmax_alpha)
         else:
             self._scheduled_activation_function = torch.nn.Softmax(dim=-1)
 
@@ -425,8 +420,7 @@ class TransformerTrainer(Trainer):
                 if accum == self.grad_accum_count:
 
                     start_decay = 4500
-                    batch_teacher_forcing_ratio = \
-                        self._calc_teacher_forcing_ratio(step, start_decay)
+                    batch_teacher_forcing_ratio = self._calc_teacher_forcing_ratio(step, start_decay)
 
                     # print('TRANSF_GRAD: step: ', step)
                     if step % 200 == 0:
@@ -439,7 +433,7 @@ class TransformerTrainer(Trainer):
 
                     report_stats = self._maybe_report_training(
                         step, train_steps,
-                        self.optim.learning_rate,
+                        self.optim.learning_rate, batch_teacher_forcing_ratio,
                         report_stats)
 
                     true_batchs = []
@@ -447,8 +441,7 @@ class TransformerTrainer(Trainer):
                     normalization = 0
                     if step % valid_steps == 0:
                         if self.gpu_verbose_level > 0:
-                            logger.info('GpuRank: validate step %d'
-                                        % step)
+                            logger.info('GpuRank: validate step %d' % step)
                         valid_iter = valid_iter_fct()
                         valid_stats = self.validate(valid_iter)
                         if self.gpu_verbose_level > 0:

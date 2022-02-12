@@ -121,11 +121,12 @@ class Statistics(object):
                time.time() - start))
         sys.stdout.flush()
 
-    def log_tensorboard(self, prefix, writer, learning_rate, step):
+    def log_tensorboard(self, prefix, writer, step, learning_rate, teacher_forcing_factor):
         """ display statistics to tensorboard """
         t = self.elapsed_time()
         writer.add_scalar(prefix + "/xent", self.xent(), step)
         writer.add_scalar(prefix + "/ppl", self.ppl(), step)
         writer.add_scalar(prefix + "/accuracy", self.accuracy(), step)
         writer.add_scalar(prefix + "/wrdpersec", self.n_words / t, step)
-        writer.add_scalar(prefix + "/lr", learning_rate, step)
+        if learning_rate is not None: writer.add_scalar(prefix + "/lr", learning_rate, step)
+        if teacher_forcing_factor is not None: writer.add_scalar(prefix + "/teach_factor", teacher_forcing_factor, step)

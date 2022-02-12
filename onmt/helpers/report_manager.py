@@ -19,8 +19,8 @@ def build_report_manager(opt, action="train"):
         from tensorboardX import SummaryWriter
         tensorboard_log_dir = opt.tensorboard_log_dir
 
-        tensorboard_log_dir += datetime.now().strftime("/"+".".join(opt.models[0].split(".")[:-1])+"_%b-%d_%H-%M-%S")
-
+        tensorboard_log_dir += datetime.now().strftime("/"+(".".join((opt.models[0].split("/")[-1].split(".")[:-1])
+                                                                    if action=="translate" else "")) + "_%b-%d_%H-%M-%S")
         writer = SummaryWriter(tensorboard_log_dir, comment=action)
     else:
         writer = None
@@ -57,7 +57,7 @@ class ReportMgrTraining(object):
     def log(self, *args, **kwargs):
         logger.info(*args, **kwargs)
 
-    def report_training(self, step, num_steps, learning_rate, report_stats, multigpu=False):
+    def report_training(self, step, num_steps, learning_rate, teacher_forcing_factor, report_stats, multigpu=False):
         """
         This is the user-defined batch-level traing progress
         report function.
@@ -66,6 +66,7 @@ class ReportMgrTraining(object):
             step(int): current step count.
             num_steps(int): total number of batches.
             learning_rate(float): current learning rate.
+            teacher_forcing_factor(float): current teacher forcing value.
             report_stats(Statistics): old Statistics instance.
         Returns:
             report_stats(Statistics): updated Statistics instance.
@@ -76,20 +77,20 @@ class ReportMgrTraining(object):
         if step % self.report_every == 0:
             if multigpu:
                 report_stats = onmt.utils.Statistics.all_gather_stats(report_stats)
-            self._report_training(step, num_steps, learning_rate, report_stats)
+            self._report_training(step, num_steps, learning_rate, teacher_forcing_factor, report_stats)
             self.progress_step += 1
             return onmt.utils.Statistics()
         else:
             return report_stats
 
-    def _report_training(self, step, num_steps, learning_rate, report_stats):
+    def _report_training(self, step, num_steps, learning_rate, teacher_forcing_factor, report_stats):
         """
         See base class method `ReportMgrBase.report_training`.
         """
         report_stats.output(step, num_steps, learning_rate, self.start_time)
 
         # Log the progress using the number of batches on the x-axis.
-        self.maybe_log_tensorboard(report_stats, "training", learning_rate, self.progress_step)
+        self.maybe_log_tensorboard(report_stats, "training", self.progress_step, learning_rate, teacher_forcing_factor)
 
     def report_step(self, lr, step, train_stats=None, valid_stats=None):
         """
@@ -110,17 +111,17 @@ class ReportMgrTraining(object):
             self.log('Train perplexity: %g' % train_stats.ppl())
             self.log('Train accuracy: %g' % train_stats.accuracy())
 
-            self.maybe_log_tensorboard(train_stats, "train_step", lr, step)
+            self.maybe_log_tensorboard(train_stats, "train_step", step, lr)
 
         if valid_stats is not None:
             self.log('Validation perplexity: %g' % valid_stats.ppl())
             self.log('Validation accuracy: %g' % valid_stats.accuracy())
 
-            self.maybe_log_tensorboard(valid_stats, "valid_step", lr, step)
+            self.maybe_log_tensorboard(valid_stats, "valid_step", step, lr)
 
-    def maybe_log_tensorboard(self, stats, prefix, learning_rate, step):
+    def maybe_log_tensorboard(self, stats, prefix, step, learning_rate=None, teacher_forcing_factor=None):
         if self.tensorboard_writer is not None:
-            stats.log_tensorboard(prefix, self.tensorboard_writer, learning_rate, step)
+            stats.log_tensorboard(prefix, self.tensorboard_writer, step, learning_rate, teacher_forcing_factor)
 
 
 class ReportMgrTranslation(object):
