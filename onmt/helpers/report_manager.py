@@ -6,6 +6,8 @@ import math
 import time
 from datetime import datetime
 
+import wandb
+from bert_score import BERTScorer
 import onmt
 from onmt.evaluation.pycocoevalcap.bleu.bleu import Bleu
 from onmt.evaluation.pycocoevalcap.meteor.meteor import Meteor
@@ -82,14 +84,15 @@ class ReportMgrTraining(object):
         else:
             return report_stats
 
-    def _report_training(self, step, num_steps, learning_rate, teacher_forcing_factor, report_stats):
+    def _report_training(self, step, num_steps, lr, teacher_forcing_factor, report_stats):
         """
         See base class method `ReportMgrBase.report_training`.
         """
-        report_stats.output(step, num_steps, learning_rate, self.start_time)
+        report_stats.output(step, num_steps, lr, self.start_time)
+        wandb.log({"tr": step, "tr_lr": lr, "tr_teach": teacher_forcing_factor, "tr_step_ppl": report_stats.ppl(), "tr_step_acc": report_stats.accuracy(), "tr_step_xent": report_stats.xent()})
 
         # Log the progress using the number of batches on the x-axis.
-        self.maybe_log_tensorboard(report_stats, "training", self.progress_step, learning_rate, teacher_forcing_factor)
+        self.maybe_log_tensorboard(report_stats, "training", step, lr, teacher_forcing_factor)
 
     def report_step(self, lr, step, train_stats=None, valid_stats=None):
         """
@@ -109,12 +112,14 @@ class ReportMgrTraining(object):
         if train_stats is not None:
             self.log('Train perplexity: %g' % train_stats.ppl())
             self.log('Train accuracy: %g' % train_stats.accuracy())
+            wandb.log({"tr_step": step, "tr_step_lr": lr, "tr_step_ppl": train_stats.ppl(), "tr_step_acc": train_stats.accuracy(), "tr_step_xent": train_stats.xent()})
 
             self.maybe_log_tensorboard(train_stats, "train_step", step, lr)
 
         if valid_stats is not None:
             self.log('Validation perplexity: %g' % valid_stats.ppl())
             self.log('Validation accuracy: %g' % valid_stats.accuracy())
+            wandb.log({"val_step": step, "val_step_lr": lr, "val_step_ppl": valid_stats.ppl(), "val_step_acc": valid_stats.accuracy(), "val_step_xent": valid_stats.xent(), })
 
             self.maybe_log_tensorboard(valid_stats, "valid_step", step, lr)
 
@@ -147,7 +152,6 @@ class ReportMgrTranslation(object):
                 self.tensorboard_writer.add_scalars("translate/xent", {"train": t_xent, "val": v_xent}, 0)
                 self.tensorboard_writer.add_scalar("translate/use_semantic", int(semantic), 0)
 
-
     def report_trans_eval(self, translations_file, targets_file):
         with open(translations_file, 'r') as r:
             hypothesis = r.readlines()
@@ -157,7 +161,7 @@ class ReportMgrTranslation(object):
             tgt = {k: [v.strip().lower()] for k, v in enumerate(references)}
         meteor_score, _ = 0,0 # Meteor().compute_score(tgt, res)
         rouge_score, _ = Rouge().compute_score(tgt, res)
-        #bleu_score, bleu_ngrams, _ = Bleu().compute_score(tgt, res)
+        precision, recall, f1 = BERTScorer(lang="en", rescale_with_baseline=True).score(references, hypothesis)
         pred = [sent[0].strip().split(" ")  for k, sent in res.items()]
         tgt = [[sent[0].strip().split(" ")]  for k, sent in tgt.items()]
         bleu1 = bleu_score(pred, tgt, max_n=1, weights=[0.25])
@@ -169,6 +173,7 @@ class ReportMgrTranslation(object):
         logger.info(f"TEST SET SCORES\n"
                     f"Meteor: {meteor_score}\n"
                     f"Rouge: {rouge_score}\n"
+                    f"Bert p, r, f1: {precision.mean(), recall.mean(), f1.mean()}\n"
                     f"Bleu: {bleu_ngrams}\n"
                     f"Bleu mean {bleu}")
         if self.tensorboard_writer is not None:

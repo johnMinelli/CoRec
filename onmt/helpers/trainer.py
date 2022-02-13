@@ -11,7 +11,9 @@
 import math
 import random
 
+import pandas as pd
 import torch
+import wandb
 
 import onmt.utils
 import onmt
@@ -58,7 +60,8 @@ def build_trainer(opt, model, vocab, optim, model_saver):
     scheduled_activation = opt.transformer_scheduled_activation
     scheduled_softmax_alpha = opt.transformer_scheduled_alpha
     ###
-
+    wandb.config = opt
+    wandb.log({"params": wandb.Table(data=pd.DataFrame({k: [v] for k, v in vars(opt).items()}))})
     report_manager = build_report_manager(opt, "train")
     trainer = Trainer(model, train_loss, valid_loss, optim, trunc_size,
                       shard_size, grad_accum_count,
@@ -419,7 +422,7 @@ class TransformerTrainer(Trainer):
                 accum += 1
                 if accum == self.grad_accum_count:
 
-                    start_decay = 4500
+                    start_decay = 2000
                     batch_teacher_forcing_ratio = self._calc_teacher_forcing_ratio(step, start_decay)
 
                     # print('TRANSF_GRAD: step: ', step)

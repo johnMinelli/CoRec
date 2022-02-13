@@ -270,7 +270,7 @@ class DiffTranslator(object):
                     log_of.write('Prediction: ' + '\n'.join(n_best_preds) + '\n'
                                  + 'Gold: ' + ' '.join(trans.gold_sent) + '\n'
                                  + 'Bleu: ' + str(" ".join([str(bleu_ngram) for bleu_ngram in bleu_ngrams])) +'\n'
-                                + 'Bleu mean: ' + str(bleu) + '\n'
+                                 + 'Bleu mean: ' + str(bleu) + '\n'
                                  + 'Meteor: ' + str(meteor) + '\n'
                                  + 'Nist: ' + str(nist) + '\n'
                 #                 + 'Precision BertScore: ' + str(precision) + '\n'
