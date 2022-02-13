@@ -6,8 +6,11 @@ import math
 import time
 from datetime import datetime
 
+import numpy as np
 import wandb
 from bert_score import BERTScorer
+from nltk.translate.meteor_score import single_meteor_score
+
 import onmt
 from onmt.evaluation.pycocoevalcap.bleu.bleu import Bleu
 from onmt.evaluation.pycocoevalcap.meteor.meteor import Meteor
@@ -29,7 +32,7 @@ def build_report_manager(opt, action="train"):
     if action == "train":
         report_mgr = ReportMgrTraining(opt.report_every, start_time=-1, tensorboard_writer=writer)
     elif action == "translate":
-        report_mgr = ReportMgrTranslation(tensorboard_writer=writer)
+        report_mgr = ReportMgrTranslation(tensorboard_writer=writer, wandb_run=opt.wandb_run)
 
     return report_mgr
 
@@ -129,7 +132,7 @@ class ReportMgrTraining(object):
 
 
 class ReportMgrTranslation(object):
-    def __init__(self, tensorboard_writer=None):
+    def __init__(self, tensorboard_writer=None, wandb_run=None):
         """
         A report manager that writes statistics on standard output as well as (optionally) TensorBoard
 
@@ -137,6 +140,7 @@ class ReportMgrTranslation(object):
             tensorboard_writer(:obj:`tensorboard.SummaryWriter`): The TensorBoard Summary writer to use or None
         """
         self.tensorboard_writer = tensorboard_writer
+        self.wandb_run = wandb.Api().run(wandb_run) if wandb_run is not None else None
 
     def report_model_details(self, model_stats=None, semantic=None):
         logger.info("Translation {} semantics".format("WITH" if semantic else "WITHOUT"))
@@ -155,27 +159,44 @@ class ReportMgrTranslation(object):
     def report_trans_eval(self, translations_file, targets_file):
         with open(translations_file, 'r') as r:
             hypothesis = r.readlines()
-            res = {k: [v.strip().lower()] for k, v in enumerate(hypothesis)}
+            pred = {k: [v.strip().lower()] for k, v in enumerate(hypothesis)}
         with open(targets_file, 'r') as r:
             references = r.readlines()
-            tgt = {k: [v.strip().lower()] for k, v in enumerate(references)}
-        meteor_score, _ = 0,0 # Meteor().compute_score(tgt, res)
-        rouge_score, _ = Rouge().compute_score(tgt, res)
+            ref = {k: [v.strip().lower()] for k, v in enumerate(references)}
+        rouge_score, _ = Rouge().compute_score(ref, pred)
         precision, recall, f1 = BERTScorer(lang="en", rescale_with_baseline=True).score(references, hypothesis)
-        pred = [sent[0].strip().split(" ")  for k, sent in res.items()]
-        tgt = [[sent[0].strip().split(" ")]  for k, sent in tgt.items()]
-        bleu1 = bleu_score(pred, tgt, max_n=1, weights=[0.25])
-        bleu2 = bleu_score(pred, tgt, max_n=2, weights=[0.25, 0.25])
-        bleu3 = bleu_score(pred, tgt, max_n=3, weights=[0.25, 0.25, 0.25])
-        bleu4 = bleu_score(pred, tgt, max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
+        pred_split = [sent[0].strip().split(" ") for k, sent in pred.items()]
+        ref_split = [sent[0].strip().split(" ") for k, sent in ref.items()]
+        ref_split_list = [[sent[0].strip().split(" ")] for k, sent in ref.items()]
+        meteor_score = np.mean([single_meteor_score(r, p) for r, p in zip(ref_split, pred_split)])
+        bleu1 = bleu_score(pred_split, ref_split_list, max_n=1, weights=[0.25])
+        bleu2 = bleu_score(pred_split, ref_split_list, max_n=2, weights=[0.25, 0.25])
+        bleu3 = bleu_score(pred_split, ref_split_list, max_n=3, weights=[0.25, 0.25, 0.25])
+        bleu4 = bleu_score(pred_split, ref_split_list, max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
         bleu_ngrams = [bleu1, bleu2, bleu3, bleu4]
         bleu = (bleu1 + bleu2 + bleu3 + bleu4) / 4
+
+        # console
         logger.info(f"TEST SET SCORES\n"
                     f"Meteor: {meteor_score}\n"
                     f"Rouge: {rouge_score}\n"
                     f"Bert p, r, f1: {precision.mean(), recall.mean(), f1.mean()}\n"
                     f"Bleu: {bleu_ngrams}\n"
                     f"Bleu mean {bleu}")
+        # weights and bias
+        if self.wandb_run is not None:
+            self.wandb_run.summary["Meteor"] = meteor_score
+            self.wandb_run.summary["Rouge"] = rouge_score
+            self.wandb_run.summary["Bert_p"] = precision.mean()
+            self.wandb_run.summary["Bert_r"] = recall.mean()
+            self.wandb_run.summary["Bert_f1"] = f1.mean()
+            self.wandb_run.summary["Bleu"] = bleu
+            self.wandb_run.summary["Bleu_1"] = bleu_ngrams[0]
+            self.wandb_run.summary["Bleu_2"] = bleu_ngrams[1]
+            self.wandb_run.summary["Bleu_3"] = bleu_ngrams[2]
+            self.wandb_run.summary["Bleu_4"] = bleu_ngrams[3]
+            self.wandb_run.summary.update()
+        # tensorboard
         if self.tensorboard_writer is not None:
             self.tensorboard_writer.add_scalar("translate/nist", rouge_score, 0)
             self.tensorboard_writer.add_scalar("translate/meteor", meteor_score, 0)

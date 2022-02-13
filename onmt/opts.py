@@ -658,6 +658,8 @@ def translate_opts(parser):
                        help="""Log directory for Tensorboard.
                        This is also the name of the run.
                        """)
+    group.add_argument("-wandb_run", type=str,
+                       help="""Run identifier for W&B""")
 
     group = parser.add_argument_group('Efficiency')
     group.add('--batch_size', '-batch_size', type=int, default=30,
