@@ -92,7 +92,7 @@ class ReportMgrTraining(object):
         See base class method `ReportMgrBase.report_training`.
         """
         report_stats.output(step, num_steps, lr, self.start_time)
-        wandb.log({"tr": step, "tr_lr": lr, "tr_teach": teacher_forcing_factor, "tr_step_ppl": report_stats.ppl(), "tr_step_acc": report_stats.accuracy(), "tr_step_xent": report_stats.xent()})
+        wandb.log({"tr": step, "tr_lr": lr, "tr_teach": teacher_forcing_factor, "tr_step_ppl": report_stats.ppl(), "tr_step_acc": report_stats.accuracy(), "tr_step_xent": report_stats.xent()}, step)
 
         # Log the progress using the number of batches on the x-axis.
         self.maybe_log_tensorboard(report_stats, "training", step, lr, teacher_forcing_factor)
@@ -115,14 +115,14 @@ class ReportMgrTraining(object):
         if train_stats is not None:
             self.log('Train perplexity: %g' % train_stats.ppl())
             self.log('Train accuracy: %g' % train_stats.accuracy())
-            wandb.log({"tr_step": step, "tr_step_lr": lr, "tr_step_ppl": train_stats.ppl(), "tr_step_acc": train_stats.accuracy(), "tr_step_xent": train_stats.xent()})
+            wandb.log({"tr_step": step, "tr_step_lr": lr, "tr_step_ppl": train_stats.ppl(), "tr_step_acc": train_stats.accuracy(), "tr_step_xent": train_stats.xent()}, step)
 
             self.maybe_log_tensorboard(train_stats, "train_step", step, lr)
 
         if valid_stats is not None:
             self.log('Validation perplexity: %g' % valid_stats.ppl())
             self.log('Validation accuracy: %g' % valid_stats.accuracy())
-            wandb.log({"val_step": step, "val_step_lr": lr, "val_step_ppl": valid_stats.ppl(), "val_step_acc": valid_stats.accuracy(), "val_step_xent": valid_stats.xent(), })
+            wandb.log({"val_step": step, "val_step_lr": lr, "val_step_ppl": valid_stats.ppl(), "val_step_acc": valid_stats.accuracy(), "val_step_xent": valid_stats.xent()}, step)
 
             self.maybe_log_tensorboard(valid_stats, "valid_step", step, lr)
 
@@ -185,16 +185,16 @@ class ReportMgrTranslation(object):
                     f"Bleu mean {bleu}")
         # weights and bias
         if self.wandb_run is not None:
-            self.wandb_run.summary["Meteor"] = meteor_score
-            self.wandb_run.summary["Rouge"] = rouge_score
-            self.wandb_run.summary["Bert_p"] = precision.mean()
-            self.wandb_run.summary["Bert_r"] = recall.mean()
-            self.wandb_run.summary["Bert_f1"] = f1.mean()
-            self.wandb_run.summary["Bleu"] = bleu
-            self.wandb_run.summary["Bleu_1"] = bleu_ngrams[0]
-            self.wandb_run.summary["Bleu_2"] = bleu_ngrams[1]
-            self.wandb_run.summary["Bleu_3"] = bleu_ngrams[2]
-            self.wandb_run.summary["Bleu_4"] = bleu_ngrams[3]
+            self.wandb_run.summary["23_Meteor"] = meteor_score
+            self.wandb_run.summary["23_Rouge"] = rouge_score
+            self.wandb_run.summary["23_Bert_p"] = precision.mean()
+            self.wandb_run.summary["23_Bert_r"] = recall.mean()
+            self.wandb_run.summary["23_Bert_f1"] = f1.mean()
+            self.wandb_run.summary["23_Bleu"] = bleu
+            self.wandb_run.summary["23_Bleu_1"] = bleu_ngrams[0]
+            self.wandb_run.summary["23_Bleu_2"] = bleu_ngrams[1]
+            self.wandb_run.summary["23_Bleu_3"] = bleu_ngrams[2]
+            self.wandb_run.summary["23_Bleu_4"] = bleu_ngrams[3]
             self.wandb_run.summary.update()
         # tensorboard
         if self.tensorboard_writer is not None:
