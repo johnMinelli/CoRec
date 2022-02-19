@@ -9,21 +9,17 @@ import numpy as np
 import torch
 from statistics import mean
 
+from evaluate_res import get_bleu, evaluate_translations
 from onmt.helpers.report_manager import build_report_manager
-from onmt.utils.logging import logger
-from itertools import count
 import onmt.opts as opts
 from onmt.inputters import vocabulary
 from onmt.helpers.model_builder import load_test_model
 from onmt.inputters.text_dataset import SemTextDataset, TextDataset
 from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab
 from onmt.encoders.transformer import TransformerEncoder
-from onmt.utils.misc import tile
+from onmt.utils.misc import tile, read_file
 from onmt.translate.translation_wrapper import TranslationBuilder
-from onmt.hashes.smooth import compute_bleu_score
-from nltk.translate.meteor_score import single_meteor_score
-from torchtext.data.metrics import bleu_score
-from nltk.translate.nist_score import sentence_nist
+
 
 def build_translator(opt, report_score=True):
     dummy_parser = configargparse.ArgumentParser(description='train.py')
@@ -74,6 +70,18 @@ class DiffTranslator(object):
             self.lam_sem = self.opt.lam_sem
             self.sem_decoder = copy.deepcopy(self.model.decoder)
 
+    def _compute_bleu_score(self, sem_diff_path, test_diff_path):
+        test_diffs = read_file(test_diff_path)
+        sem_diffs = read_file(sem_diff_path)
+        sem_scores = []
+
+        for sem, test in zip(sem_diffs, test_diffs):
+            bleu_score_sem = np.around(get_bleu([sem.strip().lower().split(" ")], [test.strip().lower().split(" ")])[0], 4)
+            sem_scores.append(bleu_score_sem)
+
+        # write_file("data/new/syn_bleu.score", syn_scores)
+        # write_file("data/new/sem_bleu.score", sem_scores)
+        return sem_scores
 
     def offline_semantic_retrieval(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None,
                                    semantic_out_dir=None):
@@ -211,8 +219,7 @@ class DiffTranslator(object):
             os.remove(out_log_filename)
 
         if sem_path is not None:
-            self.sem_score = torch.tensor(
-                compute_bleu_score(os.path.join(sem_path, self.sem_diff_default), test_diff))
+            self.sem_score = torch.tensor(self._compute_bleu_score(os.path.join(sem_path, self.sem_diff_default), test_diff))
             self.test_dataset = SemTextDataset(test_diff, test_msg, os.path.join(sem_path, self.sem_diff_default),
                                                self.opt.max_sent_length)
 
@@ -256,26 +263,18 @@ class DiffTranslator(object):
                     of.flush()
 
                 hypothesis = [[token.lower() for token in sent] for sent in trans.pred_sents]
-                references = [[[gold_token.lower() for gold_token in trans.gold_sent]]]
-                bleu1 = bleu_score(hypothesis, references, max_n=1, weights=[0.25])
-                bleu2 = bleu_score(hypothesis, references, max_n=2, weights=[0.25, 0.25])
-                bleu3 = bleu_score(hypothesis, references, max_n=3, weights=[0.25, 0.25, 0.25])
-                bleu4 = bleu_score(hypothesis, references, max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
-                meteor = single_meteor_score(references[0][0], hypothesis[0])
-                bleu_ngrams = [bleu1, bleu2, bleu3, bleu4]
-                bleu = (bleu1 + bleu2 + bleu3 + bleu4) / 4
-                nist = sentence_nist(references[0], hypothesis[0], n=1)
-                # precision, recall, f1 = BERTScorer(lang="en", rescale_with_baseline=True).score(n_best_preds, hypothesis_bert)
+                references = [[gold_token.lower() for gold_token in trans.gold_sent]]
+                results = evaluate_translations(hypothesis, references, ["Meteor", "Bleu"])
+
                 with open(out_log_filename, 'a+') as log_of:
                     log_of.write('Prediction: ' + '\n'.join(n_best_preds) + '\n'
                                  + 'Gold: ' + ' '.join(trans.gold_sent) + '\n'
-                                 + 'Bleu: ' + str(" ".join([str(bleu_ngram) for bleu_ngram in bleu_ngrams])) +'\n'
-                                 + 'Bleu mean: ' + str(bleu) + '\n'
-                                 + 'Meteor: ' + str(meteor) + '\n'
-                                 + 'Nist: ' + str(nist) + '\n'
-                #                 + 'Precision BertScore: ' + str(precision) + '\n'
-                #                 + 'Recall BertScore: ' + str(recall) + '\n'
-                #                 + 'F1 BertScore: ' + str(f1) + '\n'
+                                 + 'Bleu: ' + str(" ".join([str(bleu_ngram) for bleu_ngram in results["Bleu"][1]])) +'\n'
+                                 + 'Bleu mean: ' + str(results["Bleu"][0]) + '\n'
+                                 + 'Meteor: ' + str(results["Meteor"]) + '\n'
+                #                 + 'Precision BertScore: ' + str(results["BertScore"][0]) + '\n'
+                #                 + 'Recall BertScore: ' + str(results["BertScore"][1]) + '\n'
+                #                 + 'F1 BertScore: ' + str(results["BertScore"][2]) + '\n'
                                  + '\n\n')
 
                     log_of.flush()
