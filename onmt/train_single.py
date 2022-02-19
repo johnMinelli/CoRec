@@ -8,6 +8,7 @@ import configargparse
 import os
 import random
 import torch
+import wandb
 
 import onmt.opts as opts
 from onmt.helpers.model_saver import build_model_saver
@@ -67,6 +68,7 @@ def training_opt_parsing(opt, device_id):
 def main(opt, device_id):
     opt = training_opt_parsing(opt, device_id)
     init_logger(opt.log_file)
+    wandb.init(project="CoRec", entity="llg")
     # Load checkpoint if we resume from a previous training.
     if opt.train_from:
         logger.info('Loading checkpoint from %s' % opt.train_from)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-
+import nltk
 import configargparse
 
 from onmt.utils.logging import init_logger
@@ -41,4 +41,6 @@ if __name__ == "__main__":
 
     opt = parser.parse_args()
     logger = init_logger(opt.log_file)
+    nltk.download('wordnet')
+    nltk.download('omw-1.4')
     main(opt)

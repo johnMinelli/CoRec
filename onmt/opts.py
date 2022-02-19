@@ -355,7 +355,9 @@ def train_opts(parser):
               help="""Model filename (the model will be saved as
                        <save_model>_N.pt where N is the number
                        of steps""")
-
+    group.add('--start_decay', '-start_decay',
+              type=int, default=4500,
+              help="""Starts scheduled sampling after start_decay steps""")
     group.add('--save_checkpoint_steps', '-save_checkpoint_steps',
               type=int, default=1,
               help="""Save a checkpoint every X steps""")
@@ -656,6 +658,8 @@ def translate_opts(parser):
                        help="""Log directory for Tensorboard.
                        This is also the name of the run.
                        """)
+    group.add_argument("-wandb_run", type=str,
+                       help="""Run identifier for W&B""")
 
     group = parser.add_argument_group('Efficiency')
     group.add('--batch_size', '-batch_size', type=int, default=30,

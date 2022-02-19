@@ -2,6 +2,7 @@
 import copy
 import math
 import os.path
+import os
 
 import configargparse
 import numpy as np
@@ -16,11 +17,13 @@ from onmt.inputters import vocabulary
 from onmt.helpers.model_builder import load_test_model
 from onmt.inputters.text_dataset import SemTextDataset, TextDataset
 from onmt.inputters.input_aux import build_dataset_iter, load_dataset, load_vocab
-from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, create_vocab
+from onmt.encoders.transformer import TransformerEncoder
 from onmt.utils.misc import tile
 from onmt.translate.translation_wrapper import TranslationBuilder
 from onmt.hashes.smooth import compute_bleu_score
-
+from nltk.translate.meteor_score import single_meteor_score
+from torchtext.data.metrics import bleu_score
+from nltk.translate.nist_score import sentence_nist
 
 def build_translator(opt, report_score=True):
     dummy_parser = configargparse.ArgumentParser(description='train.py')
@@ -201,7 +204,11 @@ class DiffTranslator(object):
         if batch_size is None:
             raise ValueError("batch_size must be set")
 
-        if os.path.isfile(out_file): os.remove(out_file)
+        out_log_filename = out_file + '.log'
+        if os.path.isfile(out_file):
+            os.remove(out_file)
+        if os.path.isfile(out_log_filename):
+            os.remove(out_log_filename)
 
         if sem_path is not None:
             self.sem_score = torch.tensor(
@@ -223,6 +230,9 @@ class DiffTranslator(object):
         all_scores = []
         all_predictions = []
         batch_counter = 0
+
+
+
         for batch in test_loader:
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print(f"processing {batch_counter} batch")
@@ -244,6 +254,31 @@ class DiffTranslator(object):
                 with open(out_file, 'a+') as of:
                     of.write('\n'.join(n_best_preds) + '\n')
                     of.flush()
+
+                hypothesis = [[token.lower() for token in sent] for sent in trans.pred_sents]
+                references = [[[gold_token.lower() for gold_token in trans.gold_sent]]]
+                bleu1 = bleu_score(hypothesis, references, max_n=1, weights=[0.25])
+                bleu2 = bleu_score(hypothesis, references, max_n=2, weights=[0.25, 0.25])
+                bleu3 = bleu_score(hypothesis, references, max_n=3, weights=[0.25, 0.25, 0.25])
+                bleu4 = bleu_score(hypothesis, references, max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
+                meteor = single_meteor_score(references[0][0], hypothesis[0])
+                bleu_ngrams = [bleu1, bleu2, bleu3, bleu4]
+                bleu = (bleu1 + bleu2 + bleu3 + bleu4) / 4
+                nist = sentence_nist(references[0], hypothesis[0], n=1)
+                # precision, recall, f1 = BERTScorer(lang="en", rescale_with_baseline=True).score(n_best_preds, hypothesis_bert)
+                with open(out_log_filename, 'a+') as log_of:
+                    log_of.write('Prediction: ' + '\n'.join(n_best_preds) + '\n'
+                                 + 'Gold: ' + ' '.join(trans.gold_sent) + '\n'
+                                 + 'Bleu: ' + str(" ".join([str(bleu_ngram) for bleu_ngram in bleu_ngrams])) +'\n'
+                                 + 'Bleu mean: ' + str(bleu) + '\n'
+                                 + 'Meteor: ' + str(meteor) + '\n'
+                                 + 'Nist: ' + str(nist) + '\n'
+                #                 + 'Precision BertScore: ' + str(precision) + '\n'
+                #                 + 'Recall BertScore: ' + str(recall) + '\n'
+                #                 + 'F1 BertScore: ' + str(f1) + '\n'
+                                 + '\n\n')
+
+                    log_of.flush()
 
             if self.report_score:
                 self.report_manager.report_trans_score('PRED', pred_score_total, pred_words_total)
@@ -467,10 +502,13 @@ class DiffTranslator(object):
 
         src_lengths, rank = src_lengths.sort(descending=True)
         src = src[:, rank, :]
+        # shape encoder states (src_length, batch_size, D*Hout) where
+        # D is 2 if bidirectional and Hout is the hidden state size
         enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
         _, recover = rank.sort(descending=False)
-        enc_states = (enc_states[0][:, recover, :], enc_states[1][:, recover, :])
-        # enc_states = (enc_states[:, recover, :], enc_states[:, recover, :])  # for transformers
+        if isinstance(self.model.encoder,TransformerEncoder):
+            enc_states = (enc_states[:, recover, :], enc_states[:, recover, :])  # for transformers
+        else: enc_states = (enc_states[0][:, recover, :], enc_states[1][:, recover, :])
         memory_bank = memory_bank[:, recover, :]
         src_lengths = src_lengths[recover]
         if src_lengths is None:
