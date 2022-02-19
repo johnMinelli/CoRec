@@ -5,17 +5,9 @@ from __future__ import print_function
 import math
 import time
 from datetime import datetime
-
-import numpy as np
-import wandb
-from bert_score import BERTScorer
-from nltk.translate.meteor_score import single_meteor_score
-
 import onmt
-from onmt.evaluation.pycocoevalcap.bleu.bleu import Bleu
-from onmt.evaluation.pycocoevalcap.meteor.meteor import Meteor
-from onmt.evaluation.pycocoevalcap.rouge.rouge import Rouge
-from torchtext.data.metrics import bleu_score
+import wandb
+from evaluate_res import eval_trans_from_files
 from onmt.utils.logging import logger
 
 def build_report_manager(opt, action="train"):
@@ -157,40 +149,27 @@ class ReportMgrTranslation(object):
                 self.tensorboard_writer.add_scalar("translate/use_semantic", int(semantic), 0)
 
     def report_trans_eval(self, translations_file, targets_file):
-        with open(translations_file, 'r') as r:
-            hypothesis = r.readlines()
-            pred = {k: [v.strip().lower()] for k, v in enumerate(hypothesis)}
-        with open(targets_file, 'r') as r:
-            references = r.readlines()
-            ref = {k: [v.strip().lower()] for k, v in enumerate(references)}
-        rouge_score, _ = Rouge().compute_score(ref, pred)
-        precision, recall, f1 = BERTScorer(lang="en", rescale_with_baseline=True).score(references, hypothesis)
-        pred_split = [sent[0].strip().split(" ") for k, sent in pred.items()]
-        ref_split = [sent[0].strip().split(" ") for k, sent in ref.items()]
-        ref_split_list = [[sent[0].strip().split(" ")] for k, sent in ref.items()]
-        meteor_score = np.mean([single_meteor_score(r, p) for r, p in zip(ref_split, pred_split)])
-        bleu1 = bleu_score(pred_split, ref_split_list, max_n=1, weights=[0.25])
-        bleu2 = bleu_score(pred_split, ref_split_list, max_n=2, weights=[0.25, 0.25])
-        bleu3 = bleu_score(pred_split, ref_split_list, max_n=3, weights=[0.25, 0.25, 0.25])
-        bleu4 = bleu_score(pred_split, ref_split_list, max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
-        bleu_ngrams = [bleu1, bleu2, bleu3, bleu4]
-        bleu = (bleu1 + bleu2 + bleu3 + bleu4) / 4
+        results = eval_trans_from_files(translations_file, targets_file)
+        meteor_score = results["Meteor"]
+        rouge_score = results["Rouge"]
+        bert_p_score, bert_r_score, bert_f1_score = results["BertScore"]
+        bleu_score, bleu_ngrams = results["Bleu"]
 
         # console
         logger.info(f"TEST SET SCORES\n"
                     f"Meteor: {meteor_score}\n"
                     f"Rouge: {rouge_score}\n"
-                    f"Bert p, r, f1: {precision.mean(), recall.mean(), f1.mean()}\n"
+                    f"Bert p, r, f1: {bert_p_score, bert_r_score, bert_f1_score}\n"
                     f"Bleu: {bleu_ngrams}\n"
-                    f"Bleu mean {bleu}")
+                    f"Bleu mean {bleu_score}")
         # weights and bias
         if self.wandb_run is not None:
             self.wandb_run.summary["Meteor"] = meteor_score
             self.wandb_run.summary["Rouge"] = rouge_score
-            self.wandb_run.summary["Bert_p"] = precision.mean()
-            self.wandb_run.summary["Bert_r"] = recall.mean()
-            self.wandb_run.summary["Bert_f1"] = f1.mean()
-            self.wandb_run.summary["Bleu"] = bleu
+            self.wandb_run.summary["Bert_p"] = bert_p_score
+            self.wandb_run.summary["Bert_r"] = bert_r_score
+            self.wandb_run.summary["Bert_f1"] = bert_f1_score
+            self.wandb_run.summary["Bleu"] = bleu_score
             self.wandb_run.summary["Bleu_1"] = bleu_ngrams[0]
             self.wandb_run.summary["Bleu_2"] = bleu_ngrams[1]
             self.wandb_run.summary["Bleu_3"] = bleu_ngrams[2]
@@ -200,7 +179,7 @@ class ReportMgrTranslation(object):
         if self.tensorboard_writer is not None:
             self.tensorboard_writer.add_scalar("translate/nist", rouge_score, 0)
             self.tensorboard_writer.add_scalar("translate/meteor", meteor_score, 0)
-            self.tensorboard_writer.add_scalar("translate/bleu", bleu, 0)
+            self.tensorboard_writer.add_scalar("translate/bleu", bleu_score, 0)
             self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[0], 1)
             self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[1], 2)
             self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[2], 3)
