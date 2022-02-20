@@ -10,6 +10,16 @@ EOS_WORD = '</s>'
 
 
 def create_vocab(opt, *datasets):
+    glove_file = "C:/Users/Gio/PycharmProjects/CoMeatIt/glove.6B.50d.txt"
+
+    print("Loading Glove Model")
+    glove = {}
+    with open(glove_file, encoding="utf8") as f:
+        lines = f.readlines()
+    for line in lines:
+        splits = line.split()
+        glove[splits[0]] = 0
+
     """Creates a torchtext vocabulary of source and target
     datasets texts. Indices go from most to least frequent word"""
     max_size_src = opt.src_vocab_size
@@ -20,11 +30,19 @@ def create_vocab(opt, *datasets):
         if type(dataset) is SemTextDataset:
             for src_text, target_txt, _, _, _, _, _ in dataset:
                 counter_src.update(src_text)
-                counter_tgt.update(target_txt)
+                target_glove_txt = []
+                for token in target_txt:
+                    if token.lower() in glove:
+                        target_glove_txt.append(token)
+                counter_tgt.update(target_glove_txt)
         else:
             for src_text, target_txt, _, _, _ in dataset:
                 counter_src.update(src_text)
-                counter_tgt.update(target_txt)
+                target_glove_txt = []
+                for token in target_txt:
+                    if token.lower() in glove:
+                        target_glove_txt.append(token)
+                counter_tgt.update(target_glove_txt)
     sorted_by_freq_words_src = sorted(counter_src.items(), key=lambda x: x[1], reverse=True)
     sorted_by_freq_words_tgt = sorted(counter_tgt.items(), key=lambda x: x[1], reverse=True)
     ordered_dict_words_src = OrderedDict(sorted_by_freq_words_src)

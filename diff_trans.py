@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 import copy
-import math
 import os.path
 import os
 
 import configargparse
 import numpy as np
 import torch
-from statistics import mean
 
 from evaluate_res import get_bleu, evaluate_translations
 from onmt.helpers.report_manager import build_report_manager
@@ -184,7 +182,7 @@ class DiffTranslator(object):
 
         return
 
-    def translate(self, test_diff=None, test_msg=None, sem_path=None, batch_size=None, attn_debug=False, out_file=None):
+    def translate(self, test_diff=None, test_msg=None, sem_path=None, batch_size=None, attn_debug=True, out_file=None):
         """
         Translate content of `src_data_iter` (if not None) or `test_diff`
         and get gold scores if one of `tgt_data_iter` or `test_msg` is set.
@@ -228,7 +226,7 @@ class DiffTranslator(object):
 
         test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
-        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, len(self.test_dataset.target_texts) > 0)
+        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, len(self.test_dataset.target_texts) > 0, True)
 
         # Statistics
         pred_score_total, pred_words_total = 0, 0

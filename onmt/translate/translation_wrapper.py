@@ -4,7 +4,7 @@ from __future__ import unicode_literals, print_function
 import torch
 
 from evaluate_res import get_bleu
-from onmt.inputters.vocabulary import EOS_WORD
+from onmt.inputters.vocabulary import EOS_WORD, UNK_WORD
 
 
 class TranslationBuilder(object):
@@ -22,22 +22,52 @@ class TranslationBuilder(object):
        has_tgt (bool): will the batch have gold targets
     """
 
-    def __init__(self, dataset, vocab, n_best=1, has_tgt=False):
+    def __init__(self, dataset, vocab, n_best=1, has_tgt=False, replace_unk=False):
         self.dataset = dataset
         self.vocab = vocab
         self.n_best = n_best
         self.has_tgt = has_tgt
+        self.replace_unk = replace_unk
+        # self.indeces_oov = {}
+        # 
+        # glove_file = "C:/Users/Gio/PycharmProjects/CoMeatIt/glove.6B.50d.txt"
+        # 
+        # print("Loading Glove Model")
+        # glove = {}
+        # with open(glove_file, encoding="utf8") as f:
+        #     lines = f.readlines()
+        # for line in lines:
+        #     splits = line.split()
+        #     glove[splits[0]] = 0
+        # 
+        # for i, token in enumerate(vocab.vocab.itos_[4:]):
+        #     if token.lower() not in glove:
+        #         self.indeces_oov[i+4] = True
+        # 
+        # print(len(self.indeces_oov))
 
-    def _build_target_tokens(self, pred):
+    def _build_target_tokens(self, pred, src_raw, attn):
         tokens = []
         for index in pred:
             if index < len(self.vocab):
+                # if int(index) in self.indeces_oov:
+                #     tokens.append(UNK_WORD)
+                # else:
                 tokens.append(self.vocab.lookup_token(index))
             else:
+                raise Exception()
                 tokens.append(" ")
             if tokens[-1] == EOS_WORD:
                 tokens = tokens[:-1]
                 break
+        if self.replace_unk and (attn is not None):
+            for i in range(len(tokens)):
+                if tokens[i] == UNK_WORD:
+                    _, max_index = attn[i].topk(len(attn[i]), 0)
+                    for max_i in max_index:
+                        if max_i < len(src_raw) and src_raw[max_i] not in ['mmm','ppp','0','2','1','3','4','5','6','7','8','9','`','.','@','%','&','^',':',';',',','\\','"',')','}',']','+','?','/','(','[','{','+','|','=','-','_','$','<nl>','a','b','c']:
+                            tokens[i] = src_raw[max_i]
+                            break
         return tokens
 
     def from_batch(self, translation_batch, batch_size):
@@ -64,10 +94,10 @@ class TranslationBuilder(object):
         translations = []
         for b in range(batch_size):
             src_raw = self.dataset[inds[b]][0]
-            pred_sents = [self._build_target_tokens(preds[b][n]) for n in range(self.n_best)]
+            pred_sents = [self._build_target_tokens(preds[b][n], src_raw, attn[b][n]) for n in range(self.n_best)]
             gold_sent = None
             if tgt is not None:
-                gold_sent = self._build_target_tokens(tgt[1:, b] if tgt is not None else None)
+                gold_sent = self._build_target_tokens(tgt[1:, b], src_raw, None)
 
             translation = TranslationWrapper(src[:, b] if src is not None else None,
                                              src_raw, pred_sents,
