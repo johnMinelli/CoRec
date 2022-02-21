@@ -197,4 +197,4 @@ class MultiHeadedAttention(nn.Module):
                   query_len, key_len)[:, 0, :, :] \
             .contiguous()
 
-        return output, top_attn
+        return output, attn, top_attn

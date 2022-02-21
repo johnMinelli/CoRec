@@ -27,7 +27,7 @@ class TransformerEncoderLayer(nn.Module):
     def __init__(self, d_model, heads, d_ff, dropout):
         super(TransformerEncoderLayer, self).__init__()
 
-        self.self_attn = MultiHeadedAttention(heads, d_model, dropout=dropout)
+        self.self_attn = MultiHeadedAttention(heads, d_model, dropout=dropout, )
         self.feed_forward = PositionwiseFeedForward(d_model, d_ff, dropout)
         self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
         self.dropout = nn.Dropout(dropout)
@@ -46,7 +46,7 @@ class TransformerEncoderLayer(nn.Module):
             * outputs `[batch_size x src_len x model_dim]`
         """
         input_norm = self.layer_norm(inputs)
-        context, _ = self.self_attn(input_norm, input_norm, input_norm, mask=mask)  # self multihead attn
+        context, heads_attn, _ = self.self_attn(input_norm, input_norm, input_norm, mask=mask)  # self multihead attn
         out = self.dropout(context) + inputs
         return self.feed_forward(out)
 

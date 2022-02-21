@@ -71,12 +71,12 @@ class TransformerDecoderLayer(nn.Module):
         input_norm = self.layer_norm_1(inputs)
         all_input = input_norm
         if self.self_attn_type == "scaled-dot":
-            query, attn = self.self_attn(input_norm, input_norm, input_norm,
+            query, heads_attn, attn = self.self_attn(input_norm, input_norm, input_norm,
                                          mask=dec_mask,
                                          layer_cache=layer_cache,
                                          type="self")
         elif self.self_attn_type == "average":
-            query, attn = self.self_attn(input_norm, mask=dec_mask,
+            query, heads_attn, attn = self.self_attn(input_norm, mask=dec_mask,
                                          layer_cache=layer_cache, step=step)
 
         query = self.drop(query) + inputs
