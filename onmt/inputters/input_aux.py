@@ -54,6 +54,7 @@ class MinPaddingSampler(Sampler):
         else:
             for i in range(0, len(indices), self.batch_size):
                 sorted_indices = sorted(indices[i:i + self.batch_size], key=lambda x: x[1], reverse=True)
+                # sorted_indices = sorted(indices, key=lambda x: x[1], reverse=False)[i:i + self.batch_size]
                 yield [x[0] for x in sorted_indices]
 
     def __len__(self):
