@@ -1,5 +1,6 @@
 ﻿# STANDARD
 """ Statistics calculation utility """
+
 from __future__ import division
 import time
 import math
@@ -15,6 +16,7 @@ class Statistics(object):
 
     * accuracy
     * perplexity
+    * xent loss
     * elapsed time
     """
 

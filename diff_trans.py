@@ -71,6 +71,12 @@ class DiffTranslator(object):
             self.sem_decoder = copy.deepcopy(self.model.decoder)
 
     def _compute_bleu_score(self, sem_diff_path, test_diff_path):
+        """
+        TODO
+        :param sem_diff_path: 
+        :param test_diff_path: 
+        :return: 
+        """
         test_diffs = read_file(test_diff_path)
         sem_diffs = read_file(sem_diff_path)
         sem_scores = []
@@ -83,8 +89,7 @@ class DiffTranslator(object):
         # write_file("data/new/sem_bleu.score", sem_scores)
         return sem_scores
 
-    def offline_semantic_retrieval(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None,
-                                   semantic_out_dir=None):
+    def offline_semantic_retrieval(self, test_diff=None, train_diff=None, train_msg=None, batch_size=None, semantic_out_dir=None):
         """
         Saves the semantic info in three files: diffs and msgs of training set samples aligned with the test set samples
         by similarity of encode and the shared vocabulary used for translation
@@ -191,18 +196,13 @@ class DiffTranslator(object):
 
         Note: batch_size must not be None
         Note: one of ('test_diff', 'src_data_iter') must not be None
-
-        Args:
-            test_diff (str): filepath of source data
-            test_msg (str): filepath of target data
-            batch_size (int): size of examples per mini-batch
-            attn_debug (bool): enables the attention logging
-            sem_path (str): filepath of semantic diffs from training set aligned with source diffs by similarity
-            out_file (str): filepath of output
-
-        Returns:
-            (`list`, `list`)
-
+        :param test_diff: (str) filepath of source data
+        :param test_msg: (str) filepath of target data
+        :param batch_size: (int) size of examples per mini-batch
+        :param attn_debug: (bool) enables the attention logging
+        :param sem_path: (str) filepath of semantic diffs from training set aligned with source diffs by similarity
+        :param out_file: (str) filepath of output
+        :return: (`list`, `list`)
             * all_scores is a list of `batch_size` lists of `n_best` scores
             * all_predictions is a list of `batch_size` lists
                 of `n_best` predictions
@@ -238,8 +238,6 @@ class DiffTranslator(object):
         all_predictions = []
         batch_counter = 0
 
-
-
         for batch in test_loader:
             # batch here contains {diff_batch, diff_length, msg_batch, msg_length, sem_batch, sem_length}
             print(f"processing {batch_counter} batch")
@@ -272,6 +270,7 @@ class DiffTranslator(object):
                                  + 'Bleu: ' + str(" ".join([str(bleu_ngram) for bleu_ngram in results["Bleu"][1]])) +'\n'
                                  + 'Bleu mean: ' + str(results["Bleu"][0]) + '\n'
                                  + 'Meteor: ' + str(results["Meteor"]) + '\n'
+                # commented out being very slow
                 #                 + 'Precision BertScore: ' + str(results["BertScore"][0]) + '\n'
                 #                 + 'Recall BertScore: ' + str(results["BertScore"][1]) + '\n'
                 #                 + 'F1 BertScore: ' + str(results["BertScore"][2]) + '\n'
@@ -291,12 +290,13 @@ class DiffTranslator(object):
     def _process_batch(self, batch, batch_size, sem_path, vocab, attn_debug):
         """
         Translate a batch of sentences.
-
-        Mostly a wrapper around :obj:`Beam`.
-
-        Args:
-           batch (:obj:`Batch`): a batch from a dataset object
-
+        TODO
+        :param batch: (:obj:`Batch`) a batch from a dataset object
+        :param batch_size: 
+        :param sem_path: 
+        :param vocab: 
+        :param attn_debug: 
+        :return: 
         """
 
         max_length = self.opt.max_length
@@ -350,7 +350,10 @@ class DiffTranslator(object):
                 sem_sc = tile(sem_sc, beam_size).view(-1, 1)
             else:
                 sem_sc, sem_lengths, sem_bank = None, None, None
-            # beam search aim is to make n hypothesis at the same time: expand the input data [1 x batch x 1] --> [1 x batch*beam x 1], decode, take the 'beam' top values (instead of just one): their indices in mod vocab_size is the n° of token predicted
+            # beam search aim is to make n hypothesis at the same time:
+            #   1. expand the input data [1 x batch x 1] --> [1 x batch*beam x 1]
+            #   2. decode
+            #   3. take the 'beam' top values (instead of just one): their indices in mod vocab_size is the n° of token predicted
             top_beam_finished = torch.zeros([batch_size], dtype=torch.uint8)
             batch_offset = torch.arange(batch_size, dtype=torch.long)
             beam_offset = torch.arange(0, batch_size * beam_size, step=beam_size, dtype=torch.long, device=mb_device)
@@ -400,7 +403,8 @@ class DiffTranslator(object):
                 select_indices = batch_index.view(-1)
 
                 # Append last prediction --> the vocabulary token of a beam is appended to it's input sequence which generated it.
-                # If in a batch a beam input sequence obtained all topk values (all token different but same beam_index) the alive_seq will be reassigned with all starting input sequence equal but last token generated.
+                # If in a batch a beam input sequence obtain all topk values (all token different but same beam_index),
+                # the alive_seq will be reassigned with all starting input sequence equal but last token generated.
                 alive_seq = torch.cat([alive_seq.index_select(0, select_indices), topk_ids.view(-1, 1)], -1)
 
                 if return_attention:
@@ -434,7 +438,7 @@ class DiffTranslator(object):
                         for j in finished_hyp:
                             hypotheses[b].append((
                                 topk_scores[i, j],
-                                predictions[i, j, 1:],  # Ignore start_token.
+                                predictions[i, j, 1:],  # ignore start_token
                                 attention[:, i, j, :memory_lengths[i]]
                                 if attention is not None else None))
                         # With top beam finished as end condition we can return n_best hypotheses.

@@ -1,5 +1,4 @@
-﻿# STANDARD
-""" Report manager utility """
+﻿""" Report manager utility """
 from __future__ import print_function
 
 import math
@@ -11,6 +10,12 @@ from evaluate_res import eval_trans_from_files
 from onmt.utils.logging import logger
 
 def build_report_manager(opt, action="train"):
+    """
+    Builder method for the ReportMgr class
+    :param opt: dictionary of parameters of the program
+    :param action: "train" or "translate" supported actions
+    :return: an instance of ReportMgr specialized for the action specified
+    """
     if opt.tensorboard:
         from tensorboardX import SummaryWriter
         tensorboard_log_dir = opt.tensorboard_log_dir
@@ -35,13 +40,12 @@ class ReportMgrTraining(object):
     """
     def __init__(self, report_every, start_time=-1., tensorboard_writer=None):
         """
-        Args:
-            report_every(int): Report status every this many sentences
-            start_time(float): manually set report start time. Negative values
-                means that you will need to set it later or use `start()`
-            tensorboard_writer(:obj:`tensorboard.SummaryWriter`):
-                The TensorBoard Summary writer to use or None
+        Init
+        :param report_every: (int) Report status every this many sentences
+        :param start_time: (float) manually set report start time. Negative values means that you will need to set it later or use `start()`
+        :param tensorboard_writer: (:obj:`tensorboard.SummaryWriter`) The TensorBoard Summary writer to use or None
         """
+
         self.report_every = report_every
         self.progress_step = 0
         self.start_time = start_time
@@ -55,18 +59,15 @@ class ReportMgrTraining(object):
 
     def report_training(self, step, num_steps, learning_rate, teacher_forcing_factor, report_stats, multigpu=False):
         """
-        This is the user-defined batch-level traing progress
-        report function.
-
-        Args:
-            step(int): current step count.
-            num_steps(int): total number of batches.
-            learning_rate(float): current learning rate.
-            teacher_forcing_factor(float): current teacher forcing value.
-            report_stats(Statistics): old Statistics instance.
-        Returns:
-            report_stats(Statistics): updated Statistics instance.
+        This is the user-defined batch-level training progress report function
+        :param step: (int) current step count
+        :param num_steps: (int) total number of batches
+        :param learning_rate: (float) current learning rate
+        :param teacher_forcing_factor: (float) current teacher forcing value
+        :param report_stats: (Statistics) old Statistics instance
+        :returns report_stats: (Statistics) updated Statistics instance.
         """
+
         if self.start_time < 0:
             raise ValueError("""ReportMgr needs to be started set 'start_time' or use 'start()'""")
 
@@ -92,12 +93,12 @@ class ReportMgrTraining(object):
     def report_step(self, lr, step, train_stats=None, valid_stats=None):
         """
         Report stats of a step
-
-        Args:
-            train_stats(Statistics): training stats
-            valid_stats(Statistics): validation stats
-            lr(float): current learning rate
+        :param lr: (float) current learning rate
+        :param step: (int) current step
+        :param train_stats: (Statistics) training stats
+        :param valid_stats: (Statistics) validation stats
         """
+
         self._report_step(lr, step, train_stats=train_stats, valid_stats=valid_stats)
 
     def _report_step(self, lr, step, train_stats=None, valid_stats=None):
@@ -126,11 +127,11 @@ class ReportMgrTraining(object):
 class ReportMgrTranslation(object):
     def __init__(self, tensorboard_writer=None, wandb_run=None):
         """
-        A report manager that writes statistics on standard output as well as (optionally) TensorBoard
-
-        Args:
-            tensorboard_writer(:obj:`tensorboard.SummaryWriter`): The TensorBoard Summary writer to use or None
+        A report manager that writes statistics on standard output as well as (optionally) TensorBoard, W&B
+        :param tensorboard_writer: (:obj:`tensorboard.SummaryWriter`) The TensorBoard Summary writer to use or None
+        :param wandb_run: the identifier of W&B run
         """
+
         self.tensorboard_writer = tensorboard_writer
         self.wandb_run = wandb.Api().run(wandb_run) if wandb_run is not None else None
 
@@ -155,14 +156,14 @@ class ReportMgrTranslation(object):
         bert_p_score, bert_r_score, bert_f1_score = results["BertScore"]
         bleu_score, bleu_ngrams = results["Bleu"]
 
-        # console
+        # Console
         logger.info(f"TEST SET SCORES\n"
                     f"Meteor: {meteor_score}\n"
                     f"Rouge: {rouge_score}\n"
                     f"Bert p, r, f1: {bert_p_score, bert_r_score, bert_f1_score}\n"
                     f"Bleu: {bleu_ngrams}\n"
                     f"Bleu mean {bleu_score}")
-        # weights and bias
+        # Weights and Bias
         if self.wandb_run is not None:
             self.wandb_run.summary["Meteor"] = meteor_score
             self.wandb_run.summary["Rouge"] = rouge_score
@@ -175,7 +176,7 @@ class ReportMgrTranslation(object):
             self.wandb_run.summary["Bleu_3"] = bleu_ngrams[2]
             self.wandb_run.summary["Bleu_4"] = bleu_ngrams[3]
             self.wandb_run.summary.update()
-        # tensorboard
+        # Tensorboard
         if self.tensorboard_writer is not None:
             self.tensorboard_writer.add_scalar("translate/nist", rouge_score, 0)
             self.tensorboard_writer.add_scalar("translate/meteor", meteor_score, 0)

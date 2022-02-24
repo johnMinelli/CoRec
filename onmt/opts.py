@@ -1,8 +1,6 @@
 """ Implementation of all available options """
 
 import configargparse
-#from onmt.models.sru import CheckSRU
-
 
 def config_opts(parser):
     parser.add('-config', '--config', required=False,

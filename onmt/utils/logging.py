@@ -1,4 +1,5 @@
 # STANDARD
+""" Standard Logger of ONMT """
 # -*- coding: utf-8 -*-
 
 import logging
