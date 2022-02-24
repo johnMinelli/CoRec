@@ -12,7 +12,7 @@ EOS_WORD = '</s>'
 def create_vocab(opt, *datasets):
     glove_file = "C:/Users/Gio/PycharmProjects/CoMeatIt/glove.6B.50d.txt"
 
-    print("Loading Glove Model")
+    print("Loading Glove vocabulary")
     glove = {}
     with open(glove_file, encoding="utf8") as f:
         lines = f.readlines()

@@ -1,6 +1,8 @@
 """ Translation main class """
 from __future__ import unicode_literals, print_function
 
+import string
+
 import torch
 
 from evaluate_res import get_bleu
@@ -28,23 +30,7 @@ class TranslationBuilder(object):
         self.n_best = n_best
         self.has_tgt = has_tgt
         self.replace_unk = replace_unk
-        # self.indeces_oov = {}
-        # 
-        # glove_file = "C:/Users/Gio/PycharmProjects/CoMeatIt/glove.6B.50d.txt"
-        # 
-        # print("Loading Glove Model")
-        # glove = {}
-        # with open(glove_file, encoding="utf8") as f:
-        #     lines = f.readlines()
-        # for line in lines:
-        #     splits = line.split()
-        #     glove[splits[0]] = 0
-        # 
-        # for i, token in enumerate(vocab.vocab.itos_[4:]):
-        #     if token.lower() not in glove:
-        #         self.indeces_oov[i+4] = True
-        # 
-        # print(len(self.indeces_oov))
+        self.punct = a = [char for char in string.punctuation]+["mmm","ppp","<nl>","0","1","2","3","4","5","6","7","8","9","a","b","c"]
 
     def _build_target_tokens(self, pred, src_raw, attn):
         tokens = []
@@ -56,7 +42,7 @@ class TranslationBuilder(object):
                 tokens.append(self.vocab.lookup_token(index))
             else:
                 raise Exception()
-                tokens.append(" ")
+                # tokens.append(" ")
             if tokens[-1] == EOS_WORD:
                 tokens = tokens[:-1]
                 break
@@ -65,7 +51,7 @@ class TranslationBuilder(object):
                 if tokens[i] == UNK_WORD:
                     _, max_index = attn[i].topk(len(attn[i]), 0)
                     for max_i in max_index:
-                        if max_i < len(src_raw) and src_raw[max_i] not in ['mmm','ppp','0','2','1','3','4','5','6','7','8','9','`','.','@','%','&','^',':',';',',','\\','"',')','}',']','+','?','/','(','[','{','+','|','=','-','_','$','<nl>','a','b','c']:
+                        if max_i < len(src_raw) and src_raw[max_i] not in self.punct:
                             tokens[i] = src_raw[max_i]
                             break
         return tokens
