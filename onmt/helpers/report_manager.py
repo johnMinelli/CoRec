@@ -131,7 +131,6 @@ class ReportMgrTranslation(object):
         :param tensorboard_writer: (:obj:`tensorboard.SummaryWriter`) The TensorBoard Summary writer to use or None
         :param wandb_run: the identifier of W&B run
         """
-
         self.tensorboard_writer = tensorboard_writer
         self.wandb_run = wandb.Api().run(wandb_run) if wandb_run is not None else None
 
