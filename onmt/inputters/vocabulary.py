@@ -7,6 +7,7 @@ PAD_WORD = '<blank>'
 UNK_WORD = '<unk>'
 BOS_WORD = '<s>'
 EOS_WORD = '</s>'
+POS_UNK = '<pos0>'
 
 
 def create_vocab(opt, *datasets):
@@ -46,7 +47,7 @@ def create_vocab(opt, *datasets):
     sorted_by_freq_words_src = sorted(counter_src.items(), key=lambda x: x[1], reverse=True)
     sorted_by_freq_words_tgt = sorted(counter_tgt.items(), key=lambda x: x[1], reverse=True)
     ordered_dict_words_src = OrderedDict(sorted_by_freq_words_src)
-    ordered_dict_words_tgt = OrderedDict(sorted_by_freq_words_tgt)
+    ordered_dict_words_tgt = OrderedDict(sorted_by_freq_words_tgt+[(f"<pos{i}>", 1) for i in range(100)])
     final_vocab_src = vocab(ordered_dict_words_src)
     final_vocab_tgt = vocab(ordered_dict_words_tgt)
 

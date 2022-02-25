@@ -1,7 +1,7 @@
 ﻿import torch, os, codecs
 from torch.utils.data import DataLoader, Sampler
 from torchtext.data.utils import RandomShuffler
-from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD
+from onmt.inputters.vocabulary import BOS_WORD, EOS_WORD, PAD_WORD, UNK_WORD, POS_UNK
 from onmt.inputters.text_dataset import SemTextDataset
 from onmt.utils.logging import logger
 from onmt.inputters.vocabulary import get_indices
@@ -85,6 +85,18 @@ def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=T
                 tgt_tensor = torch.tensor([])
             else:
                 tgt_tensor = torch.tensor(get_indices(vocabs["tgt"], [BOS_WORD]+tgt_item+[EOS_WORD]))
+
+                UNK_WORD_index, POS_UNK_index = get_indices(vocabs["tgt"], [UNK_WORD, POS_UNK])
+                unk_i = 0
+                pos_unk_tensor = []
+                for tok_index in tgt_tensor:
+                    if tok_index != UNK_WORD_index:
+                        pos_unk_tensor.append(tok_index)
+                    else:
+                        pos_unk_tensor.append(POS_UNK_index+unk_i)
+                        unk_i += 1
+                tgt_tensor = torch.tensor(pos_unk_tensor)
+
                 if tgt_item_len != max_tgt_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
                     padding = torch.full((1, max_tgt_len - tgt_item_len), vocabs["tgt"][PAD_WORD], dtype=torch.int)[0]
@@ -116,6 +128,18 @@ def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=T
                 tgt_tensor = torch.tensor([])
             else:
                 tgt_tensor = torch.tensor(get_indices(vocabs["tgt"], [BOS_WORD]+tgt_item+[EOS_WORD]))
+
+                UNK_WORD_index, POS_UNK_index = get_indices(vocabs["tgt"], [UNK_WORD, POS_UNK])
+                unk_i = 0
+                pos_unk_tensor = []
+                for tok_index in tgt_tensor:
+                    if tok_index != UNK_WORD_index:
+                        pos_unk_tensor.append(tok_index)
+                    else:
+                        pos_unk_tensor.append(POS_UNK_index+unk_i)
+                        unk_i += 1
+                tgt_tensor = torch.tensor(pos_unk_tensor)
+
                 if tgt_item_len != max_tgt_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
                     padding = torch.full((1, max_tgt_len - tgt_item_len), vocabs["tgt"][PAD_WORD], dtype=torch.int)[0]
