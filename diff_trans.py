@@ -226,7 +226,7 @@ class DiffTranslator(object):
 
         test_loader = build_dataset_iter(self.test_dataset, vocab, batch_size, gpu=self.gpu, shuffle_batches=False)
 
-        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["tgt"], n_best, len(self.test_dataset.target_texts) > 0, True)
+        translation_wrapper_builder = TranslationBuilder(self.test_dataset, vocab["src"], vocab["tgt"], n_best, len(self.test_dataset.target_texts) > 0, True)
 
         # Statistics
         pred_score_total, pred_words_total = 0, 0

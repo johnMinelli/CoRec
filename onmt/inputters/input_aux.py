@@ -64,8 +64,23 @@ class MinPaddingSampler(Sampler):
 
 def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=True):
     device = torch.device("cuda" if gpu else "cpu")
+
+    def _pos_unk_sub(tensor, unk_index, pos_index):
+        unk_i = 0
+        pos_unk_tensor = []
+        for tok_index in tensor:
+            if tok_index != unk_index:
+                pos_unk_tensor.append(tok_index)
+            else:
+                pos_unk_tensor.append(pos_index + unk_i)
+                unk_i += 1
+        return torch.tensor(pos_unk_tensor)
+
     def generate_batch(data_batch):
         _, _, _, src_len, tgt_len = zip(*data_batch)
+        # for POS_UNK
+        UNK_WORD_src_index, POS_UNK_src_index = get_indices(vocabs["src"], [UNK_WORD, POS_UNK])
+        UNK_WORD_tgt_index, POS_UNK_tgt_index = get_indices(vocabs["tgt"], [UNK_WORD, POS_UNK])
         # for padding
         max_src_len = max(src_len)
         max_tgt_len = max(tgt_len)
@@ -74,7 +89,7 @@ def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=T
 
             indexes.append(index)
             # encode source
-            src_tensor = torch.tensor(get_indices(vocabs["src"], src_item+[EOS_WORD]))
+            src_tensor = _pos_unk_sub(torch.tensor(get_indices(vocabs["src"], src_item+[EOS_WORD])), UNK_WORD_src_index, POS_UNK_src_index)
             if src_item_len != max_src_len:
                 # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
                 padding = torch.full((1, max_src_len - src_item_len), vocabs["src"][PAD_WORD], dtype=torch.int)
@@ -84,7 +99,7 @@ def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=T
             if tgt_item is None:
                 tgt_tensor = torch.tensor([])
             else:
-                tgt_tensor = torch.tensor(get_indices(vocabs["tgt"], [BOS_WORD]+tgt_item+[EOS_WORD]))
+                tgt_tensor = _pos_unk_sub(torch.tensor(get_indices(vocabs["tgt"], [BOS_WORD]+tgt_item+[EOS_WORD])), UNK_WORD_tgt_index, POS_UNK_tgt_index)
 
                 UNK_WORD_index, POS_UNK_index = get_indices(vocabs["tgt"], [UNK_WORD, POS_UNK])
                 unk_i = 0
@@ -110,6 +125,9 @@ def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=T
 
     def generate_batch_sem_dataset(data_batch):
         _, _, _, _, src_len, tgt_len, sem_len = zip(*data_batch)
+        # for POS_UNK
+        UNK_WORD_src_index, POS_UNK_src_index = get_indices(vocabs["src"], [UNK_WORD, POS_UNK])
+        UNK_WORD_tgt_index, POS_UNK_tgt_index = get_indices(vocabs["tgt"], [UNK_WORD, POS_UNK])
         # for padding
         max_src_len = max(src_len)
         max_tgt_len = max(tgt_len)
@@ -119,7 +137,7 @@ def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=T
 
             indexes.append(index)
             # encode source
-            src_tensor = torch.tensor(get_indices(vocabs["src"], src_item+[EOS_WORD]))
+            src_tensor = _pos_unk_sub(torch.tensor(get_indices(vocabs["src"], src_item+[EOS_WORD])), UNK_WORD_src_index, POS_UNK_src_index)
             if src_item_len != max_src_len:
                 # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
                 padding = torch.full((1, max_src_len - src_item_len), vocabs["src"][PAD_WORD], dtype=torch.int)[0]
@@ -127,19 +145,7 @@ def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=T
             if tgt_item is None:
                 tgt_tensor = torch.tensor([])
             else:
-                tgt_tensor = torch.tensor(get_indices(vocabs["tgt"], [BOS_WORD]+tgt_item+[EOS_WORD]))
-
-                UNK_WORD_index, POS_UNK_index = get_indices(vocabs["tgt"], [UNK_WORD, POS_UNK])
-                unk_i = 0
-                pos_unk_tensor = []
-                for tok_index in tgt_tensor:
-                    if tok_index != UNK_WORD_index:
-                        pos_unk_tensor.append(tok_index)
-                    else:
-                        pos_unk_tensor.append(POS_UNK_index+unk_i)
-                        unk_i += 1
-                tgt_tensor = torch.tensor(pos_unk_tensor)
-
+                tgt_tensor = _pos_unk_sub(torch.tensor(get_indices(vocabs["tgt"], [BOS_WORD]+tgt_item+[EOS_WORD])), UNK_WORD_tgt_index, POS_UNK_tgt_index)
                 if tgt_item_len != max_tgt_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
                     padding = torch.full((1, max_tgt_len - tgt_item_len), vocabs["tgt"][PAD_WORD], dtype=torch.int)[0]
@@ -147,7 +153,7 @@ def build_dataset_iter(dataset, vocabs, batch_size, gpu=False, shuffle_batches=T
             if sem_item is None:
                 sem_tensor = torch.tensor([])
             else:
-                sem_tensor = torch.tensor(get_indices(vocabs["src"], sem_item+[EOS_WORD]))
+                sem_tensor = _pos_unk_sub(torch.tensor(get_indices(vocabs["src"], sem_item+[EOS_WORD])), UNK_WORD_src_index, POS_UNK_src_index)
                 if sem_item_len != max_sem_len:
                     # creates an array of "blank" tokens inside an array (we need padding[0] to get the actual padding)
                     padding = torch.full((1, max_sem_len - sem_item_len), vocabs["src"][PAD_WORD], dtype=torch.int)[0]

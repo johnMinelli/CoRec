@@ -31,33 +31,36 @@ def create_vocab(opt, *datasets):
         if type(dataset) is SemTextDataset:
             for src_text, target_txt, _, _, _, _, _ in dataset:
                 counter_src.update(src_text)
-                target_glove_txt = []
-                for token in target_txt:
-                    if token.lower() in glove:
-                        target_glove_txt.append(token)
-                counter_tgt.update(target_glove_txt)
+                counter_tgt.update(target_txt)
         else:
             for src_text, target_txt, _, _, _ in dataset:
                 counter_src.update(src_text)
-                target_glove_txt = []
-                for token in target_txt:
-                    if token.lower() in glove:
-                        target_glove_txt.append(token)
-                counter_tgt.update(target_glove_txt)
+                counter_tgt.update(target_txt)
+    # remove non english common words
+    for token, count in (counter_src & counter_tgt).items():
+        if token.lower() not in glove:
+            counter_src.pop(token)
+            counter_tgt.pop(token)
     sorted_by_freq_words_src = sorted(counter_src.items(), key=lambda x: x[1], reverse=True)
     sorted_by_freq_words_tgt = sorted(counter_tgt.items(), key=lambda x: x[1], reverse=True)
-    ordered_dict_words_src = OrderedDict(sorted_by_freq_words_src)
+    ordered_dict_words_src = OrderedDict(sorted_by_freq_words_src+[(f"<pos{i}>", 1) for i in range(100)])
     ordered_dict_words_tgt = OrderedDict(sorted_by_freq_words_tgt+[(f"<pos{i}>", 1) for i in range(100)])
     final_vocab_src = vocab(ordered_dict_words_src)
     final_vocab_tgt = vocab(ordered_dict_words_tgt)
 
-    for i, t in enumerate([UNK_WORD, PAD_WORD]):
+    for i, t in enumerate([UNK_WORD, PAD_WORD, EOS_WORD]):
         final_vocab_src.insert_token(t, i)
     for i, t in enumerate([UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD]):
         final_vocab_tgt.insert_token(t, i)
 
     final_vocab_src.set_default_index(final_vocab_src[UNK_WORD])
     final_vocab_tgt.set_default_index(final_vocab_tgt[UNK_WORD])
+
+    # the previous method consisted in a simple reduction of the tgt using the attention for the generation but rare words could be missing from src_raw and also attention could be badly scattered in src
+
+    # for both src and tgt remove COMMON rare words and add pos1-100
+    # in batch substitute in both the missing with incremental pos1-100  
+    # at translation time if you predict a pos watch in src_row the pos with maximum attention (aligment)
 
     return final_vocab_src, final_vocab_tgt
 

@@ -164,16 +164,16 @@ class ReportMgrTranslation(object):
                     f"Bleu mean {bleu_score}")
         # weights and bias
         if self.wandb_run is not None:
-            self.wandb_run.summary["Meteor"] = meteor_score
-            self.wandb_run.summary["Rouge"] = rouge_score
-            self.wandb_run.summary["Bert_p"] = bert_p_score
-            self.wandb_run.summary["Bert_r"] = bert_r_score
-            self.wandb_run.summary["Bert_f1"] = bert_f1_score
-            self.wandb_run.summary["Bleu"] = bleu_score
-            self.wandb_run.summary["Bleu_1"] = bleu_ngrams[0]
-            self.wandb_run.summary["Bleu_2"] = bleu_ngrams[1]
-            self.wandb_run.summary["Bleu_3"] = bleu_ngrams[2]
-            self.wandb_run.summary["Bleu_4"] = bleu_ngrams[3]
+            self.wandb_run.summary["43_Meteor"] = meteor_score
+            self.wandb_run.summary["43_Rouge"] = rouge_score
+            self.wandb_run.summary["43_Bert_p"] = bert_p_score
+            self.wandb_run.summary["43_Bert_r"] = bert_r_score
+            self.wandb_run.summary["43_Bert_f1"] = bert_f1_score
+            self.wandb_run.summary["43_Bleu"] = bleu_score
+            self.wandb_run.summary["43_Bleu_1"] = bleu_ngrams[0]
+            self.wandb_run.summary["43_Bleu_2"] = bleu_ngrams[1]
+            self.wandb_run.summary["43_Bleu_3"] = bleu_ngrams[2]
+            self.wandb_run.summary["43_Bleu_4"] = bleu_ngrams[3]
             self.wandb_run.summary.update()
         # tensorboard
         if self.tensorboard_writer is not None:

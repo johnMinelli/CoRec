@@ -24,22 +24,24 @@ class TranslationBuilder(object):
        has_tgt (bool): will the batch have gold targets
     """
 
-    def __init__(self, dataset, vocab, n_best=1, has_tgt=False, replace_unk=False):
+    def __init__(self, dataset, vocab_src, vocab_tgt, n_best=1, has_tgt=False, replace_unk=False):
         self.dataset = dataset
-        self.vocab = vocab
+        self.vocab_src = vocab_src
+        self.vocab_tgt = vocab_tgt
         self.n_best = n_best
         self.has_tgt = has_tgt
         self.replace_unk = replace_unk
-        self.punct = a = [char for char in string.punctuation]+["mmm","ppp","<nl>","0","1","2","3","4","5","6","7","8","9","a","b","c"]
+        self.punct = [char for char in string.punctuation]+["mmm","ppp","<nl>","0","1","2","3","4","5","6","7","8","9","a","b","c"]
+        self.pos_tokens = [f"<pos{i}>" for i in range(100)]
 
-    def _build_target_tokens(self, pred, src_raw, attn):
+    def _build_target_tokens(self, pred, src_encoded, src_raw, attn):
         tokens = []
         for index in pred:
-            if index < len(self.vocab):
+            if index < len(self.vocab_tgt):
                 # if int(index) in self.indeces_oov:
                 #     tokens.append(UNK_WORD)
                 # else:
-                tokens.append(self.vocab.lookup_token(index))
+                tokens.append(self.vocab_tgt.lookup_token(index))
             else:
                 raise Exception()
                 # tokens.append(" ")
@@ -48,12 +50,21 @@ class TranslationBuilder(object):
                 break
         if self.replace_unk and (attn is not None):
             for i in range(len(tokens)):
-                if tokens[i] == UNK_WORD:
+                if tokens[i] == UNK_WORD or tokens[i] in self.pos_tokens:
                     _, max_index = attn[i].topk(len(attn[i]), 0)
-                    for max_i in max_index:
-                        if max_i < len(src_raw) and src_raw[max_i] not in self.punct:
-                            tokens[i] = src_raw[max_i]
-                            break
+                    src_pos_unk_index = [j for j, t in enumerate(self.vocab_src.lookup_tokens(src_encoded[:,0].tolist())) if t in self.pos_tokens]
+                    if len(src_pos_unk_index) > 0:
+                        # use pos_unk allgnment
+                        for max_i in max_index:
+                            if max_i in src_pos_unk_index:
+                                tokens[i] = src_raw[max_i]
+                                break
+                    else:
+                        # use max attention alignment
+                        for max_i in max_index:
+                            if max_i < len(src_raw) and src_raw[max_i] not in self.punct:
+                                tokens[i] = src_raw[max_i]
+                                break
         return tokens
 
     def from_batch(self, translation_batch, batch_size):
@@ -80,10 +91,10 @@ class TranslationBuilder(object):
         translations = []
         for b in range(batch_size):
             src_raw = self.dataset[inds[b]][0]
-            pred_sents = [self._build_target_tokens(preds[b][n], src_raw, attn[b][n]) for n in range(self.n_best)]
+            pred_sents = [self._build_target_tokens(preds[b][n], src[:, b], src_raw, attn[b][n]) for n in range(self.n_best)]
             gold_sent = None
             if tgt is not None:
-                gold_sent = self._build_target_tokens(tgt[1:, b], src_raw, None)
+                gold_sent = self._build_target_tokens(tgt[1:, b], src[:, b], src_raw, None)
 
             translation = TranslationWrapper(src[:, b] if src is not None else None,
                                              src_raw, pred_sents,
