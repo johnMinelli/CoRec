@@ -37,7 +37,7 @@ def create_vocab(opt, *datasets):
     final_vocab_src = vocab(ordered_dict_words_src)
     final_vocab_tgt = vocab(ordered_dict_words_tgt)
 
-    for i, t in enumerate([UNK_WORD, PAD_WORD]):
+    for i, t in enumerate([UNK_WORD, PAD_WORD, EOS_WORD]):
         final_vocab_src.insert_token(t, i)
     for i, t in enumerate([UNK_WORD, PAD_WORD, BOS_WORD, EOS_WORD]):
         final_vocab_tgt.insert_token(t, i)
