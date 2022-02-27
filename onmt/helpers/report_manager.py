@@ -177,7 +177,7 @@ class ReportMgrTranslation(object):
             self.wandb_run.summary.update()
         # Tensorboard
         if self.tensorboard_writer is not None:
-            self.tensorboard_writer.add_scalar("translate/nist", rouge_score, 0)
+            self.tensorboard_writer.add_scalar("translate/rouge", rouge_score, 0)
             self.tensorboard_writer.add_scalar("translate/meteor", meteor_score, 0)
             self.tensorboard_writer.add_scalar("translate/bleu", bleu_score, 0)
             self.tensorboard_writer.add_scalar("translate/bleu", bleu_ngrams[0], 1)

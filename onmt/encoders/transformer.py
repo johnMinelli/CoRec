@@ -104,7 +104,7 @@ class TransformerEncoder(EncoderBase):
         mask = words.data.eq(padding_idx).unsqueeze(1)  # [B, 1, T]
         # Run the forward pass of every layer of the tranformer.
         for layer in self.transformer:
-            out = layer(out, mask)  # TODO check mask dim because there is an inconsistency in 2° dim in library versions
+            out = layer(out, mask)
         out = self.layer_norm(out)
 
         return emb, out.transpose(0, 1).contiguous(), lengths

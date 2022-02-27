@@ -72,10 +72,10 @@ class DiffTranslator(object):
 
     def _compute_bleu_score(self, sem_diff_path, test_diff_path):
         """
-        TODO
-        :param sem_diff_path: 
-        :param test_diff_path: 
-        :return: 
+        Compute bleu metric
+        :param sem_diff_path: file with samples for semantic similarity
+        :param test_diff_path: file with input samples to translate
+        :return: a list of scores relative to each sample
         """
         test_diffs = read_file(test_diff_path)
         sem_diffs = read_file(sem_diff_path)
@@ -289,14 +289,13 @@ class DiffTranslator(object):
 
     def _process_batch(self, batch, batch_size, sem_path, vocab, attn_debug):
         """
-        Translate a batch of sentences.
-        TODO
+        Translate a batch of sentences
         :param batch: (:obj:`Batch`) a batch from a dataset object
-        :param batch_size: 
-        :param sem_path: 
-        :param vocab: 
-        :param attn_debug: 
-        :return: 
+        :param batch_size: (int) size of the current batch
+        :param sem_path: (String) path where to find the semantic files
+        :param vocab: (Vocabulary) vocabulary for targets
+        :param attn_debug: store in each result dictionary the cross attention used for decoding
+        :return: a dictionary of lists with the results of decoding
         """
 
         max_length = self.opt.max_length
