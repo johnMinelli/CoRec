@@ -76,7 +76,7 @@ class TransformerDecoderLayer(nn.Module):
                                          layer_cache=layer_cache,
                                          type="self")
         elif self.self_attn_type == "average":
-            query, heads_attn, attn = self.self_attn(input_norm, mask=dec_mask,
+            query, attn = self.self_attn(input_norm, mask=dec_mask,
                                          layer_cache=layer_cache, step=step)
 
         query = self.drop(query) + inputs
@@ -246,7 +246,7 @@ class TransformerDecoder(nn.Module):
                     output, src_memory_bank,
                     src_pad_mask, tgt_pad_mask,
                     layer_cache=self.state["cache"]["layer_{}".format(i)]
-                    if self.state["cache"] is not None else None,
+                    if step is not None else None,
                     step=step)
             if self.state["cache"] is None:
                 saved_inputs.append(all_input)
