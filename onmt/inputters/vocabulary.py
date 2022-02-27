@@ -11,6 +11,14 @@ POS_UNK = '<pos0>'
 
 
 def create_vocab(opt, *datasets):
+    """
+    Creates a torchtext vocabulary of source and target
+    datasets texts. Indices go from most to least frequent word
+    :param opt: program dictionary of parameters
+    :param datasets: (Dataset) data
+    :return: Vocabulary class
+    """
+
     glove_file = "C:/Users/Gio/PycharmProjects/CoMeatIt/glove.6B.50d.txt"
 
     print("Loading Glove vocabulary")
@@ -21,8 +29,6 @@ def create_vocab(opt, *datasets):
         splits = line.split()
         glove[splits[0]] = 0
 
-    """Creates a torchtext vocabulary of source and target
-    datasets texts. Indices go from most to least frequent word"""
     max_size_src = opt.src_vocab_size
     max_size_tgt = opt.tgt_vocab_size
     counter_src = Counter()
@@ -70,5 +76,11 @@ def get_max_index(vocabulary):
 
 
 def get_indices(vocabulary, example):
+    """
+    Get list of indices corresponding to tokens in vocabulary
+    :param vocabulary: Vocabulary class
+    :param example: list of tokens
+    :return: the list of indices
+    """
     """Returns the indices of an example (list of tokens)"""
     return vocabulary.lookup_indices(example)

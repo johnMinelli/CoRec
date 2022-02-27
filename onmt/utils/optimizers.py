@@ -1,5 +1,6 @@
 # STANDARD
-""" Optimizers class """
+""" ONMT optimizers class """
+
 import torch
 import torch.optim as optim
 from torch.nn.utils import clip_grad_norm_

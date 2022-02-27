@@ -60,16 +60,18 @@ def controller(opt):
         command = "python translate.py -model models/CoRec_1000_step_2400.pt \
                             -src data/top1000/cleaned.test.diff \
                             -tgt data/top1000/cleaned.test.msg \
+                            -train_diff data/top1000/cleaned.train.diff \
+                            -train_msg data/top1000/cleaned.train.msg \
                             -sem_path data/top1000/sem/ \
                             -output data/output/1000test.out \
-                            -min_length 2 \
                             -src_vocab data/preprocessed/top1000_data.vocab.pt \
+                            -min_length 2 \
                             -max_length 30 \
                             -batch_size 32 \
                             -gpu \
-                            -lam_sem 0.8 \
-                            -max_sent_length 100"
-
+                            -lam_sem 0.8"
+                            # -wandb_run user/project/id_run
+                            # -attn_debug
 
         os.system(command)
         print('Done.')

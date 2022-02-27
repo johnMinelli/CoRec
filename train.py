@@ -6,11 +6,8 @@
 import configargparse
 import os
 import signal
-import torch
 
 import onmt.opts as opts
-
-from onmt.utils.logging import logger
 from onmt.train_single import main as single_main
 
 
@@ -18,7 +15,7 @@ def main(opt):
 
     if opt.gpu:  # case GPU
         single_main(opt, 0)
-    else:   # case only CPU
+    else:  # case only CPU
         single_main(opt, -1)
 
 class ErrorHandler(object):
@@ -51,8 +48,7 @@ class ErrorHandler(object):
         for pid in self.children_pids:
             os.kill(pid, signal.SIGINT)  # kill children processes
         (rank, original_trace) = self.error_queue.get()
-        msg = """\n\n-- Tracebacks above this line can probably
-                 be ignored --\n\n"""
+        msg = """\n\n-- Tracebacks above this line can probably be ignored --\n\n"""
         msg += original_trace
         raise Exception(msg)
 

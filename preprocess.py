@@ -3,7 +3,6 @@ import torch
 import glob
 import sys, os
 # local imports
-from onmt.inputters.input_aux import build_dataset_iter
 from onmt.utils.logging import init_logger, logger
 from onmt import opts
 from onmt.inputters.text_dataset import TextDataset
@@ -18,8 +17,7 @@ def check_existing_pt_files(opt):
     for t in ['train', 'valid', 'vocab']:
         pattern = opt.save_data + '.' + t + '*.pt'
         if glob.glob(pattern):
-            sys.stderr.write("Please backup existing pt file: %s, "
-                             "to avoid tampering!\n" % pattern)
+            sys.stderr.write("Please backup existing pt file: %s, to avoid tampering!\n" % pattern)
             sys.exit(1)
 
 
@@ -68,11 +66,6 @@ def main():
     valid_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "valid")
     logger.info(" * saving %s dataset to %s." % ("valid", valid_pt_file))
     torch.save(valid_dataset, valid_pt_file)
-
-    #test_dataset = TextDataset(opt.test_src, opt.test_tgt, opt.src_seq_length, opt.tgt_seq_length)
-    #test_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "test")
-    #logger.info(" * saving %s dataset to %s." % ("test", test_pt_file))
-    #torch.save(test_dataset, test_pt_file)
 
     vocab_src, vocab_tgt = create_vocab(opt, train_dataset)
     vocab_pt_file = "{:s}.{:s}.pt".format(opt.save_data, "vocab")

@@ -6,7 +6,7 @@ import torch.nn as nn
 
 class StackedLSTM(nn.Module):
     """
-    Our own implementation of stacked LSTM.
+    ONMT implementation of stacked LSTM.
     Needed for the decoder, because we do input feeding.
     """
 
@@ -39,7 +39,7 @@ class StackedLSTM(nn.Module):
 
 class StackedGRU(nn.Module):
     """
-    Our own implementation of stacked GRU.
+    ONMT implementation of stacked GRU.
     Needed for the decoder, because we do input feeding.
     """
 

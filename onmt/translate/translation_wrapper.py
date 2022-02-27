@@ -1,12 +1,10 @@
 """ Translation main class """
 from __future__ import unicode_literals, print_function
 
-import string
-
 import torch
 
 from evaluate_res import get_bleu
-from onmt.inputters.vocabulary import EOS_WORD, UNK_WORD
+from onmt.inputters.vocabulary import EOS_WORD
 
 
 class TranslationBuilder(object):
@@ -14,14 +12,11 @@ class TranslationBuilder(object):
     Build a word-based translation TranslationWrapper from the batch output
     of translator and the underlying dictionaries.
 
-    Replacement based on "Addressing the Rare Word
-    Problem in Neural Machine Translation" :cite:`Luong2015b`
-
-    Args:
-       data (DataSet):
-       fields (dict of Fields): data fields
-       n_best (int): number of translations produced
-       has_tgt (bool): will the batch have gold targets
+    Replacement based on "Addressing the Rare Word Problem in Neural Machine Translation" :cite:`Luong2015b`
+    :param dataset: (DataSet)
+    :param vocab: (Vocabulary) vocabular class
+    :param n_best: (int) number of translations produced
+    :param has_tgt: (bool) will the batch have gold targets
     """
 
     def __init__(self, dataset, vocab_src, vocab_tgt, n_best=1, has_tgt=False, replace_unk=False):
@@ -106,22 +101,17 @@ class TranslationBuilder(object):
 
 class TranslationWrapper(object):
     """
-    Container for a translated sentence.
-
-    Attributes:
-        src (`LongTensor`): src word ids
-        src_raw ([str]): raw src words
-
-        pred_sents ([[str]]): words from the n-best translations
-        pred_scores ([[float]]): log-probs of n-best translations
-        attns ([`FloatTensor`]) : attention dist for each translation
-        gold_sent ([str]): words from gold translation
-        gold_score ([float]): log-prob of gold translation
-
+    Container for a translated sentence
+    :param src: (`LongTensor`) src word ids
+    :param src_raw: ([str]) raw src words
+    :param pred_sents: ([[str]]) words from the n-best translations
+    :param attn: ([`FloatTensor`]) attention dist for each translation
+    :param pred_scores: ([[float]]) log-probs of n-best translations
+    :param tgt_sent: ([str]) words from gold translation
+    :param gold_score: ([float]) log-prob of gold translation
     """
 
-    def __init__(self, src, src_raw, pred_sents,
-                 attn, pred_scores, tgt_sent, gold_score):
+    def __init__(self, src, src_raw, pred_sents, attn, pred_scores, tgt_sent, gold_score):
         self.src = src
         self.src_raw = src_raw
         self.pred_sents = pred_sents

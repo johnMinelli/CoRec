@@ -4,9 +4,8 @@ import os
 import nltk
 import configargparse
 
-from onmt.utils.logging import init_logger
 from diff_trans import build_translator
-
+from onmt.utils.logging import init_logger
 import onmt.opts as opts
 
 

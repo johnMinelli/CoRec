@@ -4,8 +4,6 @@
 """
 
 import configargparse
-
-import os
 import random
 import torch
 import wandb
@@ -123,8 +121,8 @@ def main(opt, device_id):
 
     trainer.train(train_iter_fct, valid_iter_fct, opt.train_steps, opt.valid_steps)
 
-    #We use the model_saver
-    #torch.save(model.state_dict(), "models/CoRec_1000_step_100000.pt")
+    # We use the model_saver
+    # torch.save(model.state_dict(), "models/CoRec_1000_step_100000.pt")
 
     if opt.tensorboard:
         trainer.report_manager.tensorboard_writer.close()

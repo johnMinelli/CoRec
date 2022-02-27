@@ -25,15 +25,13 @@ from onmt.utils.loss import build_loss_compute
 
 def build_trainer(opt, model, vocab, optim, model_saver):
     """
-    Simplify `Trainer` creation based on user `opt`s*
-
-    Args:
-        opt (:obj:`Namespace`): user options (usually from argument parsing)
-        model (:obj:`onmt.models.NMTModel`): the model to train
-        vocab (dict): dictionary with embedding of all tokens
-        optim (:obj:`onmt.utils.Optimizer`): optimizer used during training
-        model_saver(:obj:`onmt.models.ModelSaverBase`): the utility object
-            used to save the model
+    `Trainer` creation based on user `opt`s*
+    :param opt: program dictionary parameters (usually from argument parsing)
+    :param model: (:obj:`onmt.models.NMTModel`) the model to train
+    :param vocab: (Vocabulary) embedding of all tokens
+    :param optim: (:obj:`onmt.utils.Optimizer`) optimizer used during training
+    :param model_saver: :obj:`onmt.models.ModelSaverBase`) the utility object  used to save the model
+    :return: Trainer class
     """
     train_loss = build_loss_compute(model, vocab["tgt"], opt)
     valid_loss = build_loss_compute(model, vocab["tgt"], opt, train=False)
@@ -135,21 +133,12 @@ class Trainer(object):
 
     def train(self, train_iter_fct, valid_iter_fct, train_steps, valid_steps):
         """
-        The main training loops.
-        by iterating over training data (i.e. `train_iter_fct`)
+        The main training: loops by iterating over training data (i.e. `train_iter_fct`)
         and running validation (i.e. iterating over `valid_iter_fct`
-
-        Args:
-            train_iter_fct(function): a function that returns the train
-                iterator. e.g. something like
-                train_iter_fct = lambda: generator(*args, **kwargs)
-            valid_iter_fct(function): same as train_iter_fct, for valid data
-            train_steps(int):
-            valid_steps(int):
-            save_checkpoint_steps(int):
-
-        Return:
-            None
+        :param train_iter_fct: (function) a function that returns the train iterator
+        :param valid_iter_fct: (function) same as train_iter_fct, for valid data
+        :param train_steps: steps of training
+        :param valid_steps: steps of validation
         """
         logger.info('Start training...')
 
@@ -203,10 +192,10 @@ class Trainer(object):
         return total_stats
 
     def validate(self, valid_iter):
-        """ Validate model.
-            valid_iter: validate data iterator
-        Returns:
-            :obj:`nmt.Statistics`: validation loss statistics
+        """
+        Validate model
+        :param valid_iter: validate data iterator
+        :return: (obj:`nmt.Statistics`) validation loss statistics
         """
         # Set model in validating mode.
         self.model.eval()
@@ -234,7 +223,7 @@ class Trainer(object):
 
         return stats
 
-    def _gradient_accumulation(self, true_batchs, normalization, total_stats, report_stats, step):  # +++ step
+    def _gradient_accumulation(self, true_batchs, normalization, total_stats, report_stats, step):
         if self.grad_accum_count > 1:
             self.model.zero_grad()
 
@@ -386,18 +375,12 @@ class TransformerTrainer(Trainer):
 
     def train(self, train_iter_fct, valid_iter_fct, train_steps, valid_steps):
         """
-        The main training loops.
-        by iterating over training data (i.e. `train_iter_fct`)
+        The main training: loops by iterating over training data (i.e. `train_iter_fct`)
         and running validation (i.e. iterating over `valid_iter_fct`
-
-        Args:
-            train_iter_fct(function): a function that returns the train
-                iterator. e.g. something like
-                train_iter_fct = lambda: generator(*args, **kwargs)
-            valid_iter_fct(function): same as train_iter_fct, for valid data
-            train_steps(int):
-            valid_steps(int):
-            save_checkpoint_steps(int):
+        :param train_iter_fct: (function) a function that returns the train iterator
+        :param valid_iter_fct: (function) same as train_iter_fct, for valid data
+        :param train_steps: steps of training
+        :param valid_steps: steps of validation
         """
         logger.info('Start training...')
 

@@ -1,7 +1,6 @@
 # STANDARD
 """
-This includes: LossComputeBase and the standard NMTLossCompute, and
-               sharded loss compute stuff.
+This includes: LossComputeBase and the standard NMTLossCompute, and sharded loss compute stuff.
 """
 from __future__ import division
 import torch

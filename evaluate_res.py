@@ -13,7 +13,7 @@ def _g_mean(x):
 
 def get_bleu(translations, references):
     """
-    Compute the bleu score.
+    Compute the bleu score
     :param translations: list of hypothesis sentences splitted
     :param references: list of targets sentences splitted
     :return: mean, array of 4 ngrams
@@ -31,7 +31,7 @@ def get_bleu(translations, references):
 
 def evaluate_translations(translations, references, metrics = None):
     """
-    Evaluate translations.
+    Evaluate translations
     :param translations: list of hypothesis sentences splitted
     :param references: list of targets sentences splitted
     :param metrics: list of metrics to evaluate if available
@@ -63,7 +63,7 @@ def evaluate_translations(translations, references, metrics = None):
 
 def eval_trans_from_files(translations_file, references_file):
     """
-    Evaluate translations from files.
+    Evaluate translations from files
     :param translations_file: file path of hypothesis sentences
     :param references_file: file path of targets sentences
     :return: a dictionary with computed values for all available metrics
@@ -87,14 +87,14 @@ def main(hyp, ref):
 
 
 if __name__ == '__main__':
-    pred_CoRec = "data/output/10000test.out"
-    # pred_ptg = "result/ptg/cleaned.test.msg"
-    # pred_nngen = "result/nngen/cleaned.test.msg"
-    ref = "data/top10000/merged/cleaned_test.msg"
+    pred_CoRec = "data/output/1000test.out"
+    pred_ptg = "result/ptg/cleaned.test.msg"
+    pred_nngen = "result/nngen/cleaned.test.msg"
+    ref = "data/top1000/cleaned.test.msg"
 
-    # print("PTG")
-    # main(pred_ptg, ref)
-    # print("NNGEN")
-    # main(pred_nngen, ref)
+    print("PTG")
+    main(pred_ptg, ref)
+    print("NNGEN")
+    main(pred_nngen, ref)
     print("CoRec")
     main(pred_CoRec, ref)
