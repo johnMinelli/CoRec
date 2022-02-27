@@ -1,10 +1,11 @@
 """ Translation main class """
 from __future__ import unicode_literals, print_function
 
+import string
 import torch
 
 from evaluate_res import get_bleu
-from onmt.inputters.vocabulary import EOS_WORD
+from onmt.inputters.vocabulary import EOS_WORD, UNK_WORD
 
 
 class TranslationBuilder(object):
@@ -45,11 +46,12 @@ class TranslationBuilder(object):
                 break
         if self.replace_unk and (attn is not None):
             for i in range(len(tokens)):
+                src_pos_unk_index = [j for j, t in enumerate(self.vocab_src.lookup_tokens(src_encoded[:,0].tolist())) if t in self.pos_tokens]
+
                 if tokens[i] == UNK_WORD or tokens[i] in self.pos_tokens:
                     _, max_index = attn[i].topk(len(attn[i]), 0)
-                    src_pos_unk_index = [j for j, t in enumerate(self.vocab_src.lookup_tokens(src_encoded[:,0].tolist())) if t in self.pos_tokens]
                     if len(src_pos_unk_index) > 0:
-                        # use pos_unk allgnment
+                        # use pos_unk alignment
                         for max_i in max_index:
                             if max_i in src_pos_unk_index:
                                 tokens[i] = src_raw[max_i]
