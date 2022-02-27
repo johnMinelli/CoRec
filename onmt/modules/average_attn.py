@@ -69,8 +69,7 @@ class AverageAttention(nn.Module):
         if layer_cache is not None:
             step = mask_or_step
             device = inputs.device
-            average_attention = (inputs + step *
-                                 layer_cache["prev_g"].to(device)) / (step + 1)
+            average_attention = (inputs + step * layer_cache["prev_g"].to(device)) / (step + 1)
             layer_cache["prev_g"] = average_attention
             return average_attention
         else:
