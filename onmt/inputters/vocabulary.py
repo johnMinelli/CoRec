@@ -19,7 +19,7 @@ def create_vocab(opt, *datasets):
     :return: Vocabulary class
     """
 
-    glove_file = "C:/Users/Gio/PycharmProjects/CoMeatIt/glove.6B.50d.txt"
+    glove_file = "glove.6B.50d.txt"
 
     print("Loading Glove vocabulary")
     glove = {}
