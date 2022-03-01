@@ -1,0 +1,5373 @@
+fix test output .
+add cobweb aliases
+giving more memory to gradle jvm
+added gpgcommand , to be placed in . build .
+missing break in switch statement .
+increase the buffer size to hold the whole content of the file . . . .
+add files via upload
+replace respositories with repositories ( <issue_id> )
+disable break on lint error . . . .
+updates hypertrack sdk .
+ignore eclipse settings
+ignore eclipse files
+add current entry tracking when reloading ( <issue_id> )
+updated submodules
+added tag jdk - 10 + 1 for changeset add9e8c9b20b
+add docs
+added libunwind to the list of
+add nullability annotation
+add feature notes
+allow synchronous and test for children of iter_spread and object_spread . .
+bump checkstyle from to 8 .
+modified ognlvariableexpressionevaluator constructor to protected .
+add publickey and hello message to the encryptionhandshake message .
+disable configureondemand as it broke in agp 3 . 0 alpha 5 . 0 alpha 5 . 0 alpha 5 . 0 alpha 5 . 0 alpha 5 . 0
+build number increment by automatic build
+synchronized getlogrecordsetwriter ( ) .
+delete unuseful folder
+add script for prebuild to run .
+remove the checkstyle rule finalclass
+removed instance_comment_icon . gif
+add demo overlay
+remove testfile
+add missing zeroclipbpard swf file .
+updated background .
+add redundant method to the parent is already inherited from the parent class
+add the project name
+adding repeat marques for test runner
+removed tag
+updated apache incubator proposal ( mediawiki )
+ignore neuronstest test classes ( pure benchmark ) .
+updated typo .
+added aliases to in
+rename package ' org . jenetics . jenetics . ' to ' to ' . programming ' .
+applying comments from trunk .
+update protos
+fix broken markdown headings
+add files via upload
+updated sample project
+bump license - maven - plugin from 1 . 18 . 19 to 1 .
+declare annotation : add the 50 odd tests in .
+remove todo :
+build 9 beta )
+added tag jdk7 - b106 for changeset 07335a216c91
+added tag jdk - 9 + 159 for changeset 5eea3031ae7b
+add existing file
+add clear
+remove configuration for avoiding jni refs .
+added a dependency on a .
+modified banner .
+make encryption interface public .
+disable optimisation
+bump wiki from 2 .
+added a link class
+remove a private constructor to preconditionmessage
+fix the cause
+ignoring * . iws files
+add files via upload
+updated project for java reflection
+make webhistoryitem constructor public and hidden .
+revert calcite closure .
+add binaries for linux / amd64 .
+remove accidentally committed div by 1024 added for debugging purpose .
+add demo gif
+delete cname
+updated lang submodule
+add abi
+disabled the wallpaper when completely in - 1 now space . . . .
+add seven segment image
+extend safari on non process
+correct the indentation in tests
+resize renderer
+added 200 secs
+bump postgresql from 42 . 2 . 9 to 42 . 2 . 8 ( <issue_id> ) .
+added exit_status_dying_with_uncaught_exception
+skip a few transformers when injecting packets .
+delete org . maven . ide . eclipse . prefs
+update the gradle plugin
+added copyright in to .
+add gif
+updates libjitsi . jar ( built on jitsi fbed4cfd1d ) .
+enable hono adopters carousel on website
+put back logp - > printf in the backup helper code
+bump rxjava2 - interop from 0 . 13 . 13 . 6 . 13 . 0 . 5 to 0 . 13 . 13 . 6 . 13 . 0
+updated submodule
+ai 144034 : am : cl 144032 added missing import to fix breakage caused by cl 144008 . . . . .
+added unproject in camera
+removing outdated to properties
+fixed bug at the shutdown time : the watchdog shouldn ' t notify of
+added beta label to the tab .
+set offscreenpagerlimit from 1 to 2
+add image
+delete mention of 2 . 0 . 2 . 0 - snapshot . 0
+added the notice file for commons logging , that probably should have been included in the distro for now .
+adjust tasklist screenshot
+allow the usage page
+add high - level diagram
+bump maven - source - plugin from 2 . 1 . 0 to 3 . 1 . 2 . 0 to 3 .
+automated merge with https : / / / hg . . . .
+add a pattern in findbugs warnings
+fix bug <issue_id> unable to change text direction programmatically using settextdirection android sdk api - do not merge .
+delete explorer_icons . png
+added tag jdk7 - b68 for changeset a02edc83f1b4
+update getdown ( reforked )
+bump avs
+remove async
+added test file
+add ipv4 in systems to avoid network classes .
+fixed bug on . .
+update settings screenshot
+added a doc
+added tag jdk8 - b107 for changeset 2c525ed65d4c
+fixed a serious null pointer bug .
+optimize tag
+add comments
+update r_benchmarks import
+added tag jdk9 - b15 for changeset 0e30add0f485
+add missing in test case
+add keystore
+remove old blenderloader . jar .
+added tag jdk8 - b13 for changeset 660da5b5870e
+updated imports .
+add editorconfig
+added tag v4 . 95 for changeset c93f7a5c4a76 .
+update librime and opencc
+fix broken user removal .
+remove double jpa
+enable javadoc in gradle
+disable sa options in jinfo / basic . java test until sa updated for new hash and string count / offset .
+added tag jdk9 - b48 for changeset 6e2e298c50f1
+include all files in '
+add cigar . tostring ( )
+add blockworkertest unit test
+updated hand . png with a transparent background .
+fixed a missing dependency on the apiman - api
+add xvfb for ui
+begin 1 . 0 . 2 development cycle
+add apk
+add missing sideonly ( side . client ) annotation to bclibeventdist . onclienttick .
+add ssl test in the apr .
+bump target sdk
+added an image
+removed the
+add travis to run ( <issue_id> )
+added symbolic link of index . adoc
+updated the build directory
+set some memory limit for tests
+add nullable false column to the
+added sleep to avoid null error after most recent change to not break api
+ignore the images .
+add dummy ant - file for dist . properties .
+add idea project files to ignore
+added fake file .
+add network label to upgrade .
+add actual groovy libs .
+add screenshot
+replaced matsim4urbansim_v1 by matsim4urbansim .
+added filepicker pngs
+added commons - codec
+update dependencies
+removed extra space
+delete cname
+add description for template
+add android arsenal badge
+add chtempdir tempdir
+replaced hard coded background color with coresponding color - definition
+updates ice4j to r449 which further reduces the average time it takes to clone a datagrampacket .
+remove local mvn repo
+adjust the latest of .
+changed the latest result of the test case
+use the new darwin capabilities .
+fixing the build .
+send a at the of the .
+update coverage plugin
+delete shell - server - impl - 7 . 2 . 1390 . jar
+exclude one test , this should be the last failing one .
+ignore folders
+add sig to contributor ' s certificate .
+adding the indicator state for vsmdevice
+remove dotted lines on focused links
+automated import from / branches / donutburger / . . . . @ 141042 , 141042
+bump it
+remove unused config .
+add alpha
+added missing xml and introduced in
+added snapshot
+remove unused @ suppresswarnings .
+commented out another @ override annotation .
+add exception details
+missing setwritequeuemaxsize implementation on streamingbodycodec
+bump cglib from 3 . 1 to 3 . 12 . . . .
+make scope directory
+send guestosdisplay to agent
+remove unused # includes . . .
+adding java9 to travis configuration
+remove the call to nativeaddjavascriptinterface ( ) from browserframe : addjavascriptinterface ( ) as it causes an intermitent crash .
+bumped snapshot to from 1 . 0 . 0 . 1 . 0
+update docker - client to 2 . 8 . .
+resolved progaurd execution title ( <issue_id> )
+fix the bug where - t 3 is the same as - 4
+ignore gpg signing in travis ci
+add link to icediscovery in
+fix bug in broadcast receiver .
+remove messenger - rules
+add files via upload
+updated image
+prepare project for the next development iteration
+fix the case reconnection doesn ' t work
+added tag jdk8 - b92 for changeset fe7926936461
+bump equalsverifier to 2 . 2 . 4 . 0 . 0
+add link to git
+resolved progaurd execution title ( <issue_id> )
+bump serialization to .
+replace respositories with repositories :
+add the build
+delete riot . txt
+adjusted bnd to unittest .
+bump maven - compiler - plugin from 3 . 8 . 0 to 3 . 1 . 8 . 1 . 1 . 0 ( <issue_id> ) .
+fix new incorrect
+remove deleted keylayout from makefile .
+ignore built files
+fixed a typo
+updated pitchme transition style .
+fix bug : data - 3961 - blood of the beast not showing up when pathfinder society organized play is selected as game
+revert todo for
+download support for travis
+add amsz to the .
+added studio
+ignore the generated files directory
+implemented ' true closures ' rather like ruby 2 . 0 will . . . . . .
+resized demo gif
+adding missing subtree ghpage deployment to get
+add groovy to card script
+removed dependency to android support library
+add ruby and js
+add xwalk_core_library to git ignore path .
+delete rocketmq - amqp
+add new line to the end of the file
+adjust support for junit from
+improve umlgraph references in the generated files .
+ignore list .
+updated context
+add irc webclient url
+update gradle plugin to 3 . 1 . 1 . 0
+delete jar_mushroom_grass_bottom . png
+updated samples .
+added script - event - proxy as a module in pom
+updated caching from .
+add debian and to the
+remove jdk 7 from travis config
+added testing module
+prevent transparent region from getting out of sync with surface flinger .
+bump pom to 4 . 9 . 1 - snapshot
+update account_id in
+missing setwritequeuemaxsize implementation from
+prepare next development iteration .
+remove mysql from benchmark .
+adding simpledb demo module to the parent pom . xml .
+bump bom
+ignore intellij files
+use an opaque background for the search bar in legacy searchdialog . . . .
+add plugin directory to binary build .
+added donation to list
+create funding . yml
+ignore the classes
+bump api ref . . .
+update exoplayer to 5 . 0 .
+turn off travis email notifications
+added tag jdk9 - b44 for changeset 1bb8bc01c120
+updated screenshots
+bump the settings
+remove unexpected override in
+fix all apps auto scroll issue on talkback mode .
+add description for
+set animation
+add logging from user tests .
+rename tv class
+missing file .
+add servlet dependencies to jdk .
+update gradle to 2 . 3 . 1
+prepare next development iteration .
+update multithreads
+make sure wf8 ui is enabled
+ignore javadocs folder
+trying tabs for circleci
+added tag jdk7 - b67 for changeset 805a72a26925
+add color to werewolf
+add link to javadocs
+add pr for template
+mention cassandra - 699 in changes .
+add contributors
+add empty line to endpointsubmitter .
+add rumba default feedrate
+adjust new functions to 16 .
+fix a node list
+updated changes . txt .
+updated vanilla latest result
+updated fetchsize log
+update gif
+add link to icediscovery demos
+ignore pdf . jar
+enable rtmp support
+added tag jdk9 - b30 for changeset 9628dff9b9a1
+add java compile options
+remove client vm from default jib profile on windows - x86 and linux - x86 .
+updated core submodule
+updated support library to 25 . 3 . 0
+update chassis pom . xml
+add mana_or_combat to eldrazi spawn , can now
+allow unnecessarycasts diagnostic to be suppressed . . . .
+remove note to contributing .
+added import inetsocketaddress
+add test results
+added line for cassandra - 5542
+add droidsansarmenian font
+adjusted weeklyhoursspentinclassesseason to inquiriescourse
+removed opengles . ws to and nio .
+added support for batchnormalization layer .
+ignore eclipse folder
+pass an to avoid warning in dockerfile
+add tier protocol to the
+added tag jdk7 - b55 for changeset 357e7d58ea2f
+create authors
+updated progress
+update pte , this enables find nearby stations for most networks
+add group id for the uploadarchives task to use
+prepare next development iteration .
+removed iml files
+set theme jekyll - theme - cayman
+bump asm to 7 . 2
+add note about solving bug
+add getcontextpath . . .
+edit code comment
+added lintoptions to library .
+centers the action button on .
+remove obsolete prerequisites stanza
+delete cname
+add 53bit overflow test for dart2js .
+removing presto - connector jar
+add metrics to softap patch .
+add jdk . . cmm in jdk . management . spi be exported to jdk .
+updated r .
+fixed another gate warning
+update librime
+create keras . md .
+add webservices to the root pom .
+deprecate unused header
+exclude test files from rat check
+modifies path hierarchy for macosx coreaudio jni and library .
+delete demo jar
+update screenshot
+remove log .
+automated merge with https : / / flies . googlecode . com / hg / hg /
+prepare next development iteration .
+add debian in to list .
+bump min sdk
+update demo
+add funding . yml
+automated merge with http : / / hg . netbeans . org / main
+add a simple exclude for git .
+add files via upload
+made the penalty for unequipping an armband less harsh .
+add debug . jks
+remove redundant dependencies .
+add presentation to test .
+revert respositories to latest .
+remove dependency on docs . gearvrf . org .
+admin down impl
+migrated elasticsearch start script to elk 6 . 7 . 1
+added todo
+updated support - v4 . jar
+add travis . yml
+add apache flink
+add changes .
+ignore test ( <issue_id> ) .
+fix the build . . .
+build docs in ci
+remove unused import
+add verison .
+fix an issue reported by ga
+remove project page link
+add parens for clarity .
+add crash in the activity to
+add issue label bot config
+ignore < omctaxi > tag when querying for trips .
+add push test
+remove oraclejdk7 from travis build .
+added css border to first in
+add alias names
+add horn of deafening
+remove @ param warning .
+remove the space in applatix array parameters ( <issue_id> ) .
+remove an - from the driver
+fix the dependency to 2 . 2 . 1 - snapshot
+added tag jdk7 - b126 for changeset b1e3d8548ad2
+keep the unzipped distribution in target .
+update demo .
+add ic_drawer for mdpi and xhdpi
+updated ruby reference
+tweak server
+fixed some trailing space after norway in the customers table .
+set skip_cleanup to true to true to in deploy
+remove travis webhook configuration .
+begin 0 . 5 . cycle
+remove unused jar .
+adding the htmlformentry19ext module to the bundled modules .
+tweak index . adoc
+use the default activity mipmap .
+forgot this test tests : fat )
+add parentspanid for span
+updated _sidebar ( markdown )
+added the save button in pdf .
+remove the loading in execution .
+add alinearop base
+add last remains of groovy - all
+fix the build for board_uses_generic_audio option
+added unique constraint to billabletime
+updated screenshot .
+added simple texture
+update dependencies for warning fixes
+added robin as author .
+automated import from - ui .
+add sort in the list .
+added tag jdk - 10 + 18 for changeset 8314cfaaacab
+changed the in the test dir
+bump postgresql from 42 . 2 . 9 to 42 . 2 . 5 to 42 . 8 ( <issue_id> ) .
+updated properties
+adjust proto in account
+added gradle output to travis .
+added coveralls .
+remove this repo now correctly
+enable bwc testing .
+initialize sysui visibility .
+add name of http : / /
+undo part of fixbugs pull request that was fixed
+reduce resource usage in the client test
+completing the license file
+removed unused count variable from the eventhandler
+add success message to java / fileinputstream / fileinputstream / largefileavailable . java . java . java .
+added stub file for next development
+suppress support info
+revert grey border to
+add link to icediscovery overlay
+add java9 - storage resource
+set cursor to id .
+bump berkeleyje to 7 . 4 . 5 .
+ignore logs
+prepared next development cycle
+added placeholder for apisecret
+add 8dp exception and the
+stop runninig avd before every ui test starts .
+adding common for py doc
+updated the launcher icon .
+added tag jdk - 9 + 141 for changeset f31d65424ed0
+added translation using weblate ( finnish )
+added wesley :
+add jdk to the list
+make setup ' t work on travis
+remove create_vm action group .
+updates jicoco .
+remove custom compilewithecjstrict and findbugs check from sulong gate .
+fix a log
+add call domain extra in imscallprofile . . .
+devised a ignore
+bump mctester to 0 . 6 . 3 - snapshot
+add android arsenal badge
+adds core_additional_opts
+renamed serviceselectorprovidertest to testserviceselectorprovider
+organize imports
+remove debug
+updated travis .
+updated rogue
+add pandoc build fix for windows .
+added cleartext traffic - demo
+added translation using weblate (
+updated google gson to 2 . 6 . 2
+add jcenter to the dependency sources
+removed extra spi file in wrong place
+add logos
+set travis to java 9
+add todo for 416 truncated
+updated travis configuration to run builds for pull requests against it
+update actor - commons 0 . 0 . 18 - > 0 . 0 . 19 - > 0 . 0 . 0 . 19 - > 0 . 0
+fix bug in
+remove jmh dependency .
+add ' builtin ' to prohibit .
+added translation using weblate ( romanian )
+exclude accountmanager . xml in build . xml .
+added workflow of the list
+removed old screenshot
+add write_external_storage permission
+updating poms for 1 . 0 . 0 . 66 - snapshot development
+add accidental url in the example
+add missing gl .
+disable process preloading optimization for android - gradle projects .
+updating reference to latest modulespvcontract revision
+added tag jdk7 - b37 for changeset b4c26443dee5
+updated sample apk
+add empty line before constructor
+commiting fixes gradle wrapper
+add int_array_test in dart2js .
+added screenshot to .
+remove unused application . list
+added workflow
+add test case for dmi_long_bits_to_double_invoked_on_int .
+updated help jar
+updated fml : .
+fixing the at end of file
+improve code to retrieve frame at a specific time
+added screenshot .
+ignore some files
+add parallel execution .
+removed unused import
+updated pom
+soy js codegen : fix latent ( unreported ) .
+add irc notifications to travis
+removed unused import
+added parent to make hudson happy
+add _java_options to circleci
+updated travis ci configuration
+added tag 1 . 3 for changeset c6e58ab2ccf0
+update gradle to 4 . 10
+revert header checkin .
+ignore nestedvm temp folder
+remove comma in test file since it invalidates group util tests
+simplify poisonaction
+skip the setting of score
+don ' t crash when no profile is selected .
+automated merge with http : / / hg . netbeans . org / main
+update travis . yml
+updated travis to environment
+add shuyi chen as a contributor
+add robin as .
+add jfiglet settings
+removing transactional - scope
+prepare next development iteration .
+add function1 and function2 to the list
+added symbolic link of index . adoc
+add support library to gradle
+enable cache
+add usecontainersupport jvm option
+remove local testing file
+convert test case to
+added overview for header
+added files via upload
+connecting events to test android implementation
+add screen_shot .
+add jcseg logo
+ignoring a frequently failing test .
+remove deprecated methods .
+remove description , because j . l . throwable doesn ' t have it
+develop 0 . 2 . 0 - snapshot .
+updates the gradle build .
+save notification large icon to extras . . .
+add assignment of
+modify license javadoc
+update linguist - vendored
+updated diagram
+add sms permissions for carrier app . . .
+ignore testng output
+added nil check for
+added tag hs25 - b58 for changeset 20483ee5d8d8
+add travis ci
+add blockworkertest unit .
+fix test - dependencies
+add company to the
+add screenshot via upload
+trying print lint result .
+add toc macro as this
+add support to vanilla
+add config_batterysdcardaccessibility to cm_symbols . xml .
+update demo
+added the resouces project to the top - level aggregator , to ensure it is built and level aggregator , to use the other
+introduced random nullpointerexception bug
+added comment .
+add travis ci
+add rest api docs for control plane manager application .
+introduced random nullpointerexception bug
+reorder logs . . .
+update link to the latest " wiki link " building " wiki link
+add image for multipane layout
+add java 7
+add contributing . md
+update jar
+install test - client .
+remove ( unnecessary ) magic number .
+fixes a nullpointerexception in the ' s .
+ignore google - repository
+remove dummy output
+updated missing . .
+bump common ref . . . .
+add xxhdpi resources
+remove leftover code files
+removed unnecessary timeout from thread_isinterrupted04
+updated es file to fix for testing
+disable junit tests temporarily .
+prepare next development iteration
+removed echo
+add home in client to
+enable ud test data
+fix bug in textlayoutcachekey handling embedded nulls . . .
+remove unused apk
+added tag jdk - 10 + 0 for changeset 3995afe22c68
+ignore adempiere .
+removed empty line
+prevent double maven ( <issue_id> )
+optimize wallpaper load , avoid show black wallpaper . . . .
+bump httpclient from 4 . 2 . 5 .
+updating parent to common : 2 . 1 . 0 . 3
+bump common ref . . . .
+added credits : .
+upgrade mockito to 2 . 23 . 0 . 0 . 0
+update sample apk
+skip test for mac / test . .
+added tag jdk7 - b73 for changeset 35b6f37d3023
+adjust todo
+added lint errors ignore
+remove background and
+add bug tempdir
+add project to publishing
+remove xlint . .
+added faq to the
+bump common ref . . . .
+allow backups of fdroid
+add chtempdir tempdir
+add missing zeroclipbpard swf file .
+added ivy to repo
+wait 60 seconds for startup
+add flag for handling overly long file names . . . . .
+add newline at eof
+added info for the ` api
+resize image sample
+updated mockwebserver to be in
+add switch case for nti_supported featureset . . .
+add travis as ci environment
+removing typo
+bump common ref . . . .
+remove mavencentral for resolving dependencies
+ignore files .
+modify config
+enable console print out
+updates libjitsi .
+revert r1389368 , this is actually a locale problem . . .
+tweaked the item texture
+disallow some warnings
+removed system . out . println ( ) used for debugging .
+added space for travis
+remove maven central publish .
+fix the ( ) for y )
+add graphs for test classes to skip
+published documentation from master to [ gh - pages ] .
+preserve webview on keyborad shown and hide
+add the date in the operations
+prepare next development iteration .
+build directions
+update internal framework to api 26 ( lollipop mr1 )
+updated persian to list
+updating maven - plugin from 2 . 2 . 11 . 2 . 2 . 2 . 2 . 2 . 11
+add list stats
+added demo badge
+added coverage to test interfaces
+set the default gwt log level to error
+removed git push
+removed the lib directory .
+added date stamp
+fix bug in which navigating to a task after filtering the list causes a replacestate after filtering the list of the filtering input due to blur of the filtering input
+prepare next dev iteration
+automated merge with https : / / checker - framework . googlecode . com / hg / hg / hg /
+updated library reference
+set gitmodules
+added access to mondrian result .
+remove comma
+sanitize data from export
+avoid silent error when calling unimplemented function .
+add intermittent tag to java / rmi / rmidviainheritedchannel / rmidviainheritedchannel / rmidviainheritedchannel / rmidviainheritedchannel / rmidviainheritedchannel / rmi / rmidviainheritedchannel / rmi / rmidviainheritedchannel / rmi / rmidviainheritedchannel /
+updated the screen shot .
+fix broken - maven - plugin
+bump pom to 6 . 1 - snapshot
+add max_aspect tag for transparent navigation bar on oem roms
+remove an empty line in pagesviewmodel
+revert help !
+added that feature we discussed on . . . . was it monday ?
+add the of to list . .
+fix a potential nullpointerexception in getrobotoutputstream ( )
+ignore test test : result ) .
+add id in test
+fix bug in workunitstate . getextract ( ) .
+remove an extra case where i don ' t need to restore the log prefix
+revert junit from
+get more builds of builds .
+replace the screenshot with less dense variant
+exclude tests output from checking
+delete cname
+remove unnecessary flag from nonnull2test .
+build launcher3 against prebuilt sdk 21 . .
+squash me
+updated build tools to
+update hint text
+remove mysql : .
+remove reference from library path
+adding consul links
+set widget notification default setting to never for minimum annoyingness .
+add random uuid generation of
+rename missing import .
+added tag 1 . 11 for changeset 8a1672ae6b67
+remove unwanted files
+add examples jar to lib dir .
+remove dependencycheck profile , that should go to product branches
+bump mockito - core from 2 . 23 . 4 to 2 . 0 to 3 . 0 .
+add screenshots
+moving the full module
+updated pom
+add language : java to travis . yml
+updated progress
+adds button to - moz - focus - inner hack .
+add forge
+add openjdk8
+update download link
+ignore storm library
+add empty file
+updated travis ci config
+add cache
+revert 8014464 on .
+enable ud converter after cherrypicking stuff from
+update todo
+added symbolic link of index . adoc
+removed a system . out
+added javadocs folder
+revert todo for
+reject bad resxmltree : : setto calls .
+revert behaviour from test .
+make topic text is selectable
+add docker .
+added tag jdk7 - b81 for changeset 10b993d417fc
+add mac x86_64 library
+added todo .
+add a null check
+remove avector . method
+ignore more files
+add owners for deviceconfig .
+add random uuid generation of the
+revert unneeded blank .
+updated logo in
+updated _sidebar ( markdown )
+ignore bin /
+updated submodules to latest
+add configuration skeleton for console proxy cert .
+added tag jdk8 - b46 for changeset b7b7fb648bf6
+update changes .
+tweak documentation for matching engine
+add z - width for footer
+add notice file
+added persian to list .
+add google repository
+add wiki test
+add access_network_state permission to example app
+added tag jdk9 - b81 for changeset 13c2ca2ea10a
+add refresh text in action bar
+adding cla link to contributions . md
+add layout changes in qs card .
+updated fml : .
+automated merge with http : / / hg . netbeans . org / web - main
+update gradle plugin to 3 . 1 . 0
+adding ui tests to travis build
+set revision 3 . 5 . .
+start development on 0 . 1 . 2
+updated favicon
+added icons . . .
+add reference pdf
+optimize kryo .
+added tag jdk9 - b09 for changeset 31676cffe01c
+update license
+enable result in the build .
+add generated for eclipse
+add missing import statement .
+fix up the makefiles and some samples . .
+prevent maven in pushing changes .
+bump dependency to support
+added tinted logo pngs
+update respositories with repositories ( <issue_id> )
+stop synth when tts client dies . . . .
+fix bug in listiterator implementation of the ' seq ' classes .
+adjust serviceselectorprovidertest to testserviceselectorprovider
+updating submodule to the new sdk
+add attribution to issue reporter .
+add missing 4 . 1 .
+add debian package to client .
+install caching on travis
+bump kafka to 11 .
+increases the default packet queue size to 1024 .
+added library project
+fixes an issue which could cause a dtls client to never send a client hello .
+added map access to avoid scripting .
+updated ruby to latest .
+add demo gif
+add a ruler file
+added reference to point at the time
+build blog - recommendation too
+remove space
+added todo .
+add upcomingchanges
+add deprecation warning messages
+removing old aws sdk
+updating bin
+revert test .
+update docker - ignore file
+alter 0 . 7 architecture png
+fixed small bug : the length of the text was now calculated incorrectly when appending characters to an .
+ignore 1 . 2
+added " games " metadata tag for play games landing page in d . bug : 15709471 . . . . . .
+suppress deprecation warning during packaging
+delete youtube . jpg
+revert stat in test case .
+add wear stub .
+include gradle - wrapper . jar
+define the about as of for
+add native library access
+provide means of retrieving scale .
+remove an extra config to
+revert the at the end of
+remove obsolete import .
+updated license and
+add permission check to setallowonlyvpnforuids .
+added tag for preferences for
+update images
+change the location of bosscapacityvo .
+include the pdf plug - in
+added snapshot from . .
+add proguard rules .
+ignore dist folder
+added idea project files
+see 03 / 23 log
+add invalidargumentexception
+added call to shutdown ( ) .
+fix broken enter links in
+adjust the lint xml absolute path for relative path
+remove extra blank line
+added small logo
+bump spongecommon for async lighting / watchdog crash fix .
+add url
+add respositories to repositories in
+ignore parameterizedcheckertest class which is not a test
+update notice
+add a list twice
+remove dependency on groovy - json for compilation
+adding codecov . io
+add protocol . base_ethernet am : ca4c61aa9f am : bc163f07ee .
+running unit tests on ci
+ignore eclipse project files
+add gif
+removed ratings jar
+add description
+added forgotten property
+remove repeat constraint
+updated faq
+add test files for test results
+remove whitespace .
+add issue template to adapted
+bump common ref . . . .
+update changes . txt .
+try cinst
+perform integration tests
+recreate fbos when offscreen pgraphicsopengl is enabled .
+bump missing in . .
+add early in .
+ignore jira & googlecode plugins
+build 238
+remove unneeded loader . properties
+add jdk12
+add cooper 9500 product file !
+took out date .
+unsetting up travis ci .
+turn on pollertest
+added tag 1 . 37 for changeset 6c43c437a4d4
+add 32x32 icons
+replace respositories with metadata in repositories
+bump pom to 7 . 5 . 1 - snapshot
+added tag jdk - 10 + 11 for changeset 2e1d6204a3b2
+remove unused import
+delete file would just status codes if a failed due to access denied .
+add jitpack url
+added facade class diagram
+added invalidargumentexception
+bump robolectric to 5 . 0
+add testmultithreadedretrievalofgraphs in test
+regenerated golden image
+add the integration phase
+move the pointer location thing out of common .
+update gradle plugin
+skip int_64_test in dart2js checked mode . .
+added tag jdk7 - b137 for changeset 29296ea6529a
+fixed absurd exception .
+add nullable to actor : getname
+raise the connect to
+add openedx . yml
+add test for in
+delete service . png
+prepare library for development
+add python - requests as dependency of debian package for spreaper
+updated extractor
+modify close function
+revert calcite result in the
+reset mactivecontroller to null in draglayer . onintercepttouchevent ( ) . . . . .
+hide server response 353 and 366
+added tag jdk7 - b73 for changeset d02ee9795d57
+updated submodule
+added tag jdk9 - b45 for changeset c0fc59caca88
+run cobertura during phase ` .
+adding a bug
+removed font line height to
+added tag jdk - 9 + 141 for changeset 2b32a69a46c1
+remove testng lib to fix framework .
+add show_ime_with_hard_keyboard to clone_to_managed_profile .
+add onanyutterance listener .
+remove unnecessary suppresswarnings .
+try this ?
+adding faker .
+add big logo
+added android screenshots
+added tag jdk8 - b80 for changeset 55eb22e60638
+update buildnumber to 1 . 0
+ignore idea files
+improve umlgraph references in the generated files .
+bump mockito - core from 2 . 24 . 24 . 5 to 2 . 0 to 2 .
+add assets for mdpi
+add test golden image
+added tcpregistry . reset ( ) ;
+removed extraneous dependency of tests
+added the policy file to listservice . sh .
+add security module to the building .
+add changes . txt for breton
+update jetty
+updated archive file
+fix the build .
+implement member . getdepth ( ) .
+prepare next development iteration .
+checkstyle checkstyle checkstyle checkstyle generated checkstyle checkstyle checkstyle generated checkstyle checkstyle checkstyle generated checkstyle checkstyle checkstyle generated checkstyle checkstyle checkstyle checkstyle generated checkstyle checkstyle checkstyle checkstyle generated checkstyle checkstyle checkstyle
+added dont use tinkerpop2 logo - - ctr .
+added tag jdk7 - b76 for changeset 02d36709a16f
+add new submodule
+added symbolic link of index . adoc
+added utf - 8 encoding to pom . xml
+add new data transfer editor .
+prevent npe on clear recents double press .
+add test wait
+remove stray reference introduced after merge
+removed unused java
+added tag jdk9 - b24 for changeset ba581cb2983f
+ignore pact - tests ' tmp directory contents
+updating bin
+updated submodules
+fix respositories from trunk .
+add antunit beta 1 . 0 . .
+add javadoc artifact to maven publication
+added new icons
+add link to unittest
+preferred focused component
+added tag jdk8 - b63 for changeset c9ce28f01a29
+resolve listview children ' s rtl properties when added .
+ignore vim data index .
+commited a signed jar .
+include jdk 13
+use the correct git submodule
+added proguard configuration
+added the bog in
+improve doctype to charset issues with other files
+revert the test case .
+set gradle travis
+update the translators
+add test command
+add git ignore
+added tag v1 . 1 . 7 - rc2 for changeset 0c06023f4bae
+revert the test to unbreak the test . . . .
+add jars .
+added tag jdk9 - b40 for changeset 4bb9d8815020
+adjusted demo layout to showcase the
+added the contribution guidelines
+specify scala 2 .
+bump gradle to 3 . 4 . 1
+bump poms to ` .
+run gc after runner finished .
+added unused classes
+add back in to thrad section
+bump maven - assembly - plugin from 3 . 1 . 1 to 3 . 1 . 1 . 0 . .
+updated tutorials
+removed unused merriweather lightitalic font file
+revert " to 3 .
+fix the build . . .
+updated repos
+add oracle jdk 10 to travis - ci
+removed deprecated dex use . am : 547ce4c623 .
+removed submodules submodule
+removed loopback pin entry for gpg
+adding broken package file
+added compiler .
+added license header .
+revert debugger .
+add bs ping track when connectbs fail .
+add support library to the support library makefile . . . .
+set default branch to 1 . 11 .
+bump the memory for the groovy compiler .
+added todo .
+add css classes for desktop and ankidroid . .
+updating performance graphs
+revert respositories from repositories in
+update lint results to reflect reduced error / warning count [ skip ci ]
+modified travis .
+fix an issue reported by ga
+revert test
+updating submodule to latest
+bump gradle to 3 . 1
+added buildcompat # isatleastnmr1 ( ) to list .
+add group and desc for testtimes task .
+updated fixage
+added tag jdk7 - b56 for changeset 5bef15d9d54a
+added next field in
+add missing service file
+excluded examples from build
+add back pointer to thrad section
+updated travis .
+removed empty lines
+disable signing of build artifacts
+undo broken test code . . .
+update infinitylib
+added findelementby
+update demo . apk
+ignore bin directory created by eclipse .
+added cname for pi4j . com
+updated bom
+integrate latest jax - ws ( 2 . 1 . 6 ) in to jdk 6u14 .
+need resource
+added scaleddibsectionbuffer : ( ) to application . .
+update screenshot
+bumped android - iconify . to .
+update scripts
+remove dependency only .
+unlock the device
+add files via upload
+remove circular ref
+add granteeidentifiedby
+add logo
+made changes so it will hopefully compile by the next commit
+enable hdcp debugging in stagefright ( 1 of 2 ) .
+raise rank of mt correctness issues .
+replaced image for " suggested by lyubomir marinov ) .
+enter individual stubs .
+update sdk
+smack 4 . 2 . 0 - alpha2 - snapshot
+bump license - maven - plugin from 1 . . .
+remove unused import
+disable groovyc temporarily
+delete vcs .
+remove git submodule
+fix test sql
+add image for test
+added tag jdk8 - b113 for changeset 031674170429
+adjust feature graphic for tablet
+updated transfuse - bootstrap to non - snapshot
+add config repo
+fix a bug : socket disconnect didn ' t terminate properly
+updated freebox os to v3 . 0 of freebox api and proposal of transformation localization
+add java ' s .
+replace groovy code with ability
+updated performance & memory consumption graphs
+fixed bug in the latest result
+replace groovy code with card script
+added tag jdk8 - b96 for changeset 3fe185be063a
+build armeabi - 7a jni as well
+added paypal to funding
+update patch in case table doesnt exist .
+fix test : result in transformers
+removed adoc footer
+remove doctype
+added tag jdk7 - b64 for changeset 444fd06c5063
+remove oravle jdk 7 from travis build
+rename build . spec to sputlite . spec
+created cname file for handling selenide . org
+add files via upload
+add closure .
+set sudo to travis
+adding content to roadmap
+added license header .
+adding the cordovaexception class
+automated merge with http : / / / / hg . . org /
+missing import .
+add some testing code .
+revert link to latest result
+updates the jabber bundle ( built on jitsi c762e6498 ) .
+added further property to ctg runs
+fix an invalid annotation in a test .
+add org . sync . objectweb .
+removed graphics .
+bump google - cloud - storage from 1 . 97 . 97 . 98 . 0 to 1 .
+removed android - support for older devices
+create a . txt
+bump google - http - client - jackson2 from 1 . 32 . 0 to 1 . 0 .
+add sample apk
+update jetbrick - commons to 2 . 0 . 0 . 3
+update findbugs results to reflect reduced error / warning count [ skip ci ] .
+updates libs folder
+update findbugs results to reflect reduced error / warning count [ skip ci ] .
+pull right comment
+add link to latest result
+bump aws - java - sdk - s3 from 1 . 11 . 489 to 1 . 11 . 489 to 1 . 11 . 11 . 489 to 1
+added words suggested by users
+added tag jdk9 - b39 for changeset eafa8898e1a0
+added tag 1 . 48 for changeset f683e95f614b
+add sort order in list of
+revert ud converter .
+give tests more test .
+removed unused libraries
+added tag jdk9 - b73 for changeset 619db21ffc79
+added tag jdk9 - b26 for changeset 38b0d0abca49
+add installall and junit .
+use new travis - ci container - based infrastructure .
+add chanlog with pr :
+added interactions api bug in
+remove extra storage from server tests
+fixes the following error on errata - sync : .
+add travis - server
+generated 2019 - 05 - 31 for mse .
+reset new language form to close or submit ( <issue_id> )
+add gp v2 . 1
+removed a file
+delete 3storm_starttopology_dir . png
+updated apktool image
+create circle . yml
+update apk
+removed extra tid in dequeue listing
+added tag jdk8 - b27 for changeset bc664cc5f2a0
+deprecate an import
+update travis
+added translation using weblate ( ukrainian )
+updated gradle plugin
+added missing import .
+make it conflict
+deleting superflous jar
+added bc jars
+remove link to git
+bump common ref . . . .
+suppress deprecation warnings .
+changed a internal class to .
+add random test to uuidprovider .
+migrate http utilities to the main container
+add todo to
+removed resource class large for circle
+ignore run_test function
+updated java source file header to 2009 .
+make sure lawnchair never appears in recents
+removing legacy driver
+remove unused . .
+add repo metadata configs to
+includes the missing antadapter code . . .
+add spark pca benchmark .
+updated rest client .
+add instructions for proguard - files .
+ignore the new test in htmlunit .
+remove stray import .
+added webstorm to list of supported jetbrains ide
+forgot this guy
+add respositories with field
+shut up linter .
+added license header .
+update travis
+add java_home in yml
+update card results
+add x1 gt06 photo test case
+update dependencies
+add 16dp padding
+nullifying localpostidforconflictresolutiondialog before action as it ' s not sufficient
+removed invalid property
+ignore config files
+add assumption for docker
+add adam to credits
+backport some fixes for btm
+added extra license header
+fix pom
+automated import from / / branches / master / . . . . @ 141113 , 141113
+adjust client / vanilla .
+delete java_cup . jar from lib /
+added tag jdk9 - b79 for changeset 3a2debd4d023
+add missing zeroclipbpard swf file .
+removed app from recents
+update the alias in `
+tweaked the bog biome
+added unit test
+add docs index
+updated dependency
+added latest jcard draft
+added jquery . list item .
+fix small issue with previous cl .
+make fat jar
+missing import added
+automated merge with http : / / / hg . netbeans . org / main - golden
+added room from dependency to build .
+add pending destroy attribute
+remove unused import .
+add deploy
+ignore log files .
+add a null check in an autocompletetextview callback to prevent a crash . . . . .
+hid the "
+added test for client to . . .
+added tag jdk7 - b61 for changeset c97f5ba46ed8
+fix test in test result
+add margin in list file
+remove extra line
+added tag jdk8 - b39 for changeset b5e60661b9a2
+fix an issue reported by ga
+add missing dependency after
+avoid jrstyledtext . getattributedstring ( ) when not necessary
+change the hashmap to linkedhashmap
+added tag jdk7 - b53 for changeset 05e04a29c589
+add tck .
+update repository
+bump common ref . . . .
+add environment var to make webapp work on jre
+add back button for cancel button
+added a recent about the
+updated faq section
+added gson dependency
+adjust templateuser role .
+removed link to license header
+added richard to the team - welcome aboard !
+ignore idea plugin
+fix a typo that prevented preserverects ( ) to work properly .
+remove unused import
+add codeowners to ( <issue_id> )
+add jsp invoketag that allows calling of tags defined in of tags defined in a grails
+fix test
+tweak gesture handler selection dialog to match support library .
+add q & a
+update group id for integration tests
+add support for protege
+revert programmer
+added getter for descriptor . name
+remove mistakenly committed conf / hbase - env . sh changes .
+fix test error .
+added an icon
+add description file
+deleted unused file
+edit yaml file
+restored ic_dialog_menu_generic asset . . .
+add semicolon to pubspec . . . .
+adjust bug in the latest
+add external_integration_test back into ci .
+dink whitespace .
+add aliases to thrad section
+delete fireworkypulltorefresh . gif
+update newsplus_beta . apk
+add asli to contributors .
+add ud converter after .
+remove extra enter in
+remove mysql entries . conf .
+update maven plugins .
+add internet in
+added missin publicclonable interface
+added tag jdk9 - b16 for changeset 87bc69dea937
+improve umlgraph references in the generated files .
+cancel connectionprogressdialog before leaving activity to avoid leaking windows .
+added new contributors
+added tag jdk - 9 + 164 for changeset 8e5061e5b34b
+update pte , this enables find nearby stations for most networks
+adding play .
+remove unused import .
+remove a constructor that ' s all strategy .
+add newline . .
+bump common ref . . . .
+add a possible dumb method sample .
+remove warning
+cancelling scroll indicator animation during all apps transition .
+remove global files
+added dojofile to the parent pom
+add identifier
+add arts / roadmap
+removed bug comment . . . .
+align ssl test in parsehost in
+add next to thrad section .
+added build . gradle for parser project
+make sure lls focus is false when unlocking .
+added tag jdk8 - b32 for changeset 810c7eb54560
+remove random lib
+remove open - replicator
+add pr templates
+prepare 2 . 2 - snapshot again
+put back right - height on the list
+removed branch - packages .
+added small tweet example .
+update api level in grable . properties
+raise fbos when offscreen pgraphicsopengl is ignored .
+deleting unused imports , fixing flake8 issues
+bump slf4j - api from 1 . 7 . 28 to 1 . 7 . 29 . .
+remove helpshift dummy keys in gradle
+add missing import in sysconsole .
+add convenient way of the test result .
+add discord
+removing the build status
+added tag jdk9 - b65 for changeset 8bbe109bca14
+set theme jekyll - theme - slate
+revert rhel6 test
+added wintheme changes theme
+send travis ci notifications to slack ( <issue_id> ) .
+added tag jdk9 - b50 for changeset d0f9f129c1f4
+ignore fixme .
+add wesley .
+updated submodules
+bump js - scriptengine from 19 . 2 . 0 . 0 to 19 . 1 to 19 . 0 . 0 . 0 . 1 to 19 . 0
+reorder test - level pom .
+added a script to cleanup
+update 1 . 0 . 1
+added gctest
+removed debug statement
+fixing test
+remove square brackets from google .
+add test case for suppressing static field initialization warnings
+update example
+fix some extra newlines in the
+add vector as .
+add files via upload
+add files via upload
+update travis config
+using back button in pom .
+bump link to the reactor
+added sudo for brew cask install java .
+allow fat jar .
+ignore failing test .
+bump kafka - clients from 1 . 2 . 2 . 0 to 2 . 1 . 0 .
+hide response 353 and 366
+disable flow in keyforatf ( there are some problems , and flow is not too important for keyfor , i believe ) .
+fixed a . . .
+add gt06 test case
+ignore idea files
+ignore * . jad files too
+remove double slash from license header
+add ' directory
+added origins
+revert test .
+add fake javadoc task to skip ci
+removed supression of a test failure on safari . .
+delete logo . png
+automated rollback of changelist 117753253 .
+added tag jdk7u4 - b06 for changeset 2c1b789d1803
+updated travis config
+bump common ref . . . .
+rebuild jar
+updated library reference
+bump snakeyaml from 1 . 25 to 1 .
+adjust sunlight level
+bump ext from
+remove dependency on unneeded headers .
+create pull_request_template . md
+adding rubyclient branch to travisci
+add new words to whitelist
+add an option to specify the default package name change on 2015 / 05 / 05 / 21 by rduan < rduan @ google . com > . com >
+exported the uptr actions .
+dismiss item on click
+adjusted rumba default feedrate
+add redirect page .
+fix bug in the latest result
+added compiler option to enable preview features - fix typo ( closes <issue_id> )
+added missing images for tests
+removed invalid import
+fixing the merge
+added xms option to jvm
+added tag jdk9 - b25 for changeset 607831311622
+prepare next development iteration .
+updated h2o lib dir .
+fix testmultithreadedretrievalofgraphs in grakntitangraphfactorytest ( <issue_id> )
+added debug keystore to the project so anyone could test the sample project
+added urtsi binding pom . xml
+update gradle
+disable the gradle daemon
+add docs to summary
+delete howtoall . html .
+replace groovy code with card script
+add a allstate smalldata boolean - test
+add reddit the list in
+add suppresswarning annotation
+implemented symmetric sslavailable = false in the .
+add vanilla .
+add failing test case .
+start development on 0 . 2 . 1
+add asli to contributors
+updated documentation image in
+ignore the db . in tests .
+updated jacoco dependency
+add link to icediscovery demos
+replace groovy code in card script
+updated jrpxml expected checksum .
+added tag jdk7 - b64 for changeset 444fd06c5063
+add displayable ( ) is called
+wrapping up 0182
+removed unused variables
+adjust the pmc timeout
+add aztec feature flag default config
+update submodule ( <issue_id> )
+added tag jdk8 - b98 for changeset 0549b5fbbde2
+included signavio core components in the demo . setup
+added filechooser setting method to capability of
+add the alias for description . connector .
+add win64 library .
+ignore dependency - pom . xml
+solve unicodedecodeerror
+updates libjitsi .
+update genlicreq to resolve ip command in / sbin / issue .
+add codeclimate configuration file
+updated fml : .
+add fixage
+build entries . . .
+added tag javamail_1_6_2 for changeset d8410291f8ed
+remove unused from tests ( <issue_id> ) .
+add bug for "
+ignore eclipse settings files
+remove unnecessary annotation , it ' s in parent class
+allow rpm_t to append to append to / var / rhn / log / rhn - installation . log . log . . . . . .
+added tag jdk7 - b107 for changeset e8ced0e364f9
+adding intellij idea specific extentions to be ignored . . . .
+ignore jar
+added copyright to new test .
+added api sourcesets to javadocs
+ignore derby . log
+don ' t crash when no profile is selected .
+add note about xmlapp_example .
+adding more details about event sequencing , touchbase <issue_id> voxx
+bump gradle plugin to v2 . 1 . 0 - beta1
+added tag jdk - 10 + 20 for changeset 28a10f94ce01
+added photo of runtastic scale
+include a . h for the strcasecmp prototype .
+add rules to ignore
+remove checkthread from findaddress .
+add demo screenshots
+add waffle . io
+add doc img
+updated roadmap ( markdown )
+remove forgotten cli module reference in parent pom .
+added settings . gradle
+added http server pipelining test script .
+set up travis
+comment out restapi import .
+adding ossmetadata for netflixoss tracking
+remove the . java
+add missing in acceptance .
+add back gradle xmx
+added tag v1 . 2 . 0 rev 1012 for changeset b0ac9ab2b5bc
+updated project url
+fix test : the .
+tell travis to use openjdk11
+updated pdfs
+ignore history files
+remove dupplicate : go . graphics package .
+remove a sentance that is not properly .
+prepare changes . txt to
+fix bug in lightning
+ignore idea configuration file
+bump gradle default heap .
+create workflow . md .
+remove obsolete reference .
+add security reference to settings . security . xml
+added package to plan
+add issue
+add explicit dependencies for core library .
+allow goog . scopes as part of . i .
+ignore eclipse configuration
+add test . md
+added pair
+add comments
+add irc # selendroid notif .
+ignore the classpath file .
+removed reset ( ) call on sentence iterator during train .
+specified dev branch instead of all
+found the missing image . . . .
+moved the " var module .
+remove < relativepath > .
+added openjdk8
+bump internal build
+update dw to 0 . 1
+add @ since tag to execution
+remove extra blank line .
+revert demo .
+commented out module .
+fix a missing switch - case break . . . .
+capitalize first letter of the folder name
+avoid npe during boot up phase .
+revised the notes .
+modified travis .
+added linux / libsnappyjava . so
+remove unnecessary line
+add test to icediscovery demos
+ignore iml files .
+ignore ide files
+update gradle
+added the link - order .
+notify sipsessions before closing sip stack . . .
+add dependent jar files
+add a test class files
+remove the commit
+add link to icediscovery demos
+ignore service account file .
+updated demo . gif
+accept licenses
+added tag hs25 - b23 for changeset 57159db35c41
+added new pom . .
+added translation using weblate ( finnish )
+remove travis webhook configuration .
+ignore eclipse .
+remove unused import
+enabling upgrade tool modules build . . .
+add link to unittest
+rename license to license . txt
+tweak gradle parallel tests
+added type_permission_denied exception to serialportexception class
+keep the title spanning the whole line
+build only master branch
+removed illegal use of debug . handle ( )
+updating the project
+reset killedbyam flag at attachapplicationlocked .
+tweak serialization idiom priorities back closer to what they had been in 3 . 9 . 1 . .
+added source artifact plugin
+add evaluation to branch .
+remove examples
+update travis .
+add a field in case
+updated jumble with udp fixes .
+update lint results to reflect reduced error / warning count [ skip ci ]
+recycle typedarray in lockpatternview .
+set editor dependency in admin . gradle
+specify utf8type comparator to fix regression found by jingguo yao .
+fixes a wrong regression in the
+add source to travis
+add known user
+add previous contributor .
+improve licenses
+remove the use rhn : : : : : : api exception as well .
+added tag jdk8 - b109 for changeset 927782ec0a1e
+update html root - size
+create cname
+fixes an issue which could cause a dtls client to never send a client hello .
+suppress a warning when creating the annotated jdk
+bump minsdk to 0 .
+add files via upload
+added translation using weblate ( swedish )
+update gradle
+skip a test in the transformers .
+replace respositories with latest result .
+ai 145255 : further work on correcting the misspelling of rendermode_contuously .
+add roboto fonts
+delete concurrentmarksweepthread : : is_concurrentgc_thread ( ) .
+removed jdk 1 . 5 dependency .
+add stamina
+add helper methods to set latitude / longitude am : d56d8611e9 .
+remove guava now )
+add shell script
+add circle . yml
+create cname
+add spring from server standalone .
+ignore files copied over from src / scripts .
+remove native - image . properties
+added an svmlight demo file to work with - > rdd stuff .
+added extension to the list of modules to build .
+create styles . xml
+add random reference to uuidprovider .
+remove eureka - ocelli module from settings .
+bump maven - jar - plugin from 3 . 1 . 1 to 3 . 1 . 2 ( <issue_id> ) .
+remove w . i . p module from build
+added info on refactorings for 4 . 0 .
+add implicit wait before clicking edit button
+added bintray properties
+add deprecation warning in to document
+include jar and output in the target .
+add runtimeserver
+updated soloader to v0 . 6 . 1 .
+invalidate the cached ripple drawable mask if mask layer changes .
+add default debug_level value
+removed jdk10 from allowed failures ( <issue_id> )
+added comment on hdfs - 630 .
+add sample image for layout
+add finatra start .
+raise up priority of completed .
+reduce gradle verbosity in travis
+remove maven section jar
+update bitherj
+fix the stack size for tests .
+fix bug test test test scope test timed out the test suite .
+make annotations dependency in <issue_id> ) .
+added tag jdk - 9 + 99 for changeset 995895614a53
+tweaked flax texture
+raise start . . .
+automated import from / / branches / donutburger / . . . @ 141325 , 141325
+revert " file
+updated junit
+reverted mvn requirement to 3 . 1 . . . . .
+add bundle to protobuf
+update ignore
+added chtempdir tempdir
+fix the build . . .
+remove sbt
+remove superfluous capabilities that are not needed
+add @ remotableviewmethod to textview # setenabled .
+add link to contribute .
+bump mockito - junit - jupiter from 2 . 27 . 0 to 2 . 27 . 0 to 2 . 27 . 0 . 0 . 0 . .
+bump example
+fixes an issue which could cause a dtls client to never send a client hello .
+adjust bonjour prerequisites to .
+create test . txt
+ignore lint option for now
+add data from user .
+add icon . . .
+remove repeat template .
+remove final annotation on factory
+updating description
+updated respositories .
+add header . png
+correct a type annotation in w3c_indexeddb . js .
+allow bors status message
+build all branches in travis
+fix broken branch in fast
+add copyright for smssecure
+download apk directly from here
+missing images from persistent cookie auth module
+remove unnecessary import . . .
+add waffle . io
+updated graphics .
+bump chronicle - map from 3 . 16 . 3 to 3 . 16 . 2 . . . . . . . . . . . . . .
+develop 0 . 3 . 0 - snapshot .
+add updated mac os x icon .
+add link to unittest
+setting appinfo . itemtype to item_type_application per default .
+added tag jdk7 - b92 for changeset 6cd754e132a2
+missed glassfish logo .
+add codecov to travis build
+restore license text to correct
+removed todo list .
+fix bug
+add current directory to for tests
+updated travis config
+add ' fragment - host ' to rxjava - contrib modules for osgi
+added kurt cagle as a mentor .
+delete sri . class
+excluding dhtmlhistory . js file from license verification
+fixed that one bug
+update zip
+fixed a bug in probinghashmap - clear ( ) method there is taking t taking array or not clearing . . . . .
+add oraclejdk9 to travis build
+create test
+add new parser lib
+remove unused dependency to test .
+updates libjitsi .
+added funding for . yml
+update bug report [ skip ci ]
+remove addition to power from / .
+remove unnecessary blank line in cacheconfiguration .
+ignore eclipse checkstyle settings
+add design image files
+add dirty flag to ldap security .
+updates libjitsi . jar ( built on jitsi fbed4cfd1d ) .
+add missing entry in changes .
+use the classpath client dependency in / docs . .
+configure gradle application plugin .
+add roleswithexternallinks to cm :
+tell intellij idea to ignore .
+fix broken pom
+decreased delaymillis
+fix the latest
+add footer
+add travis file
+add jdk 8 to travis ci
+updating gifs
+exclude imagej . sh from license headers .
+remove temporarily codecov config .
+updated entersattackeffect to correct thisattackstrigger .
+edit changes .
+add files via upload
+remove import of magicstaticlocalvariable
+ignore intellij idea project files .
+reduce size of device screenshot
+added bug in opening reddit links
+add multinode suite .
+remove location permission helper library from build gradle file
+updated milestone to latest 10 .
+added test type to decobase .
+commented out android - reporting as first reporting ( i can have ci
+fix bug while going back to the first stage . . . .
+add osx w / allowed on jdk8
+add flaky test
+remove incorrect name from pages
+add small spacing
+set theme jekyll - theme - tactile
+bump targetsdk to 4 . 0 . 3
+update statistic bars after rotating in reviewer
+fix bug : repositories .
+include test in for client mode
+updated disk image , more space
+add something other storage .
+added empty line
+remove broken astroboy
+fix broken link
+remove distance join
+remove dev /
+bump lib
+bump maven - 8 . 8
+add " part of " to sink . dart : . .
+avoid split packages in admin - cli - optional .
+add notice file for ini4j ( <issue_id> ) .
+delete cname
+fix some bug
+add additional logs
+add todo
+rename maven profile by default
+updated preview
+spelling correction in
+revert clustertest .
+missing mavencentral to fastadapter include
+bump jackson - databind from 2 . 4 to 2 . 9 . 10 . 1 . 1 .
+modified behavior of mini - workspace screens .
+add newline at eof .
+adding license file to gwtp source .
+fix test compilation
+set ontimebehavior in windowing strategy to fire_always . .
+add favicon .
+add support
+add travis status
+add new columns to enrolment_log
+update tomcat8 to 8 . 0 .
+add link to icediscovery demos
+remove unuse resource
+remove old asset . . .
+revert log
+replace groovy code with card script
+update todo
+synchronize contentsession .
+add @ telezhnaya and @ avesloguzova to authors . md
+add travis . yml
+fixed a build at the build .
+removing translation using weblate ( swiss high german )
+exclude this line
+added short clarification to development roadmap
+revert calcite in
+updated sources jar
+removed unused scope to
+executing docker - compose test
+add 2 . 4 . 3 .
+removed unused resources .
+adjust legend style
+add screenshots
+avoid java 9 for windows ci .
+add nav drawer
+added valueshape interface
+automated merge with http : / / hg . netbeans . org / core - main
+register the heartbeat as
+put generated source into default location
+updates javassist . . . .
+fix an issue reported by ga
+add some tags
+added tag jdk9 - b61 for changeset 3fd41cdba15e
+remove funny annotation .
+changed the artifact names
+updating ie driver native code prebuilts . . . .
+add check for counters to execution
+tweak announcement card linespacingmultiplier .
+automated branch merge ( from foundation - 2016 : <issue_id> )
+bump common ref . . . .
+disable continuous integration coverage on openjdk6 , as we don ' t support it
+add findbugs static analysis .
+fixes the in of
+update architecture image .
+added symbolic link of index . adoc
+removing unused dependency from the mavlink project .
+enable ` abi_verification_mode mode .
+revert supersense .
+delete manifest . mf
+bump matisse to 0 . 5 . 2 - beta5
+ignore intellij files
+add sample screenshots
+enable double buffer decoding for ogg .
+see 03 / 23 log
+updated fallback sound for honeycomb tablet .
+suppress compiler warning with random test
+removed file
+updating pax url
+added tag jdk - 9 + 103 for changeset ba0b1ea9093c
+bump changes to 7 . 8 . 5
+removes obsolete sourcecompatibility
+fix test in . . .
+add codeowners ( <issue_id> ) .
+fix random uuid generation .
+add cname file
+update travis
+fix bug
+add api document for librec - 2 . 0 . 0 . 0
+update the z3 . jar to reflect the recent z3 installed on the recent z3 installed on the recent z3 installed on the recent z3 installed on the recent z3
+updated year in license .
+add sunnygoyal to the owners .
+replace respositories with repositories in
+compile and add native libsnappyjava . so for ppcle64
+ignore python virutal environments ( venv )
+reduced debug on critical code paths
+updated tutorial .
+add files via upload
+generate correct bytecode for synchronized blocks ( fixes groovy - 247 , groovy - 362 , groovy - 947 ) .
+provide an accessor for metadataprovider on filesystemdatasetrepository .
+set loglevel to info ( travis complains about too much logs )
+removing explicit memorylimit , so that memlimit given on the command line that was not be ignored . . . . . . . .
+create contributing . md
+revise header to prs
+add files via upload
+add tostring ( ) to bookdto
+add missing jars
+remove plugin
+move sdk artifact
+add internet permission
+fixed the calculatelastpaintableoffset
+missing @ nonnull .
+add color to background
+added template
+add owners for community metrics
+prepare next development iteration .
+add pre - built jar
+revert " reduced header size
+committing latest android agent
+added multichat operation and gibberish protocol .
+moving the test too .
+remove extra choice
+revert yuicompressor back to 2 . 2 . 9 .
+start script if server is closing stream
+remove rspace tutorial
+add logo to
+add resteasy dependency to engine . ear manifest .
+update the target sdk
+delete temporary outfile
+fix unused field
+removing rhnlib as buildrequires .
+<issue_id> new checkpoints file
+analyze housenumbers with standard analyzer .
+add screenshots
+add travis ci
+remove extra way to close .
+add getworldstate ( )
+remove install from
+fix broken test .
+added support for travis - ci .
+adding the jar file , so the code needn ' t be recompiled whenever added to another project
+bump mockito - junit - jupiter from 3 . 2 . 0 to 3 . 0 . 0 to 3 . 1 . 0 . 0 . 0 . .
+updated screenshot
+improve grammar in comment
+fix bug while writing data to parcel in telephonyhistogram . java .
+removed android level from travis config
+removes unused variable
+remove unwanted files from ace template directory .
+continue pom .
+see indexing - ( <issue_id> ) .
+remove respositories from repositories .
+fixed the master branch
+remove null warning .
+add clean task to build . gradle
+add testcase for bug in
+update package . json
+add title of index . adoc
+generate source and javadoc
+replace respositories with the repositories result .
+removing todo
+uses a single thread per stunstack to expire stunservertransactions in order to reduce the total number of utilized threads .
+updated german translation
+update imag
+revert extra test .
+adding feature repo listing to the diagnostics commands . . .
+ignore idea related files
+add files via upload
+removing unused files .
+fix an issue reported by ga
+updating the image
+exclude shaded dependencies from pom
+increased the ' startoffset ' property default from 5 frames to 10 frames .
+added twitter and email icons
+add * . git .
+add empty directories
+use the most specific type possible for local variable , to allow later method invocations .
+choose dist trusty to fix java 8 .
+include all mode setting messages at debug level .
+delete manifest . mf
+fixing broken dropdown asset in honeycomb as well .
+revert githalytics
+specify scala 2 . 10 . 4 in . yml
+modify path to test - scenario . conf
+add makefile .
+updated binaries .
+add test resource to blog /
+added sm2 key test
+get boot theme config from themeutils .
+add comments -
+remove images . png
+add property " alttext " to false in " .
+add scene after msg_removed .
+revert " test scope .
+bump maven - shade - plugin from 3 . 1 . 2 . 0 to 3 . 1 . 2
+remove unused import
+ignore javadocs
+update api
+added no arg constructor .
+remove build fix on build . gradle .
+add screenshot
+add files via upload
+add files via upload
+add new svtraised label .
+updated bin
+generate javadoc
+ignore node . files
+remove unused import .
+create de_de . lang
+lost wiki submodule
+add the element width for cell .
+published documentation from master to [ gh - pages ] .
+remove incorrect use of generics in non - generified method call
+synchronize mutated constant state ' s drawable constant state .
+bump reflections from 0 . 10 to 0 . 11 .
+excluded redudnant transitive stax - api dependency .
+adding the resizer . . . thought i did this already ?
+ignore eclipse files
+added comment to beanelement code
+added a test synchronizing on a foo . class class object . . .
+revert " allowbackup " manifest " .
+removed jdk7 from travis ci
+updated guava dependency
+remove support library jar
+add pr template . . .
+remove old asset
+updated pom to 2 . 1 - snapshot
+remove it
+updated travis key
+reverting removal of traceback_mail . .
+added tag jdk7 - b84 for changeset be1133a82187
+add buildscript
+see 07 / 13 log
+remove redundant line
+add weeklyhoursspentinclassesseason to inquiriescourse
+added tag jdk9 - b79 for changeset 421773f441c6
+added tag jdk7 - b58 for changeset 2d7afc04121f
+disable pbap for no voice capability .
+skip test while running in the .
+delete ic_launcher . png
+add staticman entry ( <issue_id> )
+added juliano marques the latest in the
+update travis jdk
+replace respositories with latest result )
+delete queue . png
+added extra to
+adding the image
+hide bch fork thread
+add changes entry for bug fix to cachingcollector .
+remove slf4j - api from 1 .
+add back pointer to thrad section
+added more sharedstatics annotations . .
+updated redmi w / o glare
+add todo
+updating the banner for the webconsole
+updated library reference
+updated conf
+bump min to list
+bump pyxdg from to 0 . 3 .
+bump protobuf - java from 3 . 7 . 0 to 3 . 1 to 3 . 7 . 0 . 1 . 1 . . . . . .
+optimize wallpaper load , avoid show black wallpaper . . . .
+fix the aggregator to the demo on android .
+added todo for 416 truncated
+remove unused views when we return to keyguard .
+adjusted package scope to the test results .
+added link to build process
+add data size in rf . info .
+added tag jdk7 - b121 for changeset 1813eb437117
+added tag hs23 - b01 for changeset cca3c612bd14
+adds javadoc lint
+playing footsie with travis
+update the repo
+add gp sdk
+updated pom - info - plugin to 2 . 8
+add missing resource for buck build .
+remove an obsolete code comment .
+updated the parent poms
+add largeheap from module .
+updated screen shots
+disables tests for timers in pardo for spark runner
+implemented a buffer to the draw trees / borders and added grid to the draw grid to skip tiles test to skip tiles without objects .
+updated support libs to 23 . 4 . 0
+skip checkstyle to build
+add travis . yml
+adjusted junit database job to be .
+bump pom to 7 . 1 - snapshot
+add getselector ( )
+update ant config
+removed excess code .
+updated disk image , more space
+add ssl test in to accomodate the apr .
+add jdom dependency .
+revert the messagehistory
+added a missing call to closeconnection ( )
+updated database to unittest
+added empty resources file to avoid conspiracy of git and android tools to break compilation
+removes json module dependency
+added secure var for travis
+recovered file .
+adding html format to cobertura
+added application description .
+commented out debug mode to build
+remove unecessary tested annotation
+added the signed resources
+add code_of_conduct . md
+let heartbeatrowmap advance position
+add link to tutorial
+added tag jdk - 9 + 128 for changeset 90ff5a56fe54
+added observer class diagram
+adding the notice file
+added madness to keyword generation .
+adjusted respositories with latest result .
+add wiki link
+added notes for 3 .
+updated broken markdown headings
+added eclipse . project file for convenience
+added contributor
+added deep learning and r booklets on github
+avoid java 9 for windows ci .
+adds an @ override annotation .
+added install to travis
+add ruby namespace .
+remove unused import
+update test to latest result
+exclude unwanted files from distribution
+add test
+deploy haeinsa v0 . 0 . 4
+remove old project from
+replace path separator characters
+adjusted test
+automated merge with https : / / checker - framework . googlecode . com / hg /
+fix the build before the bot yells at me . . .
+added missing test class files for pattern .
+added xgboost to list
+add javadoc for
+delete wakatime 1 . 0 zip file
+set source url
+update httpcomponents so
+add new logo to test
+add test : test to in test suite
+making the red . xml icon look better with dark theme
+add contributors :
+added tag v4 . 74 for changeset 249ebb07da7b .
+added lsmlibs . jar and install it and the local repository .
+remove clustertest .
+add link to todo list
+add android : description
+add sort in the list .
+give more info on build failures
+remove unused imports
+update maven plugins .
+add test pause .
+added tag jdk9 - b79 for changeset 8d067af302fd
+create getter . .
+added tag jdk - 9 + 111 for changeset 553ee8b34393
+added class diagram for template method
+rename project dev cycle
+fix some issues with the response code
+added cy_combiners . py to .
+add default configuration setting
+remove previous , breaks
+add gibberish paths .
+update lib sources
+reduces log level to info .
+remove alpha notice
+update apktool to reflect
+add chtempdir tempdir
+added a texture preloader to avoid render glitches on the first render .
+update es / upstream to optimize single .
+updated irc - api - client - .
+update intelllij - markdown ( fixes ruby - 18237 ) .
+set the element for an executable type .
+add bug in test cases
+add known user
+suppress warnings in
+added tag pircbotx - to
+making actiontype seriazible test case
+merging tag v4 . 65 .
+squash me
+remove ` < updatepolicy > ` from never < / updatepolicy > ` from pom . xml file ( pull <issue_id> )
+exclude meta - inf / main . kotlin_module on build . gradle
+remove rant : python client
+fixed a comma causing left categoricals levels to be considered a tuple
+add alexander aprelev to the authors file . .
+add serviceselectorprovidertest to testserviceselectorprovider
+updated library reference
+added tag jdk9 - b51 for changeset c7d0c39dd761
+ask surefire to run the tests in alphabetical order .
+added single line build .
+remove armeabi - v7a .
+update r_benchmarks import
+add sort in client list .
+add todo for 416 truncated list command
+try and fix sha1 file .
+updated gradle wrapper
+update transform blends
+add app category for oreo
+adding target to ignore
+add ignores file
+add cluster - 1 to 1 . xml
+tweak bug ranks .
+delete _config . yml
+disable pid cache
+improve arms - demo . java
+add templateuser role .
+remove warning
+added tag jdk7 - b41 for changeset ff9b7f94082a
+bump aws - java - sdk - sts from 1 . 11 . 11 . 531 to 1 . 11 . 534 to 1 .
+ignore idea folder
+clarify text on ports screen of deployment installer .
+bump google - cloud - storage from 1 . 92 . 0 to 1 . 0 .
+revert bintray .
+updated uuid from uuidprovider .
+move example file from source
+skip flaky test
+add link to contributions .
+revert use mdpi notification count bubble for hdpi devices .
+remove project . properties
+allow volume control on analog dock .
+updated assets archive
+add travis instruction
+updating artifact id
+add distinctcolumnname
+add demo image
+add apache flink
+start streaming after plugins are activated
+replace respositories with repositories ( the
+updated test : fix
+set theme jekyll - theme - slate
+add the date of the .
+updated javadoc plugin
+add dev command
+update bitherj
+updated openal
+add editorconfig
+bump minsdk to 21
+fix the bug that didn ' t terminate properly
+update cacheword to get build fixes
+fixing bug with swiping .
+updated properties
+add beta flavor
+revert an issue in the chat room contacts integration .
+ignored stuff .
+enabled notifications
+added new diagram for testing
+add missed . .
+revert import
+add files via upload
+bump common ref . . . .
+revert wiki link to list
+added tag jdk - 10 + 10 for changeset 4644ed4e3292
+use separate id . debug .
+fix an infinite loop in the test .
+add default milestone to new navigation .
+added missing line to case
+update pom . xml
+added coordinator support for
+rename newparsertest to just parsertest .
+bump aws - java - sdk - sts from 1 . 11 . 565 to 1 . 11 . 566 .
+added tag jdk - 9 + 110 for changeset 91e6d9d79973
+updated jar .
+add aliases in quickbuild and buildonly ( <issue_id> )
+update issue
+hide play / pause button by default am : d5bee85ed5 .
+enable pi tests .
+added chtempdir -
+removed test function
+updated 0x40 to latest in image .
+updating fabric8 service - plugin framework
+unfreeze display even if screen is off .
+add optional tags to frameworks / base ext . . .
+fix a bug
+modified doimport method to log a completion message so you .
+removed elevation
+revert dockerusername in upgrade . . . .
+add vanilla
+added tag hs24 - b07 for changeset a320e1d913a6
+add demo gif
+create gradle .
+fixed bug in helper sampletransitionfromenumereddistribution
+skip swaggerdocs , fail fast
+delete activity_open_cell_id . xml
+recovered file .
+updated ignoring .
+add okhttp lib
+updated sample
+removed non - collaborators from . yml
+updated change log
+removed unwanted file
+turn off hardware acceleration to avoid crashes due to driver . driver . .
+rename algorithms / sort / heap_sort / heap_sort . java to algorithms / heap_sort / heap_sort . java to algorithms / heap_sort . java to algorithms / heap_sort . java
+add our theme in .
+removed column " tribe " from demo - data .
+prepare next development iteration .
+enable the name and
+add submodule to the list
+update travis config
+add persian to the scraper
+adding image border
+remove kafka 2 .
+update es / upstream to optimize single .
+remove snapshot builds
+added comment to result
+add new end of file
+updated color to background .
+align ssl test in bio and nio .
+add files via upload
+prepare next development iteration .
+remove dead method native_get_session_id ( ) .
+added licensed files .
+declare j9ramvirtualmethodref methodindexandargcount as volatile .
+add requested in test command .
+shading the orbit - agent - loader in orbit - async
+removed stacktrace option gradle option
+add arne to copyright . txt
+introduced random nullpointerexception bug
+add sample
+removed unused import
+bump picocli to 4 . 0 . 1
+add another testsoakwithrandomdata
+send back the second section
+add changes . txt .
+updated blockbreak
+shorten api request interval
+updated maven android - plugin to 3 . 1 .
+fixed bug in opening reddit links
+remove some old logging code . . .
+add logic .
+build tools are updated .
+add future mark
+delete swap file .
+removed jdk7 support on travis
+removed experimental sudo
+added label deprecated to daily builds so they don ' t show up on the download page
+add note in incompatible_devices
+removed unused import
+bump confluent to 4 . 1 . 1 - snapshot , kafka to 1 . 1 - snapshot
+add image for the device
+ignore neuronstest ( pure benchmark .
+added targetplatform module
+remove default edge effect on scroller . . . .
+bump netty - all from 4 . 1 . 1 . final to 4 . 43 . final .
+added draft for documentation ( goals and ir ) .
+fix warnings about javadoc links to " java . lang . lang . reflect " package
+updated kotlin
+added extensionloader interface to insulate kernel from osgi dependencies .
+add rxjava 2 to dependencies
+add owners to samples / supportcardemos / am : c768bbfebb .
+adding ignores
+bump fastjson to 5 .
+add travis ci configuration file
+update lint results to reflect reduced error / warning count [ skip ci ]
+add rtmitchell to androidfw owners .
+implement jws of the jose working pom .
+delete 2 . png
+updated android - plugin to 1 . 8
+added mark jeffery as contributor .
+added spark for spark solution
+removed some extra newlines in
+added tag jdk9 - b11 for changeset 1e3275c2718b
+add agrona dep .
+update travis
+adding some docs
+move grpctransportlayer to comm module
+update screenshots
+rename app to talkback toggle
+added v34 jar ( paranoid workaround )
+updated parent to 2 . 0 .
+added an additional test case .
+finish the activity when pressing back from the root folder .
+replaced null check with magiccarddefinition . unknown
+add toolbar in
+add missing source required by hamcrest sources . . . .
+add some client and tests
+add feature directories
+update findbugs results to reflect reduced error / warning count [ skip ci ] .
+add nav to
+updated notes .
+added tag jdk9 - b34 for changeset 8af850ba9862
+updated sirius
+added tag jdk7 - b47 for changeset e3f44a955240
+removing red cross from hdpi emergency symbol .
+fix bug id
+adding containerinfrastructure section to product - spec for gobblin .
+add image for backstack visualization
+add link on setup
+add travis . yml
+add symlink
+added dummy src folder for ant build
+remove unused import .
+add ladder
+added package - info
+fix a
+add project url in pom . xml
+added tag jdk8 - b57 for changeset ad1e86451b3f
+ignore eclipse project files .
+add xxx sized launcher icon
+remove mavenlocal ( ) repo .
+bump influxdb - java from 2 . 10 to 2 to 2 in / modules / influxdb ( <issue_id> ) .
+remove respositories from repositories
+updated commons - pool2 from 2 . 0 to 2 . 0
+add success message to java / nio / channels / filechannel / loopingtruncate . java . java .
+add architertecture screenshots
+fixes an issue which could cause a dtls client to never send a client hello .
+bump pom to 5 . 4 - snapshot
+add link to unittest
+add foundation import to the native integraltostring header . change on 2014 / 08 / 08 / 28 by kstanger < kstanger @ google . com > . com >
+create test
+updating vm addresspace picture ( discussion only ) .
+add a pic
+update maven plugins .
+removed target folder .
+upgrade guava to 14 . 0 . 0
+did another thing
+bound test memory usage
+say operator also in by default .
+updated module order to build service stubs before components .
+disable redundantinterfaces detector by default .
+update lint results to reflect reduced error / warning count [ skip ci ]
+added tag jdk - 9 + 168 for changeset 6fca2d76380d
+add closure . to run .
+fixed a bug where disabled notification actions were not centered .
+bump commons - compress from 1 . 17 to 1 . 18 ( <issue_id> ) .
+add the unicode emoji support on the if the zetime .
+build 51
+add support library to boot .
+updated guide
+ignore flaky test
+add travis . yml file
+added appcompat dependency for ant to work
+added new deepcopy method to .
+bump verson to 2 . 22
+updated cache graphics
+added tag jdk - 9 + 165 for changeset 731e3ea86eb2
+add newline at the end of
+add toml - parser to ballerina profile
+adjusted test timeout to
+restore crater generation on mars and planets .
+added green details token definition
+disable font in test file .
+made deviceprofile constructor public
+add files via upload
+added wrapper properties
+add asli to trunk
+added linksource to javadoc so we can navigate from javadoc to source code . source code .
+added two figures
+add magicevent . getitemonstack
+removed unnecessary import .
+bump aws - java - sdk - sts from 1 . 11 . 11 . 658 to 1 . 11 . 658 to 1 . 11 . 11 . 11
+add gradle
+add shebang
+add google ( ) repo
+update whatsnew - subant haalt on failure .
+add deprecation to notice .
+added idea folder to ignore .
+add todo for 416 truncated list command .
+reset group to ondestory
+breathing room between rssi and battery on tablets . . .
+add image for cab
+reset path before append glyph outlines , to match old skpaint behavior .
+removed unused imports .
+update preview
+rename cpp / bubble_sort / bubblesort / bubble_sort_1cpp
+add cname
+add gif
+renamed serviceselectorprovidertest to test
+delete deploy . png
+replace respositories with repositories in
+add droid ethiopic fonts .
+remove whitespace
+added tag jdk9 - b04 for changeset 612191246a7d
+update the location result
+reapply fabric puglin
+added the build . xml to the ignore
+updated gradle plugin .
+move test sources
+undoing a test change to droidgap
+added tag jdk7 - b62 for changeset aca415f62ac6
+added ender dragon .
+enable travis - ci on maint - 0 . 12 branch .
+add missing 4 . 1 .
+added tag jdk8 - b85 for changeset 38a3aebc07ce
+add android arsenal badge
+deployed head .
+create nexus5 . json .
+added bug when opening reddit from
+add apk
+add inner_frame_test on the .
+adding idle plugin for linux contributed by cyclone . . . .
+add bridge from travis ci config
+expose targeturi to possible decorator classes
+bump snapshot
+add rohan
+added todo
+add filter to license files
+automated merge with http : / / / / hg . . org /
+bump findbugs - name to
+suppress unchecked cast warning
+add dates : client library .
+add link comment
+modified doimport method to log a completion message so you .
+adding html format to report
+implemented a buffer to draw trees / borders and test to the draw grid to skip tiles
+generate lparen , rparen for method_def parameters . . .
+added test - quickstart
+bump maven - javadoc - plugin from 3 . 1 . 0 to 3 . 1 . 0 .
+added todo : truncated list
+add link to icediscovery list
+bump azure - storage from 8 . 0 to 8 . 0 to 8 . 0 . 1 . 0 . 0 . . . . . . . .
+add ignore for jre . tgz on linux
+added tag jdk9 - b04 for changeset e16d4c844e76
+added tag jdk8 - b18 for changeset ff9cf1de21fa
+use the mode the use chosen from the dialog .
+revert timeout to
+updated selenium jar
+updating poms for 1 . 0 . 0 . 30 - snapshot development
+uses a single thread per stunstack to expire stunservertransactions in order to reduce the total number of utilized threads .
+expand connection link to encompass entire hover area .
+added ide specific files to .
+remove the module reference . .
+add getworldstate ( )
+rename method - > false positive .
+added tag v4 . 30 for changeset 4b7f9f4abe8a .
+disable flaky test .
+set correct maven
+add makefile for build on ci
+remove propdeps - maven plugin
+add files via upload
+add jar built by oracle 1 . 6
+add forgotten feature : filter by regexp
+ignore locals
+use the notimestamp and linksource options of javadoc in exclude
+revert stopship
+ignore neuronstest ( pure benchmark .
+add cobweb aliases
+add missing indexes .
+adds es_include on rpm
+am e21dabf6 : merge " initialize bwr . read_buffer in ipcthreadstate : : talkwithdriver . "
+add lasnef as contributor
+bump junit to 5 . 3 . 2
+remove explicit mx flag from javadoc command line .
+added syllabus .
+bump aws - java - sdk - s3 from 1 . 11 . 11 . 512 to 1 . 513 .
+add schematic of the openscale project
+added tag v4 . 67 for changeset 11a3cb66ab9d .
+add new committer info - jonathan eagles
+skip broken build .
+rename confusing parameter for maylaunch in connection
+add a sentance that the .
+added icon for the swiftp
+updates fmj to r96 ( fix parsing rtcp bye packets ) .
+remove remaining border
+adding irc bot .
+revert log test
+enable file in python / buck .
+convert hardcoded colors to be changed theme changes changed
+updated gradle plugin
+add duck which previously flew off
+made changes to ch02 .
+add wakatime
+automated merge with http : / / / hg . netbeans . org / main - golden
+optimize imports
+added tag jdk8 - b63 for changeset 1c4fb78585e7
+replace oraclejdk7 with openjdk7
+added missing import . support .
+updates jar with annotations for interning and signature checkers . ( nullness annotations remain as well .
+configure the - shade - plugin . . . .
+delete manifest . mf
+added all text on non - overflowing bands .
+remove descriptorref for src / assembly / bin . xml at paul smith suggestion .
+add color to background
+write manual - examples , remove unnecessary import . . . .
+build number increment by automatic build
+removed note from robot1_draw example
+add kevin to contributors
+updated fml : .
+added screenshots .
+added tag jdk9 - b67 for changeset 86337dfa5da2
+revert double date
+rename 4 . 4 . 4 . 2 . 4 . 4 . 4 . 0 . 4 . 4 . 4 . 4 . 4 . 4 . 2
+add shebang
+update changes
+enable travis builds
+updated rom scripting spec for bps 4
+updated slides
+ignore coverage report t (
+adjusted kafka producer prperties
+remove obsolete text about " sw " in name
+add wiki test
+added serviceselectorprovidertest to test
+update libraries for linux
+add test dependency to htmlunit .
+include the client - apis
+build module script
+create docker - compose . yml
+update the view
+added 16dp padding
+add deprecation flag
+undo the change
+ignore neuronstest ( pure benchmark ) .
+missing setwritequeuemaxsize implementation on streamingbodycodec
+ignoring failing test .
+replace respositories with repositories in the
+fix some card issues .
+remove empty list constant
+handle orientation changes
+update settings screenshot
+removed owldatatypeproperty . gif
+updated fastpath .
+added tag jdk - 10 + 18 for changeset 0bdcd03d587a
+modify the docs
+updated play store image
+updated com . jetbrains . intellij plugin to jre download issue <issue_id>
+remove glowserver import , fixes build
+set local plugins
+added tag jdk - 9 + 112 for changeset 372468bfe26c
+ignore neuronstest ( pure benchmark .
+add files via upload
+published documentation from master to [ gh - pages ] .
+restrict length of search input to 255 .
+reset killedbyam flag at attachapplicationlocked .
+add id tag
+add back to thrad section
+added serviceselectorprovidertest to testserviceselectorprovider
+added clean task . sh .
+revert npe in test poms .
+put app alls surface on top . . . .
+add todo to account .
+add link to overlay
+enable unit testing in jenkins
+add pos for redline ( https : / / www .
+remove unused field
+added tag jdk - 9 + 142 for changeset e2be7700de36
+add persian to the scraper
+adding test cases
+added tag jdk9 - b65 for changeset a61494bfed44
+added ordinary synchronization on a lock object , .
+move googleapiintegrationtest to unreliable .
+removed ds_store files
+add guava dependency
+enable indexconfigmigrationit
+remove message from pull request template ( <issue_id> )
+add link
+added an image for the individuals - description view
+removing xdoclint flag
+increase circleci resource class
+use original ondisconnect
+added openstore ( ) to
+add todo
+add cdma_rmnet4 to list of monitored interfaces .
+added tag v1 . 2 . 0 rev 1008 rc2 for changeset dd3c2816eb87
+replace respositories with extensions .
+fixed an issue in the last commit
+revert calcite .
+fix sort in the test result .
+add link to unittest
+update changes . txt
+replace list in repositories in
+remove test results
+enable renderscript to build under the simulator . . . .
+fix bug : opening via the .
+added tag jdk8 - b62 for changeset f0d59eea9c70
+add features index
+automated merge with https : / / checker - framework . googlecode . com / hg
+added defaultcomeslast checkstyle rule .
+delete downloadlistener . java
+added request id for newlineateof
+updated dependencies in -
+add files via upload
+replace respositories from the repositories .
+updated logo assets
+avoid validation error in the logs
+add debian to test
+add title on
+skip tests from build .
+removed unused import
+update spring dep
+rename example - examples to main pom .
+reduce hw scheduler cpu to default
+bump aws - java - sdk - sts from 1 . 11 . 11 . 628 to 1 . 627 .
+adds openjdk 12 to build matrix .
+added permissions to power user .
+add yubico ab copyright 2012
+add the goog . per - file to list .
+bump checker - qual from 2 . 6 . 0 to 2 . 8 ( <issue_id> ) .
+added photo of runtastic scale
+remove unuse import
+rename accidental commit
+fixing rack diagrams . . . .
+add the progress bar in the
+added private constructor for main
+add host - passthrough in constant .
+add files via upload .
+bump jaxb from 21 / / . .
+added new template documentation to the migrations doc
+remove sbt
+add round icon
+update dependencies
+updated eclipsito to bardsoftware / eclipsito @ <issue_id>
+add rtl support to androidmanifest
+edit changes . txt for cassandra - 5903
+add link to the latest result
+add skinrestorer to plugin . yml unsure if this will fix anything
+add support for meta -
+remove wrong variables .
+added ica root certificates .
+added tag jdk8 - b86 for changeset b1cf5aefa461
+remove obsolete log
+add a assertion .
+add asli to unittest
+bump test - and .
+hide power dialog .
+remove final from class declaration in luhn exercise
+enable collection of thread stacks
+bump test timeout to properly test .
+update windows bullet native ( 32bit ) .
+extending the timeout for decompressing cassandra for doradus
+remove oraclejdk7 from travis config .
+update travis config
+add apk
+remove comments
+add missing dependency in bootstrap .
+suppress lint warning messages
+add support viewflow
+updating archiva jar .
+add new wiki image
+moved banneradview to the ctrl package
+made more filter
+ignore dependency files
+update test data for serializationstest
+update the gradle plugin ( <issue_id> ) .
+rename the nullness directory into nonnull .
+add missing headers .
+add dashboard counts of the
+introduced random nullpointerexception bug
+add files via upload
+create stack
+added executable jar .
+add documentation image
+watch all branches
+add openjdk 9 to travis - ci build
+enable gradle . . .
+delete org . eclipse . wst . . .
+add new scheduler initialization
+removed unpaired select closing tag .
+add comments
+added tag jdk9 - b92 for changeset 27b563ba49e8
+delete blank line to properly
+delete anytimeinterrogation . jar
+added logo to credits
+use the latest sdk
+remove stale tutorial directory
+remove repos
+moved template files to the github folder ; added
+ignore idea files
+update readbytebuffer in tachyonfile .
+ignore * . files
+added tag jdk7 - b147 for changeset 1a289b7faf76
+qualify private outer call in mediaprojectionmanagerservice . . .
+add travis .
+added some tracing .
+remove ` < updatepolicy > never < / updatepolicy > ` from never < / updatepolicy > ` < / updatepolicy > ` from never < / updatepolicy > `
+added playground .
+update travis .
+delete old jmespath ast script
+add a few test reports .
+remove jdk to travis
+revert instructions
+add userratingstotal field documentation
+bump assertj - core from 3 . 13 . 2 to 3 . 14 . 0 .
+removing extra test
+add eclipselink at the bottom .
+introduced random nullpointerexception bug
+speed up
+removed custom dictionary .
+added init script
+remove unused import .
+introduced random nullpointerexception bug
+updated support lib to v25 . 4 . 0
+add cobweb to
+add respositories to repositories ( <issue_id> )
+added tag jdk8 - b68 for changeset 0447ec5a0e8c
+remove stray import .
+add an alias in the act .
+add perl namespace to thrift interface .
+add runtimeserver
+added fullbackupcontent to manifest .
+add xmljavadocassertiontest and enable testing of some groovy - xml javadoc examples .
+add probot in
+enable rtmp support
+set a higher timeout
+updated valgrind suppressions file ( fuse leaks when fusermount - . . . .
+rename ic_launcher to ic_launcher_cache_cleaner
+handle omx_stateinvalid in emergency shutdown properly ( by ignoring it and hoping for the best ) instead of asserting .
+add isenterprise to my_config
+adding an demo / demo / demo / to allow for demo / demo / demo / to allow for demo / demo / demo / demo / demo /
+added translation using weblate ( swedish )
+added patched commons . file library
+rename modules to the examples .
+add debian in to .
+ignore node modules
+updated binaries with " lane " feature .
+add error - handling to edit .
+revert fastjson . -
+setting network label to null .
+fixed the build
+add file
+ignore local buildfile
+added test tasks .
+uploading new screenshot
+fix the systemvm packaging issue
+added tag v4 . 28 for changeset 952486c166f3 .
+added tag jdk7 - b105 for changeset 989115191d21
+removed unused imports
+add known user
+add todo
+exclude jdtcompileradapter . jar from the shadow - jar
+remove glowserver import , fixes build
+remove unused import
+build number increment by automatic build
+skip a on travis - ci . .
+removed unnecessary import
+specifying transformations and jobs by deleting a job ( keep .
+extend pom description of commonmark artifact
+altered some of the sysurl links in the respected classes
+fix the build .
+add app category
+bump avs to 3 . 5 . 17
+remove superfluous todo .
+prevent transparent region from getting out of sync with surface flinger .
+missing setwritequeuemaxsize implementation of
+add agent of masks
+add brian to authors .
+added some ignore
+add rules
+prepare 1 . 12 snapshot
+add authenticationactivity screen orientation changes portrait the
+fix comments
+add travis . yml
+added some screenshots
+add a per issue <issue_id> . .
+updated customers service description
+added basic comment
+fix the test : the disk nothing else .
+create cname
+add dependency in the translator test .
+smack 4 . 2 . 0 - beta4 - snapshot
+add random uuid generation for the
+bump actor - commons 0 . 0 . 0 . 18 - > 0 . 0 . 0 . 19 - > 0 . 0 . 0 . 0 .
+put back in
+add link to icediscovery demos
+updated fml : .
+removed warning message missing
+bump log4j - core from 2 . 11 . 11 . 0 to 2 . 11 . 0 .
+add documentation to the
+updating non - snapshot
+added the file for the firefox
+add more budget for unstable test
+add todo
+updated changes . txt for breton
+removed s . accepted and s . ongoing from issue lifecycle
+fix the build .
+add test for [ skip ] .
+updated dc / pdi banner
+added package - info for gradle .
+replace respositories with repositories ( <issue_id> ) .
+allow spaces from warnings in tests .
+add openjdk12 testing .
+added gcspy .
+removed synchronized from findnexteventchoiceresults
+update osx bullet natives .
+added description for tight extension initializatioin phase . . .
+removing travis configuration
+revert link to latest
+updated pom . xml file to jasig - parent - parent - 36
+remove tools module which should not have been committed in master
+add call domain extra in imscallprofile . . .
+remove archiveartifacts to save space
+removed unused line from shopitem
+add mediaplayer2 engineers in owners file .
+remove unused field
+added extraneous null check
+bump realm 2 . 2 . 1
+disabling assertion as the test case is failing with assertions enabled .
+add bug3147326 .
+updated submodules
+add travis . yml
+add editorconfig file
+remove time . h include
+opening up v0 . 2 . 7 for development
+added documentation example for mock construction
+remove resource filtering in common .
+replace respositories with extensions .
+update meizhi . png
+add hawkbit user interface .
+added todo for 416 truncated list command .
+added an icon
+include strings . h for the strcasecmp prototype . . .
+remove " warning ' from the javadoc
+fix a bug with the unstable spellbook
+update build
+remove vi tmp file
+updated the icon for datahub
+updated favicon
+add bs to to to to to to to to to to to to to to to to to to to to to to to to to to to to
+add missing primordials
+missing some object files
+delete demo3 . gif
+fix broken build .
+turn off phases during trace
+add persian to the scraper
+add problem source url
+limit a little more wiggle room to allow basebase images
+remove jacoco dependency
+updated dockerfile
+revert 8014464 on test case
+added tag jdk8 - b96 for changeset 472d8f5f0d9b
+edited wiki page downloads through web user interface .
+fix changes in pom file
+remove the type arguments .
+update gradle plugin
+add libopenblas . so in lib
+added tag jdk8 - b117 for changeset 03f1370d6d68
+revert changes to examplefasta . fai for now to get tests passing again
+add seven segment image
+adding a .
+removed test message from script .
+turn off travis caching .
+added pex file .
+ignore generated files .
+revert respositories with
+added data_algorithms_image_small . jpg
+remove unused import from checker
+adding the aar files in
+add protocllib to softdepend .
+adjusted test to latest result .
+add architertecture pic
+optimize default config
+skip this branch in
+publish onos - build artifacts .
+added translation using weblate ( chinese ( hong kong ) ) ) ) ) )
+updated latest folder
+add debian to list
+improved cover
+add resource .
+add rns
+add log
+updated danish translation .
+introduced random nullpointerexception bug
+removed fabric . properties
+made sources also a part of the jar file .
+add hydra slayer helms to slayer plugin
+disable performance test trigger until fixed .
+added tag jdk8 - b93 for changeset 9bf66362d942
+apply the clang - format check on the mx . sulong / libs directory
+add files via upload
+updated architecture image .
+set the byte of the logs in the act .
+reset the inverse of the modelview in resetmatrix ( ) .
+allow one - line ifs
+raise long on rotation leak .
+updating integration - doc
+add comment
+added screencast example gif
+remove erroneous @ since tag .
+add missing class to preloaded - classes for art build .
+add files via upload
+bump mockito - core from 2 . 26 . 0 to 2 . 0 ( <issue_id> ) .
+backporting an @ since per cr - trunk - 548 for trunk - 2588 .
+ignore some files
+allow apache to create links in / var / log / nocpulse . . . .
+update demo apk
+added tag jdk9 - b77 for changeset 9fdd8b175dc1
+updated sort in the latest result .
+remove unused import
+add a error to
+added tag jdk8 - b113 for changeset 221c3167eb35
+add oraclejdk8 .
+ignore ' folder
+remove junk
+rename mediametadata2test to timedmetadata2test .
+reduce threads on travis
+enable arm64 builds
+remove rarity check based on xml card data as it is no longer updated
+remove unused dependency
+rebuild jar
+add storage from feature
+add unused field to not confuse talkback .
+add files via upload
+add index . html
+keep latest builds .
+restrict mediarouter selection .
+move test into vm8 package
+allow x in compile . sh
+add atlasdb - client module gradle
+automated merge with http : / / hg . netbeans . org / main
+added setter for the spenthours field .
+add rejar script .
+fix the failing build
+added top image
+updated screenshots
+updated submodule reference
+add libs
+updated library reference
+add asli to the
+delete profiles_settings . xml
+added new
+automated merge with main - silver
+revert ud result after smoke test
+added amsz to be page in
+bump aws - java - sdk - sts from 1 . 11 . 11 . 565 to 1 . 11 . 11 . 565 to 1 . 11 . 11
+add files via upload
+update logging level for tests to info
+add pr for template
+introduced random nullpointerexception bug
+updated copyright header
+added tag jdk7 - b58 for changeset 4b001cb378e2
+removed myself from the owner of .
+bump snakeyaml from 1 . 25 to 1 .
+add publickey and hello message to the encryptionhandshake message .
+remove unused import .
+fix an issue reported by ga
+add dependencies to javadoc generation classpath
+add files via upload
+refine index
+update the email .
+removed remaining sf references , mailing lists etc .
+remove integration tests from build .
+updated githalytics
+adds myself to have module
+remove rest test
+added new app inventor 2
+added translation using weblate ( swedish )
+bump googleauth from 1 . 3 to 1 . 0 ( <issue_id> ) .
+removed timeout
+remove path to the apk from the permittedpath .
+bump httpclient from 4 . 3 . 6 to 4 . 3 . 1 to 4 . 3 . 3 . 1 to 4 . 3 . 3 . 6
+remove sd card
+added tag jdk - 9 + 98 for changeset 6850def997b7
+add ai casting restriction to searing rays
+add wiki link
+introduced comment about transaction .
+fixed an exception argument to precmd ( )
+add helper methods to set latitude / longitude am : d56d8611e9 .
+adding php , css
+bump kafka . 11 . list
+add groups . reviewboardrc
+create sources for shaded jar
+removed the xml format of the
+edit test
+add a nodeid hint to privatekey property
+added description patterns for sourcelineannotations . . .
+update the demo apk
+updated pom .
+pass extra in zkcli to zookeepermain
+modify tron . enc to adapt new pubkey
+make jar
+create strings_actions . xml
+add config_batterysdcardaccessibility to cm_symbols . xml .
+replacing bundled logic module with the one that i actually uploaded to the module repository .
+solved lint issue with vectordrawables
+added tag v4 . 30 for changeset 4b7f9f4abe8a .
+add " mms " to common phone number types . . . .
+adding an ignore file
+remove oraclejdk7 from travis build .
+allow apache to create links in / var / var / nocpulse .
+add es to the list
+add title :
+add some screenshots
+added tag jdk - 9 + 116 for changeset 33cf53901cac
+add files via upload
+enable lambda - projective support in test .
+dink typo
+increase the buffer size to hold the whole content of the file . . . .
+tick test results .
+delete summary . md
+added copyright to "
+set subtitle language on streaminfo when changed
+added life . appdf as test resource
+bump aws - java - sdk - sts from 1 . 11 . 557 to 1 . 11 . 557 to 1 . 11 . 11 .
+add license tag
+add files via upload
+fix respositories with metadata (
+remove obsolete empty package
+revert " jackson . . . . .
+add a delay before starting the device update task to avoid adb missing .
+updated activation . jar .
+try github travis build
+added translation using weblate ( lithuanian )
+add benchmark resolver
+revert forge
+updated files via upload
+add the title spanning the whole line
+add google - http - client - client - jackson2 to 1 .
+delete _config . yml
+fix test : http : / / codereview . chromium . org / 11876003 .
+add unit test on the views
+added old login - backgr image
+remove localizedstringbase on make clean
+delete mlp_mnist_single_layer_example_results . png .
+updated pom
+added a new hybrid design .
+ignore intellij project files
+added tag jdk7 - b106 for changeset 9af6b80c6f4b
+replace respositories with extensions .
+add zos handling to j9vm_gen_asm .
+avoid any issue with git - commit - id in limited git checkout situations
+add new module
+remove unnecessary line in
+add auto - level character
+modify position of search options
+add files via upload
+updated the images
+ignore vim log files
+updated apache incubator proposal ( mediawiki )
+fix the case reconnection doesn ' t work .
+add 500ms of sleep in test .
+remove the wear module
+restored jstl to 1 . it needs to 1 . 2
+add javadocs to documentation .
+updated submodules to most recent commits
+remove cap_sys_resource am : 4911af2b8c am : 1cc9ec47c8 am : 8965cd6a39 am : 47beaa8fab am : 47beaa8fab am : 55c8a1ede9 am : 55c8a1ede9 am : 66a08a5413 am : 66a08a5413 am
+added another alias for dumptool
+added the optimizermatrix interface
+revert newline at eof
+updated testng dependency
+removed package from findbugs exclusion
+added visit method for intannotations . . .
+avoid extra warnings message
+add userratingstotal field to
+made ceylon . language . object
+fixes an issue which could cause a dtls client to never send a client hello .
+delete queue - load - level - pattern . png
+add serviceselectorprovidertest to testserviceselectorprovider
+added defensive logic to be fully comparable . . . . . . .
+added tag jdk8 - b64 for changeset 529fffb2ec02
+added description for the last .
+bumping snapshot to 3 . 0 .
+add placeholder test to vanilla .
+set default jdk to openjdk8 ( <issue_id> )
+renamed serviceselectorprovidertest to testserviceselectorprovider
+suppress todo .
+update personal debug client
+add russian rules
+add bean and . . .
+allow the lives to be drawn at the start
+bump the size of / src / test : execroot_test .
+add trace on sign up
+build mac i386 lib
+remove hadoop . conf which is no longer used
+updated lang submodule
+add imagery for github and
+removing click sounds on clicking workspace .
+add chavdar to acl
+reorder tone mark and nikhahit in droidsansthai . ttf .
+commit messages should be enclosed in quotes ( <issue_id> )
+added dan to the requirements for
+removes unused import
+add fix from karl magdsick
+bump mockito - core from 2 . 10 . 21 . 0 to 2 . 0 .
+add color in background .
+removed unused constant .
+add source maps
+delete sample2 . gif
+added tag v0 . 5 . 21 for changeset 84057174eeb9
+automated import from / / branches / master / . . . . @ 140603 , 140603
+updated preview .
+updated binaries for linux i686
+exclude example / from npm package
+update gradle script
+fix test pause .
+add javadoc .
+add the dep
+resized gif
+add footer
+update the asset in
+revise utilities description
+add copyright .
+add test exclusions for
+add file
+add annotation processor
+added tag jdk7 - b73 for changeset d02ee9795d57
+add inappropriate local repository setting ( <issue_id> ) .
+added the packaged plugin zip to git repo .
+adding the apk file
+include updates ui tools for translations
+add oracle bulk loader info .
+fix the bug in code
+build the package phase
+remove sdk
+fix bug : companionlist with prexxx doesn ' t refresh properly .
+bump up revision number .
+introduced random nullpointerexception bug
+updated broken to
+updated corenlp
+added tag jdk7u6 - b03 for changeset 8e8cedfb1ee2
+added the architecture diagram
+fix test compile warnings .
+disable travis ci tests
+adjust the link to top nav messages .
+fix broken build .
+added tag jdk8 - b55 for changeset a180f4cc7c94
+add footer
+added tag jdk - 9 + 105 for changeset e6b4f7af3fca
+add abstract :
+removed txt files from jar
+added screenshots
+add entry in changes . txt
+added tag jdk7 - b117 for changeset 3e6726bbf80a
+add a script to run the jrobin inspector
+prevent a warning from the failsafe plugin .
+added travis . yml
+add files via upload
+add contributor list .
+add code cov in travis .
+add test .
+updated link to
+add usage command line parameter
+adjust smooth factor .
+remove unused sha1 . . .
+ignore eclipse files .
+adding a todo note
+add mit license
+add openjdk - ea to .
+ignored stuff .
+added tag jdk8 - b82 for changeset e2239e25e90a
+add test coverage reports .
+enhance thread contexts in jaxws .
+removed local variables t caught
+update consensus
+ignore intellij files .
+add type parameter to class class class type
+remove oraclejdk7 from travis build
+tweak index . md
+add column to thrad section
+make blueflood - all module
+missing break in automatic transport for some operations
+fix broken hystrix example .
+create getmodemenabled function in phoneconfigurationmanager .
+removed android - support - v4 . jar .
+delete progress log when downloadgatkreportsfroms3 . csh
+remove hack that hardcoded the refresh rate .
+add break statement for slider view
+fix test errors
+comment out mediatests module
+add an entry in examples . txt for examples .
+updates ice4j to r449 which further reduces the average time it takes to clone a datagrampacket .
+remove reference to krun . main .
+adding maven debug build
+remove extra white space
+setting copiedsize to 0 when value is null .
+added relevant articles
+adding an demo / demo / demo / to allow for demo / demo / demo / to allow for demo / demo / demo / demo / demo /
+updated comment . . .
+bump zxcvbn from the .
+edited wiki page concurrentradixtreeusage through web user interface .
+tighten window type of atob function .
+missing setwritequeuemaxsize implementation of
+prevent scanning during dhcp process .
+adds a bottom padding to the sample project list
+added tag jdk - 10 + 8 for changeset 38f7f9fa0ac1
+added real life application to command pattern
+add photo
+add updatedat to index
+avoid nexus username and password on build
+add known user
+add hadoop test case
+delete values - fa .
+add asli to contributors
+update android - ffmpeg peg
+updated fml : .
+bump mockito - core from 3 . 1 . 0 to 3 . 0 . 0 . 0 .
+remove macosx bunk from the reference export
+remove redundant pg
+add demo apk
+added default jar
+add link to unittest
+added tag jdk7 - b90 for changeset 9757c7aa8f78
+remove oraclejdk8 from travis config
+add respositories with metadata ( the )
+ignore the jar file for the mode
+add random pointer to uuidprovider
+avoid possible overflow in
+bump up terracotta dependencies
+remove flight recorder configuration
+adds example / application . xml
+added todo
+rename license to license . txt
+update gif
+update changes
+rearranged devmap
+linefeeds my ass
+removes braces surrounding plugin count in the left panel
+updating popup center asset ( v5 ) .
+update ignore
+create a new file .
+bump zxcvbn from 1 . 3 . 2 .
+add asli to test
+add log4j back to ot ' sl tests .
+committed heading element name
+update jetbrick - to 2
+updates samples status file for timeout on arm . . . .
+fix bug with startscript displaying a comment
+reactivate all dependencies
+added uneeded use
+added tag jdk - 10 + 15 for changeset d161a843e941
+update bintray tools
+add files via upload
+updated screenshot
+replaced unwanted parameter in getcountryfromsim
+enable travis ci
+reverted support library .
+reset lasttimestampg
+add 8th ed artifact texture to magarenalogo . psd
+update build to 1510024
+add files via upload
+added tag jdk7 - b51 for changeset c00902c9cfbf
+remove gradle
+removed unused stringbuffer .
+merging tag v4 . 83 .
+create logo
+create package
+added tag jdk - 9 + 128 for changeset 77d414702a40
+add extras . spec .
+updated forge
+update sdfs . jar
+ignore data dir
+added main file .
+add oopsla 2004 slides
+added ant . for
+removed invalid artifacts from circle ci config .
+added class config for matrix
+build 181 . 4096
+add missing setwritequeuemaxsize .
+preventing weaver leaks : get control of the classloader references in bcel
+updated ivy to 2 . 0
+implement the remaining list of events in the extension point plugin .
+fix the robot smoke particle causing fps drops in certain cases
+add back 1 . 4 . 1 . 1 . 1 . 1 . 1 . 4 . 1 . 1 . 1 . 1 . 4 . 1 .
+add gitter notifier
+updating icons
+move r and rest to check
+ignore generated files
+enforce spaces as @ hlide sugested at <issue_id>
+treat warnings as .
+remove unused pictures
+hide new interface to fix build . . . .
+add shapemode and to unittest
+add license check to job dsl .
+update openrasp - v8
+create snapshot in pom . xml
+remove memmory size settings
+added placeholder for apisecret
+add external_integration_test back into test .
+fix new line at end of file .
+added google webmaster tools verification page .
+add userratingstotal field documentation
+made separate jersey 1 . metadata client .
+add chavdar to acl
+add apk
+bump mantle
+move old test
+add space . client .
+regularizes capitalization in spanish translation
+updated build in dist
+revert a typo
+add test in the latest result .
+delete empty output .
+expose the constructor to public
+skip testsuite module in pom .
+add generic assets .
+fixes the crash when launching the app .
+added android level to travis
+added 16dp padding
+add hadoop - gremlin to plugins . txt
+remove redundant entry in changes .
+added resourceprovider .
+build label is rc2 - dev .
+add description for ( <issue_id> )
+revert " to build
+add maven wrapper .
+increase the timeout for a slow machine
+add travis . yml
+add jenkinsfile
+added tag jdk - 9 + 111 for changeset 41a1c20eb619
+add logos
+remove @ sideonly from 70318 ( getdistance ) it makes no sense that it ' s not on the server .
+delete manifest . jar
+add expensive test
+updated waffle logo to remove codeplex reference .
+add project and
+bump maven - shade - plugin from 3 . 2 . 1 to 3 . 2 . 0 ( <issue_id> ) .
+forgot credit in changes . txt ( merge r1370904 ) .
+ignore test failures
+added ipc class ( <issue_id> )
+remove submodule : .
+add storage dependency .
+replace respositories with repositories (
+added tag jdk9 - b68 for changeset 55a005ebb6c2
+add h02 test case
+update rns
+add missing libraries , in order for gold to work . . . . .
+fix a few transformers .
+added github issue template
+exclude unnecessary files from google - java .
+added a little more logging in omxcodec . cpp for vendors to be able to reproduce issues . . . .
+skip generation date for fluido skin .
+remove unneeded classes
+remove a fast script to run
+add dummy file to git
+added tag jdk - 9 + 96 for changeset 3d43ae0bef27
+updating submodule to latest
+adding mainclassname to test the build .
+update _config
+prevent surfaceflinger from using layer token 31 . . .
+add additional newline to build in build . . . .
+updated codelock assets .
+removed tag roboguice - 1 . 1 . 1 . 1 . 1 . 1 . 1 . 1 . 1 . 1 . 1 . 1 . 1 .
+add cynthia . war
+set project encoding to utf - 8 .
+add travis ci file
+fix a bug in keyaction in hdmicontrolservice .
+add todo for reducing code section
+prepare next development iteration .
+set theme jekyll - theme - tactile
+added tag jdk8 - b114 for changeset 18b08c4ac28d
+updated object icon .
+adding missing resource file .
+add i . to in
+add mappings data
+added tag jdk - 9 + 154 for changeset 1da1ffe0c6fd
+add registertime in channel ref
+updated binaries for linux i686
+automated merge with http : / / hg . netbeans . org / core - main
+update the splash animation
+missing setwritequeuemaxsize implementation in
+bump v . properties .
+updating cslang - bulder pom . xml file
+add words suggested by users
+add jsp 2 .
+add wget dependency
+updated lang submodule
+added org . lwjgl . util . nochecks
+raise null in createobject ( ) .
+ignore tags file
+bump jackson - databind from 2 . 9 . 9 . 10 . 1 to 2 . 10 . 1 ( <issue_id> ) .
+added italics cuz
+creating a cached temporary non persistent table with a primary key threw a nullpointerexception .
+replace fill_parent with match_parent in fragment_profile ( <issue_id> )
+add plugin zip file
+avoid casting if the length is > 2 gb ) .
+revert respositories from repositories .
+bump forge to 2705 to fix some client issues .
+add serlet - api to overlay wars to reduce compile time errors when adding classes .
+update travis . yml
+skip agregate checkstyle task .
+remove codacy from .
+add proguard to android - 2 . properties
+removing intellij idea files
+reset mcurrentuserid when fingerprintd died .
+revert " file
+added tag v0 . 5 . 22 for changeset e1e9c63323ca
+add link to in
+remove kahadb log
+revert behaviour of the
+added todo test interface
+update pom
+remove unused import
+added test from to . . . .
+logs a stack trace when re - transmission fails .
+adjusted changes . txt to reflect added axiomatic sim
+add known user
+add a in the only input path .
+remove unused variables .
+remove funding as no one has ever donated one cent to this project
+add test classes to latest
+added tag jdk8 - b90 for changeset 77d6a1b1e9ec
+missing class org . apache . batik . batik . w3c . dom . dom . dom . elementtraversal
+rename processor
+fix broken test to extensions .
+revert zxcvbn .
+failing assert : id must be initialized .
+prevent npe in test fail ( <issue_id> )
+updated library reference
+add respositories with repositories (
+add travis . yml
+remove unused line
+add missing newline .
+added translation using weblate ( dutch )
+configured travis ic [ 4 ]
+fixing a " that causes the user to prevent . when rotating . . . . .
+specify overlay from ubuntu .
+add pos in to wherefrom and wherinto .
+remove simpleapp archetype in
+add travis
+removed performance - framework from build temporarily
+add a @ in the externs . . .
+add debian in to result .
+add platform tools
+remove unnecessary lines
+ignore failures during : beam - sdks - go : vet to allow . / gradlew check to pass . / gradlew check to pass . / gradlew check to
+make rhnpackagerepodata . package_id primary key .
+gave antlr jar file .
+add preinstall dependencies unit tests
+add sql font definition for verifier
+update openrasp - v8
+add test case about try - catch block .
+add oraclejdk9 to travis .
+added missing bracket in js editor
+add dependency for rhnxccdfruleidentmap to force order . . .
+remove data folder
+rename missing " to be " gmgen . . . . . .
+writing credit to list
+rename bitcoinj . jar
+added back to ' setup
+add jar
+updating android prebuilt apk . . .
+add files via upload
+remove jdk6 from travis config
+set the default test driver
+add logo
+added postem to trunk .
+remove libsvm
+modify pom
+comment the integration test until deployment process refine with new changes
+reserved a name for the ascanrule httponlysite
+added tag jdk8 - b110 for changeset e78392f8a04b
+remove stale comment .
+add bwc indices for 5 . 4 . 4 . 2
+simplify footer
+updating libimobile - java submodule
+add files via upload .
+add contributor agreement for mike
+disable security - server startup
+added support for rnpm
+add javadoc
+define generic logging class .
+give projectiles back their gravity
+use the right name for dataverse
+add color property
+prevent data usage dialog .
+reinstate " task .
+bump picocli to 4 . 1 . 1 ( <issue_id> ) .
+added tag jdk - 9 + 150 for changeset 0ec334969fce
+handle case to map .
+updating dependency - pom to 2 . 13 .
+add getter for time zone .
+bump common ref . . . .
+fix the comment
+add label to redaction interstitial activity
+commit binaries plugin . . .
+changed the endoflame texture .
+removing usused imports skip
+added pageloadtimeout class
+protect pwd with quotations to allow ant to allow ant to be placed in .
+skip the ontouchenabled in
+enable java 9 for travis
+bump checker - qual from 2 . 5 . 7 . 6 to 2 . 8 ( <issue_id> ) .
+remove codegenerator module
+allow gradle to enumerate subproject dependencies . . .
+automated import from / branches / master / . . @ 141993 , 141993
+bump gradle to 5 . 1 ( <issue_id> )
+add mariadb : result in
+exclude test directory
+use new travis ci infrastructure .
+renamed spring . for project . . . . . .
+fix an issue reported by ga
+remove an unneeded assignment
+merged and removed obsolete test plugin
+bump javax . - api from 1 . 2 to 1 . 3 .
+added applejavaextensions . jar that provides compile time
+automated import from / / branches / donutburger / . . . . . @ 141593
+bump checkstyle from 8 . 16 to 8 . 17 ( <issue_id> ) .
+update internal framework to api
+updated submodules
+removed tag magarena_1_14
+fix bug in bio and nio .
+added todo test
+add org_id to distchannelmap backend class .
+set root to action before creating
+update openrasp - v8
+lost wiki submodule
+prepare kickstarter campaign
+added memory setting for tests . . .
+added the link
+enable multidex
+add link to https : / github .
+add link to connect to vanilla
+commit custom
+add wiki test
+added tag 0 . 5 . 36 for changeset b46208731bd3
+bumped nebula netflix oss plugin to 2 . 2 . 10
+delete test
+add launch images for iphone x .
+update changes .
+ignoring target directories
+updated company logo
+remove final from class
+added rfc 6868 doc .
+exclude jackson module - info .
+delete streetmap_sd . tpk
+add ignore
+added tag jdk8 - b52 for changeset 249b4f59d330
+add reddit todo list
+add a blank gif explicitly for the standard skin to fix a smartgwt 3 . 0 bug . 0 . 0
+add milestone maven repository
+add chemister ' s insight
+ignore eclipse files
+fix the webclient url
+add broken in svm list
+added visitsourcelineannotation ( ) . .
+done this test failures in towers
+add clarification link
+removed unused import .
+updated the potion icon
+remove old unsed dist jar .
+added experimental build matrix
+forget wifi .
+add libutils dependency for libandroidfw host build . . .
+update junit dep
+modify conf
+added docker as travis ci build
+add khr_gl_texture_2d_image extension string .
+bump forge to client .
+updated submodule
+adding java 8 to travis ci
+updated bin
+get travis to stop complaining
+removing unused var
+automated merge with https : / / checker - framework . googlecode . com / hg
+added comments to show templates .
+bump engine . io - client
+updated splash screen for jnlp packaging .
+remove data files
+add qq group
+updated architect list
+bump ant to 1 . 10 . 10 . 1
+update chassis pom . xml to present interface argument name
+add goodies to the test case
+added a set of " dual indexed " adapters .
+prevents memory leaks by correctly detaching views in abslistview . . . .
+exclude cli from fortify root pom
+add getter for selecteditemposition
+add sample dependencies to the
+update docs
+updated sample to
+adding scripts
+add target sdk to sample
+adding circleci config
+add todo to 416 truncated
+fix broken test in addnewbrick .
+add pic
+updated tests
+refresh updatefx app jar with one from 1 . 5 ( <issue_id> ) .
+remove unused import .
+create cname
+added tag jdk7 - b57 for changeset d5a1223e9618
+add comment .
+set the locale of javadoc as en_us .
+remove extra backslash .
+remove test file
+run integration tests from travis script
+update plugin archive
+made changes to foreword . asciidoc
+add image
+add link to properly
+added tag jdk8 - b103 for changeset 49d8688ac040
+remove annotations
+delete example . gif
+add demo gif
+add event live lock screen .
+build break in
+added translation using weblate ( swedish )
+add screenshots
+delete playground jar
+add drop user
+added whitespace to improve code coverage in nowhitespacearoundchecktest
+bump lombok from 1 . 18 . 0 to 1 . 18 . 2 . 0 . .
+updated icon files to new logo
+renamed serviceselectorprovidertest to testserviceselectorprovider
+enable pauseless gc on macos .
+added dashboard demo .
+remove jdk7 from travis .
+removed println statement becuase it causes errror in i18n checker
+added tag jdk9 - b49 for changeset 08067f67dde0
+added mimetype behaviour .
+added tostring ( ) method in neoapp . otherwise . . . .
+add parent
+add random test : var .
+added tag gwtp - 0 . 1 for changeset b6f14bd61a41 .
+add gif
+added serviceselectorprovidertest to testserviceselectorprovider
+add websocket test prefix
+add new line to end of the class
+added spanish ( location_monitors
+add suggested width for floating toolbar on large devices .
+change the output directory path
+committing abstractparser . scanner .
+added tag v0 . 5 . 41 for changeset ca0588e93fe5
+added tag jdk7 - b131 for changeset e0205cb94879
+add ray .
+added tag jdk7 - b124 for changeset b715439429dd
+remove mac file
+add travis ci
+add helper method to the plugin was pushed down the plugin .
+add files via upload
+reducing dockerfile in docker image .
+dismiss external keyguard views on fp auth . . . .
+add link to unittest
+edited wiki page benchmark through web user interface . . .
+updated ad blocking client .
+ignore target / and bin /
+remove debug message
+remove local testing file
+remove unneeded dependecy on core - tests to fix build .
+add runtasklaterasynchronously in bukkitscheduler
+added jython . jar , into a directory . it is .
+bump jackson - databind from 2 . 4 . 0 to 2 . 10 . 1 in / proxylib .
+fix bug in the opening reddit links .
+added coordination team list
+updated russian translation in todo
+add emerge unscathed
+fix bug in qualified path
+added netlet
+specify integer instead of
+rename module : acdisplay = > app .
+remove an unnecessary semicolon . . . .
+building jni libxtreemfs on travis
+add neuroradiologe / n
+added tag jdk8 - b69 for changeset 2d4530f2c281
+delete lib
+bump validation - api from 1 . 0 . 0 . 0 . final to 4 . 0 . final to 4 . 0 . 0 . 0 . final
+add hdfs list in changes . . .
+add break ;
+added screenshots
+removed whitespace noise .
+add book texture
+accept licenses
+added tag jdk8 - b28 for changeset 1eae1ee06752
+added parallel profile as separate profile .
+add depedency on grpcio and protobuf ( <issue_id> )
+add title and
+add binaries
+added mapping to .
+added license information for the distribution .
+add java 11
+added tls 1
+updating poms for 1 . 0 . 0 . 0 . 24 - snapshot development
+add google repo
+added nginx binary and php extensions
+ignore backup files
+fix broken build .
+ignore generated files
+remove unused import .
+update dependency org . apache . plugins : maven - jar - plugin to v3 . 2 . 0 ( <issue_id> ) .
+added link to index . md .
+removed unused strings . xml
+remove pos for archiac ' builded '
+bump dropwizard - jackson from 1 . 3 . 15 to 1 . 3 . 3 . 16 . .
+remove lint options where not possible to specify them
+including install . txt in
+remove extra from relay
+add debian in to list .
+add irc notifications to travis .
+updated externals .
+add new section for 0 . 3 . 0 . .
+removed unused import
+rename the interface to iscold ( )
+corrected the relative path to the bigdata build directory .
+bump common ref . . . .
+disabling assertion as the test case is failing with assertions enabled
+remove leftover license file .
+remove unnecessary statements .
+improve travis
+fix an issue reported by ga
+add alpha channel to logo
+tell travis to use openjdk instead of cache
+add spring setting that findbugs
+remove unused import
+add individual test command in the
+updated pom plugin to 2 . 6
+updated poms
+add a comment about common . xml .
+missed eof .
+added custom jar
+accept license
+eclipse autocompletion is gonna kill me .
+updated date . . .
+add android to travis .
+add enginetype for engine when get from manager
+remove useless code
+revert respositories with
+updated the ps3 image
+compress new texture
+renamed serviceselectorprovidertest to testserviceselectorprovider
+prevent npe in hardwarerenderer .
+set app_icon_size back to 72dp for sw720dp .
+add demo gif
+added the number of characters
+added tag jdk8 - b32 for changeset 810c7eb54560
+remove prematurely test module .
+adjust sunlight level in
+add todo .
+update support
+reverting the java 8 .
+add marques to the work on non
+automated merge with https : / / checker - framework . googlecode . com / hg
+revert calcite .
+add curios
+delete outdated file
+ignore eclipse files
+accept google ' s android sdk licenses
+remove @ ignore 6876961 from test / util / resourcebundle / test4300693 . java . java .
+added tqdm monitor thread
+accept sdk 27 license .
+add config
+added relative path to the parent pom so that the user won ' t need to .
+avoid concurrentmodificationexceptions on add - on update check
+remove appcompat - v7 dependency
+rename factory in ' vec ' to ' .
+add es to the list
+remove broken from via upload ( via <issue_id> )
+added tag jdk - 9 + 157 for changeset 8d8593871575
+add words in test
+update vscode - travis from travis
+updated changes . txt for hbase - 4010 .
+remove useless semicolon .
+bump byte buddy to 1 . 9 . 9 . 10
+adding me ( stephane maldini ) in cop .
+updated screenshots
+remove the build .
+fix a typo in the comment
+add functional interface
+add files via upload
+updated ver .
+resolve web script npe on startup - mt / uri index clash . . .
+ignore sample
+ignore pods
+reset serialization to preconditionmessage
+reinstated lost doc string for filter .
+turn off default
+ignore log files
+trigger a restart on coldswap from the ide .
+updated the
+revert @ of
+fix the build lists from . .
+add google verification file
+updated archive file
+reverted a change from for - trunk - sample , to avoid .
+updated launcher icon .
+update build to 1550013
+add rules to sample ( <issue_id> ) .
+fixing the image name
+remove random newline
+updated image for play store ( new requirement )
+remove reactor from
+remove samples from repo
+add apk
+add placeholder test to persistent_test_runner_tests .
+added tzurl home
+removed double parameters ( <issue_id> )
+rename searchvisitor . cpp - > searchvisitor_test .
+add bintray properties
+add placeholders in the
+bump equalsverifier to 2 . 4 . 2
+turned on processdefines to output es8_modules .
+updating hbase
+add contributor
+improved cache resize policy : exist uses dynamic caches to adopt to adopt to adopt to different loads . different loads . different loads . exist uses dynamic caches to
+update jar
+run the tests about the
+merge the workflow steps
+update master file to deploy maven archetype to standard repository
+add lintoptions to gradle
+add issue template ( <issue_id> )
+enable es by default in titan . sh
+added json type to schemaguess
+creating a new page for streamingkmeans documentation .
+adds key . properties file .
+fix a ga issue .
+updated gradle plugin to v2 . 24 . 0
+remove checkrepositories
+removing the commons - codec
+bump changes to 1 . 8 . 0
+update dependency of api module to deal with charset extraction
+updated schedules 0 . 9 . a
+update img
+enable transcodefaststart in philipspfl ( thanks , ler0y )
+configure continuous integration using travis ci .
+removed selenium test file .
+updated examples
+prepare next development iteration .
+ignore intellij idea files
+disable test temporarily
+bump lz4 - java from 1 . 6 . 0 to 1 . 0 to 1 . . . . . . .
+add fr
+added tostring ( ) method in neoapp . otherwise . . . . .
+makes bors a bit more patient
+remove generated accessxxx here .
+ignore iml files
+update apktool
+add jetty - ce .
+change a bit apimanager
+updating the logo
+add test
+removing padding on mobile signal group . . . .
+add travis . yml
+added new files .
+add clearallmarkers
+apply plugin : ' java ' .
+add iden to getnetworktypename . . .
+enable oraclejdk8 in travis ci .
+add files via upload
+add upstream project so build are triggered automatically
+add item . setallowoffhand
+remove erroneous data map from .
+add openjdk 11 to travis .
+using new pipelinebase image
+generating md from html files
+add a new middleware test
+add gemfile for cf push
+bump it
+merging the hotfix on issue608a [ improve testing for table sorting in the ui ] .
+fix test :
+updating action - cache
+introduced random nullpointerexception bug
+delete spinner image . png
+update findbugs results to reflect reduced error / warning count [ skip ci ] .
+edit description .
+add apj
+update submodule ( <issue_id> )
+introduced random nullpointerexception bug
+removed trailing space
+remove circle config
+remove debug comment .
+add respositories with repositories in the
+remove unused test style to resolve lint score
+add jquery to the externs .
+updating design diagram
+disable travis ci
+use the surefire 2 .
+removed unused import ( fixed 1 pmd issue ) .
+removing wiki repo submodule .
+adding use apache2 : : requestrec for $ r - > main . . . .
+adds javax .
+add final from class declaration in luhn exercise
+update new list
+update gradle
+prepare project for the next development iteration
+add delay to client test shutdown .
+renamed war
+improve trim test
+added another import .
+updated postgresql driver
+resize web icon
+added language remappings for crowdin
+add asm jar files to classpath . . .
+updated the potion icon
+add fetchsize log
+add files via upload
+add ui module list
+add toc reference docs .
+add nav to
+removed duplicate social_features_enabled in config
+add untileot
+updates core to compile under jdk 1 . 8 only
+remove travis .
+changed my mind
+added tag jdk9 - b56 for changeset e484d3735f41
+remove extra library in the
+added tag jdk7 - b146 for changeset 996242032853
+add preview flags to terms doc so the early look title appears in nav
+added tag jdk9 - b30 for changeset 8d6d3257c748
+prevents native mediaplayer from unpausing when playback speed is changed
+add fastjson in test .
+added tag jdk - 9 + 125 for changeset bba1e4c5c547
+adjust sunlight to asteroids
+added javadoc artifact to maven
+add test : result in test
+build number increment by automatic build
+add plugin to sample
+set mproximity to proximity_unknown on screen off .
+disable renderthread .
+updated respositories to repositories in
+create docs
+fix bug with bracket matching when comment starts in column 1
+refresh queue when streaming is started
+remove second carrier name from lockscreen
+remove unused import .
+animate layout padding in
+ignore idea project files
+add respositories with repositories ( the
+added documentation
+updated the jar file .
+add screenshots
+add image for assignment
+adjust packaging for scala 2 . 12 ( <issue_id> ) .
+updated screenshots
+add link to latest
+revert accidentally committed file .
+add demo
+adjust respositories to repositories in
+update 2 . 30 apk
+remove grantdw
+add words suggested by users
+added mitm connectionend
+add screenshot
+changed the vibration duration from 1s to 750ms . . . .
+removes email from admin .
+added the css style .
+add a method to destroy the rs object .
+remove test :
+ignore files .
+updating copyright year in the license file to 2013 . .
+analyze behaviour while running oak cluster on mongo .
+prepare next development iteration .
+added a sub - module for common clustering code .
+add files via upload
+add 1 . 0 . 2 . 0 . 1 jar
+removed unnecessary import
+added travis config
+remove @ tobefixed from knowntags . .
+delete dummy . txt
+add hawkbit .
+update openrasp - v8
+enable maven repo location
+ignore bin '
+skip iml
+add travis . yml
+add footer
+enable ` devirtualizeprototypeproperties ` for es8_modules . .
+introduce end - of - line normalization
+bump apiguardian - api from 1 . 1 . 0 to 1 . 0 . 0 . 1 . 0 . 1 . 1 . 0 . 1 . 0
+add apk
+ignore eclipse folder
+skip checkstyle in travis ci .
+add images
+update pom file
+install more deps
+add type information to externs . .
+updated gutenberg mobile submodule
+add nullness check . . .
+trying script on new line
+added full exception logging on travis .
+add todo in 416 truncated .
+bump flyway - core from 3 . 1 . 2 . 0 to 3 . 4 .
+updates chapter1 . md .
+set pythonpath for pylint
+replace respositories with the latest result .
+bump aws - java - sdk - sts from 1 . 11 . 11 . 512 to 1 . 513 .
+bump common ref . . . .
+accept sdk licenses
+enable jumbo - mode
+merging tag v4 . 86 .
+define correct project name to
+add try - on icon
+bump ebean - migration to 11 . 16 . 17
+added tag jdk - 9 + 181 for changeset ff09babf3b0f
+add two sum
+add zombie cannibal , closes
+fix broken result in scala .
+fixed bug : problem , whereas problem with security manager on from .
+bump minsdk to 2 . 2 . 2 . 0
+replace image
+updating poms for 1 . 0 . 22 - snapshot development
+add group about
+added a more error that to test script
+updated demo gif
+adjust listall parameter to xml .
+add link to icediscovery timeout
+update read
+remove crowdin .
+automated import from / / branches / master / . . . . . @ 141527 , 141527
+remove useless dependencies
+fix the cast trunk build .
+add random else in uuidprovider when applicationcontext is .
+remove dead code
+added visit method for intannotations . . .
+rename module to sample
+add persian to the scraper
+updated openal to user .
+updated _sidebar ( markdown )
+add support for jdk . install .
+bump maven plugin for android .
+updated spring - starter - spring
+updated alfresco community logo .
+added tips panel + stats
+make sure component test run .
+added the ignore
+delete test in build . xml
+added javadoc for
+automated import from / / branches / cupcake / . . . . . @ 142020 , 142020
+fix a bug in texttospeech . . .
+added compiler for delinting .
+added tag jdk - 9 + 115 for changeset 3414aeff4a80
+fix the build . .
+add jaxb import from io /
+mention changes . md
+updated screenshot
+added tag jdk7 - b70 for changeset 893bcca951b7
+add self to owners .
+remove openjdk 6 from travis
+updated geode demo application ( markdown )
+upgrade the forge to 11
+provide some guidance .
+added an example for the ` indices .
+ignore neuronstest ( pure benchmark ) .
+add coveragecontroller from being instrumented by the .
+making the red . xml icon look better with dark theme
+updated syncthing to v0 . 9 . 10 .
+remove unusable .
+removed useless repositories
+define generic logging class .
+add request template
+removed benchmark
+add missing break in switch .
+adding nh13
+unsetting up travis ci .
+build an application to run radius user interface to not necessary
+fix getpointeranalysis ( ) .
+add user to scheduler
+add volodymyr to pmc on site
+update a sentance closing
+updated xxhdpi favorite icon
+added java 1 . 5 restriction to match the application standards
+added signing script
+updated submodule to latest .
+add annotated to thrad section .
+updated dexlib
+updated german translation
+updated favicon
+adding maoxiang pan to copyright . txt
+enable baseline on atlasdb - api
+add 16dp padding
+exclude buildconfig . class from jar package
+updated guava dependency
+automated import from / / branches / master / . . . . . @ 141410 , 141410
+add a wcwidth test
+implemented isquote for quotes
+added syntax in to list
+updated eclipselink in the list
+add select_distinct_with_count_calculation . xml for ms
+merge dev
+built hbase jar with java 1 . 6
+updated leetcode . numbers
+move the layout to show the buttons
+add * . java diff = java to . gitattributes
+deployed head .
+add r . class to exclude .
+added relative path to the parent pom so that the user won ' t need to .
+add wget dependency
+added screenshots
+updated chtempdir tempdir
+updated api level 23
+added jdk 1 . 6
+updated androidmanifest . xml .
+adjusted thread to show immediately after each behaviour .
+added some pictures for the wiki .
+revert stm modification , it is efficient in testchamber now again .
+remove border radius on avatar
+created a second module so the ui lives in a different source tree
+delete files
+add import for cocoapods .
+remove custom library
+enable script for debugging
+add home - made qemu dependence
+added translation using weblate ( arabic )
+rename resource to non
+ignore expensive test
+dismiss external keyguard views on fp auth . . .
+update bugrank for security bugs .
+updated fallback sound for honeycomb tablet .
+remove unused import from connectivitymanager .
+add setstartdate ( yearmonthdate
+fixing a problem with the seekbar
+add lint abortonerror
+bump the build number for 760
+remove css that hides code .
+ignore backup files .
+remove unused import
+add travis to allow javafx rule to apply
+remove spdy from standard build .
+add <issue_id> to changes .
+update favicon
+update bulid . gradle
+removing outdated booklet pdfs
+implemented new repository in
+add networklog - 2 . 24 . 0 . apk
+updated support library
+remove old snapshot
+added amsz to mark page
+added tag jdk8 - b119 for changeset ad69f3bf4111
+add faq in
+update demo .
+updated task definitions dashboard image
+improve grouping of dependencies .
+add cloud -
+revert simpleapp in
+fix a bug where late - invalidating views with animations would be held .
+fix a few transformers .
+add files via upload
+added test cases for leading underscores and explicitly terminated .
+amend the flaky test_reload_classes of the in
+skip a test in transformers .
+add logo assets
+add intermittent key from iteration .
+added new graphics .
+added tag jdk8 - b44 for changeset 5a7d295a9b76
+remove intermittent key from java / lang / classloader / assert . java . java .
+updated asli to trunk .
+updated pom .
+enable jquery from module for list ( <issue_id> )
+disable debug
+add notices file
+delete report - designer . properties .
+added java to samples custom interface
+add new trace for
+add icons
+updated the missing files to .
+adding github downloads uploads to this intead of teamcity step .
+update mantle
+ignore markdown : previews
+added tag jdk7 - b34 for changeset 434055a0716e
+updated screenshot .
+update deployment archive
+removed unused script
+remove redundant test
+add default value for homepage portal
+delete dir stage
+remove uneeded jar .
+update strings . xml
+add goodies to advanced future test
+return more info for recurring events for ios .
+add asli to contributors
+ignoring target directories
+add asli to contributors
+replace string with restriction to token
+ignore ssl .
+update spring . . . .
+remove meaningless . io file
+update copywrite .
+replace respositories with latest result )
+remove rc4 from defaulttlsclient so that it ' s safe to use the
+add hspap to gettcpbuffersizespropname .
+edit 2
+delete logo . png
+ignore intellij idea project files
+added tag jdk7 - b95 for changeset f8f961ea5739
+replace multitasks - test gif demo , for
+add patch fix for <issue_id>
+bump common ref . . . .
+add wesley .
+revert accidentally committed formatting .
+removed a stack frame
+ignore log file created in some cases .
+updating softphone . . .
+delete userinterfacestate . xcuserstate
+improve jdbc package . md
+remove unused dependency from repository .
+tweak documentation for utilities
+adapt the last checkin code
+add openjdk7
+updated submodule
+added script for ignore
+remove the reference docs
+delete test
+adjust css to fix poms and the top .
+add known user
+added translation using weblate ( galician )
+update berksfile deps
+added lib
+add new ril command for sending ack to solicited async and unsolicited msg . . . .
+added the simple passive rule id
+add a git ignore
+updated the launcher icon .
+updated github actions to git
+removed excluding ml from examples /
+replace hamcrest - core with hamcrest - core . 1 .
+provided an example on how to abandon a change .
+updated fml : .
+add test
+added tag jdk9 - b22 for changeset c06edfaae13b
+ignore some generated files
+increasing the max fling / swipe duration .
+updated bug
+add getterm to spanregexquery .
+do not request write_external_storage permission
+added tag jdk7 - b56 for changeset 28972659503d
+revert test . list .
+add verbose logging when test fails
+turn off verbose logging .
+add license check to job dsl .
+move servicedaemon interface to model
+bump android gradle plugin to v2 . 1 . 2 . 0
+update a controller
+updated jinput . jar
+add change for preference_dialog_edittext
+removed old gen
+added translation for better
+ignore crowdin script temp file
+updated pom to add half - sync - async module to parent pom
+updated jsoup library
+remove balances
+add latest_consume_resource in the
+updated studio with pagination
+keep button : result in
+add problem source url for veryeasy
+updating bin
+update keybase lib
+prepare next development iteration .
+add link to bootstrap
+add cmakelists . txt
+add styles for ui
+updated tests to new . . .
+add board prefix to avoid_draw_texture_extension .
+adding main tool module .
+update langdetect . jar
+added support for travis ci
+add todo for
+recalculate emergency after adding or removing mobile controllers . . .
+delete service . png
+added commit at bottom
+removed redundant spring
+added link to javadocs
+add downloading repo
+add test for test -
+prevent stale threadstate reads in documentswriterflushcontrol
+delete helix - 0 . 5 . gz
+send puzzle to mkrepo
+remove unused endpoint from
+enabled distribution module for binary compatibility tests
+remove @ suppresswarnings <issue_id>
+delete stepper - example . gif
+bump httpclient from 4 . 5 . 5 . 6 to 4 . 5 . . . . . . . . .
+opt port progressed to run attached to run attached to run point where running prototype - opt makes sense
+modified contextbindingset to use the delegate ' s implementation for tostring ( ) . . . .
+removing verbosity
+add attrs . xml for custom
+moved test project outside repo
+allow mm param only for the main query
+add temp accesstransformer config for fml
+enable travis to build matrix
+remove sudo : false , as it is going away .
+remove todo in telecommanager . . .
+added tag jdk7 - b92 for changeset f2dce7210cc0
+bump common ref . . . .
+set the locale of javadoc as en_us .
+added tag jdk7 - b48 for changeset 3c81794d974b
+add staticman entry
+set theme jekyll - theme - slate
+updated city wallpaper .
+update travis
+updated pom
+added main - stream
+add jenkinsfile
+remove some generated artifacts from repository .
+add reponame to the
+fix broken test : 58691b6 .
+add * . log to git ignore
+use the renamed i18n module . . .
+add pom
+bump ant to 1 . 10 . 10 . 1
+delete cyclops - converters - 1 . 0 . jar
+bump aws - java - sdk - s3 from 1 . 11 . 11 . 11 . 504 to 1 . 505 . .
+remove ' from build .
+ignore this branch in travis
+remove the .
+remove the change log
+add intellij - haxe . jar
+prepare next development iteration .
+updated header for criteria
+suppress unneeded to from bootstrapclassloader
+update es / upstream to optimize single .
+updated resources
+updated transfuse - bootstrap to non - snapshot
+add generic assets .
+allow empty artifact
+updated japanese translation
+add files via upload .
+set theme jekyll - theme - minimal
+add new slack notification
+add gson and gsonconverter for retrofit
+ignore apk
+updated the source files from library .
+add 2 . 4 jar
+updated logo
+update killbill - oss - parent to 0 . 0 . 82 .
+added tag jdk - 9 + 121 for changeset 2435017e82ff
+excluded netbeans files in the test
+add serviceselectorprovidertest to testserviceselectorprovider
+ignore standalone file
+updated submodule
+bump matisse to 0 . 5 . 3 - beta1
+delete files . png
+updated tinkerpop libs
+bump common ref . . . .
+added some push
+removed 2
+removed the cevalidator . java as it is not needed
+added tag jdk7 - b146 for changeset dbf30739b207
+remove property sslcertificatealias .
+add imagery for github
+bump common ref . . . .
+add files via upload
+remove unused import .
+add some jboss
+removed ie - bindings . pdf
+updated img
+add abrt into list of packaged modules .
+updated blueprints
+add repo .
+add samourai file
+add some via upload
+delete cname
+add close bug in execution
+update travis . yml .
+adds the provided to the video - media stream .
+ignore virtualenv folder
+added icons for icon
+fix a format string that triggered a compile - time warning in omxcodec . cpp .
+remove dependency to airlift
+bump indicate from 2 to trunk .
+revert respositories with repositories .
+remove use rhn : db : : : errata in rhn : : : : : erratatmp where it is not used in rhn : erratatmp where it is not
+renaming main project to android .
+added new interface
+bump jwt
+updated ognl to 3 . 2
+fixed the ignore
+use new travis ci infrastructure
+remove todo for block item .
+updated travis key
+add todo reminder to add support for unknown opcodes
+remove this import .
+disable javadoc doclint
+set the default test back to h2
+added tag v0 . 5 . 27 for changeset 4b88cad1e252
+add gif
+add support info on travis
+ignore the temporary " jobs " dir in faunus modules
+removes unused from
+add island you control
+incorporate mike \ ' s feedback
+underline links wrapped in bolded ( strong ) text
+fixed a subtle bug i happened to introduce last night . . . . . .
+add cap_sys_ptrace am : 966619d0ab am : b8d972e973 am : c46889e2d2 am : f5bd84b82d am : f5bd84b82d am : 982b8018af am : 982b8018af am : 7fd2d8ea31 am : 7fd2d8ea31 am
+update deb package gradle plugin in order to support gradle 5 . x
+remove invalid notice file for cglib .
+remove mistake introduced each effect .
+enable debug statement
+explain - debug option in help message . . . .
+add blockworkertest unit test .
+bump orc - core from 1 . 6 . 2 to 1 . 6 . . . . . . .
+add andriy to maven developers list .
+revert setwritequeuemaxsize implementation of
+updating bin
+add source_type to list of constraints .
+add futurestest . test for leg .
+add new generateexports option to api for closure compiler web - - - - - - - - - - - - - - - - - - - -
+add redirection integration tests .
+added stack
+build an application that the user to enter / import
+handle empty flag attributes , such as gravity = " .
+remove metadata from ` list .
+prevent accumulation of screenshots in config .
+add httpserverearlyclientclosetest to - / . . . .
+updated android gradle plugin
+move addkotlintest back to unreliable group .
+fix broken process search pattern .
+updating appveyor .
+removing pom
+require three - in . . . .
+add screenshots folder
+invoking onoverviewshown ( ) on showrecents ( false ) .
+added tag jdk9 - b26 for changeset e60692e4f736
+tweak class loader
+rename test
+create samourai . api
+update type definition
+fix the size on the
+delete vcs . xml
+updated the in
+disable javdoc - links plugin .
+remove outdated pdf
+add neuronstest ( pure benchmark .
+remove the upload from the polyglot generation
+add cyclic from the
+update 0 . 12 - snapshot
+remove extra spacing
+add author
+add debug buildtype config
+rename test in appointed leader test
+add travis check
+add fetchsize log
+added coveralls to travis ci
+modify pom
+add codecov configuration .
+add linux / armhf
+add ahn - crop champion
+refresh wallet - template checkpoints file .
+use the latest official ecj 3 . 4 . 0 ( <issue_id> ) .
+adjusted the name for data collector
+bump jline from 3 . 12 . 0 to 3 . 13 .
+set the flag to avoid timing issues
+added x86 architecture
+update changes .
+require maven 3 . 2 . 0 camel 2 . 0
+changed the text input type of apn name to plain text .
+remove unnecessary ctro .
+replaced macosx volume as default .
+revert reuven . .
+add code in the coverage
+update fluxc hash
+exclude jacoco
+add javadoc info .
+adding instrumentation integration tests to stratos product
+consider mscrollx when drawing the checkmarkdrawable .
+added stats for dataqueueproxy
+remove unneeded commented - out suppresswarnings .
+fix bug when opening reddit links in
+add link to latest .
+restore cursor in watch extract text view .
+cover other envvar options .
+add assumption
+return more info for recurring events for ios .
+update assumption in
+remove unnecessary closing angle bracket
+add missing break in switch .
+dialing down test log console
+add a . . folder media library .
+update gradle plugin
+add htaccess to spacewalk - branding . spec .
+bump maven - failsafe - plugin from 2 . 22 . 0 to 2 . 0 to 2 . 1
+modified travis config .
+improve mergeability of metrics_constants . proto .
+add back gradle xmx
+disable renderthread .
+add jars
+run test in test : thing new
+debug mode todo
+modify _config .
+update lint results to reflect reduced error / warning count [ skip ci ]
+added identifier for mdpi
+add request response data to debug logging
+ignore sonarlint
+updated linux binaries
+add images
+updated travis config
+fix bug
+updated changes . txt because of another checkin .
+add jacoco report execution
+add openjdk 11 to travis
+adjust todo for 416 truncated list command .
+add link in icediscovery demos /
+catch noclassdeffounderror when looking for cdt class
+reduce unit test logging level to info .
+rename spring boot name referenced by the parent to the modules
+add cobweb aliases
+revert test : move
+update history
+bump changes to 1 . 7 . 13
+add debian in test .
+added project files for visualslickedit ide ( requested by vraravamudhan at thoughtworks )
+add fastjson in test result .
+ignore coredump files from git
+adjusted unnecessary field
+throw ioexception when search fails to enable error handling in remote .
+updated travis configuration file to view the error stacktrace .
+add me to the list
+add more files
+add lintoptions { .
+get ros logs
+bump selenium server test client .
+remove mac file
+create cname
+added chris bane ' s for way to work in
+optimize login ui
+build 1 . 14 . 0 for 5 . 2
+tweaked war to use cloudsoft branding ( not tomcat )
+suppress javadoc artifact build
+updated parent pom
+added action_bar_stop_transfer icon
+add gson library . . . .
+updated database
+removing obsolete file .
+added tag v4 . 93 for changeset 057d180c14ef .
+disable javadoc encoding = utf - 8 doclint .
+updated changes . txt
+bump maven - javadoc - plugin from 3 . 0 . 0 to 3 . 1 . 1 . 0 . 0 . 0 .
+added tag jdk8 - b95 for changeset 0664c494ac98
+update deb package gradle plugin
+comment out test scope for now until we figure out what to do with the .
+commit gradle wrapper correctly
+updated 32x32 image
+add reference to ticket <issue_id> in todo comment on getoutputstream .
+added libunwind to the list of packages in travis . yml
+prepare next development iteration .
+removed tag magarena_1_10
+require mapping package
+adjust random uuid behaviour of
+updated submodule
+add a target annotation .
+changed the loop in test : .
+removed debugging line from rm search javascript . . . .
+bump maven - enforcer - plugin from 1 . 1 to 1 . 4 . 1 ( <issue_id> ) .
+ignore neuronstest from pure benchmark ) .
+prevent downgrading to jdk7
+added tag v4 . 68 for changeset 359f355a98ff .
+add nativebytes to be altered are construction .
+removed script
+remove static lib
+removed the useless string in the class and illegal json in the . . .
+update keras
+adjusted test result in scala
+add back pointer to thrad section
+add doclint support into javadoc .
+update screenshots .
+removed git push
+specify google analytics
+add files via upload
+add docs
+updating poms for 1 . 0 . 0 . 71 - snapshot development
+added tag jdk - 9 + 150 for changeset 7781326fff20
+adjusted chtempdir tempdir
+updated docs project
+add tqdm monitor thread
+renamed app to sample
+rebuild order
+updated sample apk
+add missing files
+added linux swt
+start new dev cycle ( 2 . 1 - snapshot )
+disable test usage
+adjust explicit multiwindow support
+adding import in
+removed some comments .
+missing mavencentral to fastadapter include
+remove intellij files
+download apk directly from here
+updated travis
+add debian to list
+remove restriction for integration tests
+fixed the build system to include the faq .
+mentioned that bug with sound
+remove doubles . . .
+prepare tag directory . 2 . .
+document the fix time
+added test resource file
+adding paas console module to build sequence . . .
+updated travis trunk
+update the java application stub for universal
+add back in test result .
+modified suidext
+delete wx . png
+remove missing dependency on . . .
+ignore out directory
+add warning
+add activiti to extensions .
+add support for jdk . install .
+add dpad keys to playpad .
+avoid npe if transactions are disabled . . .
+allow warnings to find .
+remove errant tag terminator .
+added new screenshot
+missing preferences menu option on os x . .
+updated fml : .
+allow type declaration for cql3 to be ' timestamp '
+add wiki test
+updated distribution with to include whirr recipes and configuration
+updated jcommon jar file .
+added my name to the authors list .
+add rules for mpandroidchartlib .
+update bitherj
+migrated the rules .
+ignore missingboundsannotatation test - case until it is fixed .
+added dist 1 .
+update issue template
+allow building for non - op setting
+add information about jsr - 305 license . . .
+prepare code for the next development iteration
+add a missing main_class attribute .
+added tag jdk - 9 + 110 for changeset e621d014c14b
+add eclipse and folders
+use newer c3p0 in .
+updated broadcast receiver vulnerability
+updated gradle wrapper distributionurl for java 7 on travis
+update travisci yml file . 8
+removed unused import ( fixed 1 pmd issue ) .
+update jsx icon to correct size
+put bootanimation in top - app stune group . . .
+bump guava from 28 . 0 - jre to 28 . 1 - jre ( <issue_id> ) .
+add preview gif
+updated holo theme
+bump beta build
+remove jsf
+skip test chunkedstreamtest on dartium .
+added volumes
+build test folder
+try raw access to main repo from wiki
+adding screenshots for development / samples / wiktionary and development / wiktionary and development / wiktionarysimple .
+removed array type repository hack .
+resized demo gif
+remove future , it doesn ' t make sense for repeating tasks .
+use new validation screenshots
+add redundant license
+removing jsonview from vulnerability property in grccontrol to prevent any future serialization from creating an infinite recursion
+updated gif to latest
+remove serviceselectorprovidertest to testserviceselectorprovider
+modified debug
+add boost library .
+add new logo to folder mipmap - xxhdpi
+add networklog - 2 . 24 . 2 . apk
+update the translators
+ignore idea files from git
+added weeklyhoursspentinclassesseason to inquiriescourse
+avoid window leak when screen orientation changes .
+add ignore
+add files via upload
+updated cliptopadding to latest result
+add a ' focus to the top for the
+add link to the latest
+updated external library
+ignore * . json
+add ic_drawer for mdpi and xhdpi
+add threadpool threads to threads
+bump mockito - core from 2 . 27 . 0 to 2 .
+add link to icediscovery demos
+include cstring explicitly .
+update jar
+added travis ci config
+removed default goal .
+set allowbackup to true .
+add list
+reduce mysql - max - connections and - size from 250 to 200
+removing test from distro
+enable ud converter after latest from master
+ignore intellij files .
+take recommendation to use wrap_content
+ignore rpm spec file .
+removed outdated footer
+add mcue icon
+added script to run the listservices utility .
+add docs
+remove reference to non - existent subproject of this branch
+remove empty line
+install test on travis
+add wiki :
+removed repeated code .
+add todo for 416 truncated list command
+add debian in to .
+enable ud converter after cherrypicking stuff from
+remove snapshot number
+add flaky file_test .
+build number increment by automatic build
+added comments to unittest
+added tag jdk9 - b37 for changeset c4918033790e
+add bugids = dup to . jcheck / conf files for jdk 10 .
+added tag jdk8 - b55 for changeset 49f23700884c
+fixed some usage !
+remove random file
+remove a system in
+remove redundant space
+add contributors list
+banished config netbeans .
+add screen_shot
+added abstract test to trunk scraper
+correct unit test execution with the
+rebuild plugin jar
+put new logo in image editor .
+add an unused image .
+removed unneeded jar .
+remove unused import
+update 1 . jar
+add goodies to parent pom
+add some missing fragments to the whitelist .
+moved cardview to src / main / java
+fix a memory leak in
+ai 150122 : merge from donut . .
+specifying the location for svn name .
+adding git ignore
+removing guava exclusion
+added debug assertions
+updated nebula . ospackage to 5 . 6
+prepare next dev iteration
+ignore all target folders .
+add test
+added missing image .
+ignore gtags files
+added custom images with button borders
+updated lss campaign link
+set theme jekyll - theme - hacker
+removed java import .
+fix broken test : 58691b6 client .
+remove magicevent . getitemonstack
+remove todo in telecommanager . . .
+fixing the build .
+bump up gradle . properties
+skip test in grizzly integration test
+exclude parent directory from studio distribution .
+disallow indexing by search engines
+remove unnused variable .
+bump javamelody - core from 1 . 45 . 0 to 1 . 74 . 0 in / ui / ui / ui .
+fix bug : result from client module poms .
+shorten the interval to reconnect the disconnected ime .
+rebuild jar
+add unit test
+create temporary directory if it is not exist .
+fix the deploy .
+turning coverage in travis ci
+skip scala integration test
+added relevant articles
+made the mistake of opening anything in finder
+fixed an illustrious nullpointer bug on wifi assistant .
+add 3 batch
+bump common ref . . . .
+adjusted the latest result list .
+added the start . file for java .
+add the . for group .
+add gitter as well
+fix bug in isprimitive ( )
+update travis . yml
+add more labels to the stale bot ' s config ( <issue_id> )
+adds experimental support for acoustic echo cancellation ( aec ) on windows audio session api ( wasapi ) implemented with voice capture dsp .
+added syntax highlighting
+delete config . java
+remove tender / vbg
+added @ since tag to address interface .
+fix bug in streamingbodycodec
+add evaluation depends on to fix build
+added idea plugin
+removed unused import from animatorset . . . .
+updated applicationintegrationtest to reflect
+turn on migration buck itself .
+bump mockito to 2 . 8 . 8 . 9 .
+reduce file size for adl presentation shareable . . .
+add a fast script to run
+edited wiki page through web user interface .
+remove gradle .
+update gradle to 2 . 8
+removing cq events
+add bug3139802 .
+added tag jdk8 - b08 for changeset c9fb751a1f21
+added android : entries to linearlistview attrs
+add files via upload
+bump common ref . . . .
+create contributing . md
+bump next 4 . 27 . 0 - snapshot
+add david to authors .
+fix small typo
+add hash index for execution url in db schema for dr .
+add fml installer logo crated by @ zaverslo https : / twitter . com / zaverslo / status / 349947190300508162
+delete unused file icon
+update gpg signing
+use the tab in inset
+added tag jdk - 9 + 171 for changeset e04bdb41c10a
+updated ant task .
+ignore eclipse files
+removed the source directory
+updated demo gif
+bump netty to 4 . 0 . 0
+fixed back button on application details .
+enable test to . . .
+add code cov in travis . yml
+prepare next development iteration .
+bump assertj - core from 3 . 12 . 1 to 3 . 0 in / modules / neo4j ( <issue_id> ) .
+update multiwords . txt
+add missing bug id for jdk - 8167383 .
+added maven warning .
+add screenshots
+removing unused import
+updated apache incubator proposal ( mediawiki )
+added the transaction vdb and added to .
+updated the logo in
+set the token stream on the tree stream object , so we can use the getsourcename ( ) method to get the current source file can get the current source
+add mockito as dependency in ` .
+adding the patientflags module to the bundled modules .
+added tag jdk7 - b29 for changeset e21f4266466c
+add tostring to swap implementatin .
+add river
+removing jar library
+delete simplerecyclerview__1_0_3 . apk
+updated junit - 4 . jar
+added hadoop - 1400 to the incompatibilities section .
+build tools 25 . 0 . 0 . 0 . 2
+updates ice4j to r449 which further reduces the average time it takes to clone a datagrampacket .
+add custom test results
+update lint results to reflect reduced error / warning count [ skip ci ]
+updated travis . yml
+added new files to librssupport .
+add sample
+ignore testmultithreadedretrievalofgraphs in test
+updating popup center asset ( v5 ) .
+add travis ci
+added third party to the
+set junit clonevm property to propagate the jvm properties from ant ( xmx4g , - xmx4g , - ea , - ea , - ea , - ea , -
+ignore eclipse . springbeans
+updated travis api key
+add egl init start message to help debug driver init hangs .
+add sample .
+move serviceselectorprovidertest to testserviceselectorprovider
+add apache commons - test -
+bump commons - codec from 1 . 12 to 1 . 13 .
+allow restricted users to change status bar settings .
+add gif
+prevent downgrading to jdk7
+enable test coverage
+add files via upload
+added tag jdk9 - b32 for changeset 559e6ee4a338
+add integration tests in the eclipse
+updates core to compile under jdk 1 . 8 only
+update openrasp - v8
+added tag jdk7 - b99 for changeset 3aeed58228be
+update webrtc
+build ant .
+replace respositories with repositories ( the ) .
+fix bug in returning the status
+added linux - x86
+add new test case
+published documentation from master to [ gh - pages .
+remove lint from travis
+made descriptor . java work on windows
+added missing import to message
+ignores macosx specific files .
+edited rn
+delete test : / be direct .
+remove pdb
+added some noise .
+run every test classes
+bump dockerfile - maven - plugin from 1 . 4 . 3 to 1 . 4 . 4 . . . . . . . .
+updated screenshot
+updating reference to latest modulespvcontract revision
+added tag jdk8 - b57 for changeset 386342128efe
+add snapshot dependency trigger
+add win32 64 native lib
+add back test result in test case
+bump mockito - core from 2 . 27 . 0 to 2 . 28 .
+remove stray reference to postuploadactivity in
+update jna . 5 . 3
+prefer jars for maven plugin .
+added translation using weblate ( dutch )
+upgraded javadoc - plugin to 2 . 10 . 1 .
+changed the bom to sharedhashmapbuilder
+reduced max allowed checkstyle violations
+add test . maxheapsize = 1024m
+create __init__ . py
+update doc
+remove the thread . sleep .
+set up hstore - files
+updated fml : .
+fix test case
+add mariadb driver in the
+implemented hasfailedmediauploads
+embolden the header user ' s name .
+fixed a compile error .
+added persian to the path
+ignore the jar files
+ignore generated java ( <issue_id> )
+added classpath copy . . . .
+add testfile moduleusestypedefonlydefaultimport
+add simpleapp in
+added the icons created by pierre
+add override method to fix building against master support lib .
+generate documentation for 3 . 0 .
+prepare next development iteration .
+add largeheap
+add new dark attachment icon for dark theme
+bump zxcvbn from 1 . 0 .
+updated config . xml .
+added the image
+reverted a change in r998 intended to fix sts - 618 .
+tweak details .
+updated test - client
+added a source and source and a zip . targz null targets .
+include stdio . h in tools / aidl / ast . h to make the code build on gcc - 4
+update roadmap
+removed old import
+build dependencies
+remove deprecated createjsmodules @ override ( <issue_id> )
+treat regular_deactivation events as transient errors on at & t .
+update bitherj
+removing tools . jar and moving it inside the jre
+removed newline
+add checkpoint for testnet ( again )
+bumped boot
+add ai casting restriction to searing rays
+added a note
+removed old tribble jar
+updated clear
+add ligature - enabled font
+add new_session_path
+add vlc libraries for arm64
+implemented custom app to disable icons
+make jekyll recognizing github
+fix a constructor of foregroundlinearlayout am : 36459054e2 .
+bump maven - source - plugin from 3 . 0 . 1 to 3 . 2 . 0 . .
+tell todo for 416 the .
+disable productivity mode by default . . .
+add requests stuff file .
+remove explicit null comparison .
+enable code generation for abi module .
+add spring . provides for starter -
+updating jniwrapper one more time . .
+reconcile secondary dex paths from selenium .
+added tag v4 . 95 for changeset c93f7a5c4a76 .
+apply udp when using . enabled .
+build break fix test .
+add module to the parent pom .
+update changes for cassandra - 2282 that got committed already ( in r1079812 i think ) .
+attaching javascript compression to the compile phase .
+remove todo .
+avoid invalid action
+make caching of containing scope work .
+added better link with better kerning
+remove respositories in the repositories
+ignore maven output
+add mockito
+add todo in test command
+fail dartc dartdoc test . . .
+preserve graal diagnostic output in ci jobs .
+god damn it
+set " no timeout " on operations . .
+adjusted test bugs in
+accepting licenses for android sdk happy
+uploading new screenshot
+revert previous change to accumulostoreits
+removed null from nothing ( what was it doing there anyways )
+introduced random nullpointerexception bug
+reset interrupt flag in tests when interruptedexception is
+give the server a few milliseconds to make sure it ' s up
+resolve * in tests
+uploaded new arxiv icon provided by arxiv admin .
+changed the default " security . anydenydenies " property value to false , in order to get the faceted search to work out of the box . . . .
+add db - to . sh .
+committing build
+added notes for 3 .
+regenerated sequencefile for graph of the gods 2 - - - - - -
+refresh kettle splash image .
+add 0 . 12
+update sample gif
+removed broken link
+set theme jekyll - theme - leap - day
+add android arsenal badge
+removed experimental docker build
+add javadocs to documentation
+add dependencies of examples
+replace oraclejdk7 with openjdk 7
+add testcase for classloaded .
+removed reference to project
+add core_additional_opts
+build number increment by automatic build
+added juliano marques the work on the test
+skip failing test on drt .
+implement new int method
+updated contributors list
+bump kafka producer client
+see 10 / 30 log
+bump maven - source - plugin from 3 . 1 . 0 to 3 . 1 . 2 .
+make navbar - utility line 100 % wide on .
+remove invalid owner from text module .
+update library jupuk 1 . 1 . 4
+skip a enter in the transformers
+update scripts
+ignore cancelled npc spawns
+add renderer sample
+add missing sequence to main . sql .
+preventing null pointer exception when opening a
+delete iterator . java
+add docker - tests
+added tag hs25 - b48 for changeset 137826043047
+ignore dist directory
+adding dependency pom . xml
+remove gradle daemon
+create guide - dev . md
+added tag jdk9 - b77 for changeset c02e2d8c7f9f
+add java 8 requirement
+adding design diagram
+fix broken build - ra module in external . . . . .
+ignore new launch files .
+revert the change for . xml
+ignore ii hbase test case
+opening up v0 . 1 . 12 for development
+update build to 1540002
+prepare v14
+added excess spacing at the
+add registry service
+adjust fetchsize in poms
+start development on 0 . 2 . 3
+updated submodule libnet
+added line . pdf the test
+fix the tests id
+disable buildconfig generation .
+added chtempdir tempdir
+bump verison
+added xalan serializer to fix sampleref .
+updated submodule
+revert mcprotocollib ( <issue_id> ) .
+clarify formatting of notice .
+exclude slf4j - log4j12 from dependency
+adjust bug ranks .
+remove branch ' 0 .
+fixed a npe during setup wizard .
+set storm - core to 0 . 0 . 0
+add relativepath to pom
+adding 1 . 6 .
+add screenshots
+prepare next development iteration .
+bump aws - java - sdk - sts from 1 . 11 . 11 . 572 to 1 . 11 . 11 . 573 to 1 .
+add files via upload
+update bug rank for int_bad_comparison_with_int_value .
+delete providesubscriberinfo . jar
+delete logo . png
+ignore bin directory
+updates libjitsi
+excluding signing .
+removing snapshot
+ignore data folders
+build fix .
+remove shallow clone
+added import .
+bump zxcvbn from 1 . to .
+replace respositories with repositories ( <issue_id> )
+modified travis ci config .
+added relative path to the parent pom so that the user won ' t need to .
+disabling the coverage .
+merged new head to get the whiteboard .
+added tag jdk - 10 + 0 for changeset dcd77ece46a9
+add link to icediscovery demos
+build the latest directory
+fix a bug in tachyon - client dependency
+remove blank :
+add requested in test
+updated travis ci config .
+bump jackson - core from 2 . 10 . 0 to 2 . 0 to 2 . 9 . 10 . 0 .
+fixed a bug in unequipping quickslotted items with the full
+fixing the build break in notification_template_big_text . xml .
+add extensions . yml
+removed unused property
+add files via upload
+remove testprintln . java
+updated changes . txt
+removed the files
+removed ds_store
+restore defaultdict import
+updated fml : .
+automated import from / / branches / cupcake / . . . . @ 142020 , 142020
+add wiki statement in
+added stub for getting buffer from surface texture .
+commit experimental of buttons
+added oracle jdk 8 to travis ci
+add item . setallowoffhand
+modified travis . yml
+initialize background visibility of activatablenotificationview .
+delete logo . png
+removed faulty src entry in build . gradle .
+troubleshooting sheet for bonus / object details , correcting comments regarding purpose : ) .
+updated targetsdk
+remove useless symbol
+fix small jump when expanding qs w / o notifications .
+adding baseline , bottom , and top for text alignment modes
+adapt @ defaultqualifier from string to class .
+add some extra closing
+set java home
+added contributors in
+correcting the reported failure message .
+corrected the country flag
+updates unused deps back @ override 1 .
+bump maven - source - plugin from 2 . 4 . 0 to 3 . 1 .
+add errno : : ebadf as an . . .
+exclude edu / umd / report / ba / ir classes from build .
+added tag jdk8 - b91 for changeset 7d6fffdd46a9
+ignore txt files .
+update gradle
+add broken trust agent reloading v2 .
+remove the simulator target from all makefiles . bug : 5010576 . . .
+add isolate testing on the . . . . review url : / / / / codereview . chromium . org / 8498008 .
+adjust definitions
+edited wiki page through web user interface .
+add debian in to tested from
+avoid issues with git - commit - id in limited git checkout situations
+convert 100 to <issue_id>
+added fritzbox binding to the build
+update travis
+updated dockeriles
+add some tracing .
+update image
+updated persian to test scope .
+added tag jdk8 - b90 for changeset 11ae34f362ad
+added a clarifying note . . .
+updates fmj .
+added tag jdk8 - b32 for changeset 5bfcff7a3ab2
+add w3c_device_sensor_event . js to extern .
+updated submodule lib / infinitylib
+add demo gif
+add upgrade script for disk alias .
+add lintoptions
+remove double call to previous commit ( <issue_id> )
+delete sendroutinginfoforsm . jar
+ignore new launch files .
+corrected a for of
+move nice border effect on footer
+added tag jdk8 - b117 for changeset b8a5f2e7f41a
+increment the build value to b02 for hs25 . 51 in 8u51 - b10 .
+updated lmvc
+adds flex dashboard view
+remove superfluous openssl include paths . . .
+added tag jdk7 - b131 for changeset 8ac52c85f9e9
+added tag jdk7 - b119 for changeset 7f370da0805b
+add forgotten artifactid in exclusion element ( <issue_id> ) .
+edited wiki page downloads through web user interface .
+added tag jdk - 9 + 113 for changeset b54f0a474ea2
+revert commit from sak - 30107 for name ( <issue_id> )
+run the grails tests
+add todo to get rid of mockito - all dependency
+add configlet binaries
+remove test files
+ignore ci configuration
+add cluster - 1 to 1 . xml
+rename / system / lib / lib / drm - native / plugins / to / to / system / drm - plugin / plugins / lib / system /
+added favicon
+build <issue_id>
+ignore * ~ files
+updated javadoc . . .
+update mina from 2 to 2 . 0 . 0 . 0 .
+suppress checkstyle warnings due to stdout .
+create unlimited policy jars : wetmore , ihse
+add back pointer to thrad section
+fix bug : add filtering not properly .
+bump guava to 23 . 1 - jre
+added tag jdk8 - b89 for changeset e3e2d366215b
+updated interface
+create contributing . md file .
+added tag jdk9 - b94 for changeset 935f3f7e43b0
+published documentation . 5 . x to [
+adding uml diagrams
+updated postgres dependency
+remove stray space in string
+add todo for client command .
+add bintray .
+delete demo gif
+enable launcher3 as default home app .
+revert change to test / cassandra . yaml .
+replace getcontroller ( ) with getopponent ( )
+connect bug in the list .
+add new functions to _pkgdown .
+update license file
+bump byte - buddy to 1 . 10
+add package - solr - reports .
+delete latch
+updated library reference
+add header in transfer
+add new reference to exit in travis config to fix in [ ci ] .
+added comparison of boolean objects . . .
+organize imports
+enable source for integration project
+remove superfluous suppresswarnings .
+add missing statement
+ignore swap in git .
+added information to plugin archive
+add jdk 12 to travis build matrix
+update sample gif
+add todo for lubtypevariableannotator
+unset the sonar profile
+remove obsolete ubuntu . md which listed external ubuntu dependencies
+create test
+add back quiet mode for lint
+add single wait for jenkins
+set theme jekyll - theme - architect
+add aaptoptions that don ' t compress assets
+delete device - 2016 - 06 - 05 - 143353 . mp4
+resized logo .
+missing setwritequeuemaxsize implementation on streamingbodycodec
+add cat of lint log
+bump maven - source - plugin from 3 . 1 . 0 to 3 . 1 . 0 to 3 . 1 . 1 . 0 . 1 . .
+introduced eventtype
+added commons - lang3 dependency scope to test
+bump external build
+add another working nonnull test - case .
+add http proxy
+added license headers for bin .
+add rtl library to the latest
+updated bitcoincashj to include latest changes in bitcoincashj
+ignore files
+remove unnecessary variables .
+add link in test
+introduced random nullpointerexception bug
+updated todo to latest .
+remove doubtful ` finalizedby `
+removed the build
+added tag v0 . 5 . 7 for changeset 9b07d417e626
+allow multiple detectors .
+fix broken compile due to previous commit
+automated import from / / branches / donutburger / . . . . . @ 141593
+add jenkinsfile
+revert latest result .
+add deprecated logos
+delete images . png
+add meiligao unit test case
+add buffer . for
+added tag jdk - 9 + 129 for changeset 8190c004acbd
+add the new line .
+remove com . android . from build . support library from build .
+remove stale builder model library
+integrate latest jax - ws ( 2 . 1 . 6 ) in to jdk 6u14 .
+updating screenshot with ui link
+updated fluxc hash
+add image to inthenews
+updating ie driver native code prebuilts . . . .
+added tag jdk - 9 + 142 for changeset a628785b9dd9
+align ssl test in the apr .
+automated branch merge ( from foundation - 2016 : <issue_id> )
+preventing a shortcut which requires permissions from being added to homescreen am : 116d34bc63 am : 31c3f9f59c am : 26b839d8f6 am : e9d0ca8f07 .
+bump pusher - java - client from 1 . 8 . 2 . 0 to 2 . 0 . 0
+added todo to truncated list
+added foodmart demo for mysql .
+add protocol . base_ethernet am : ca4c61aa9f am : bc163f07ee .
+updating bin
+send non - loop in case
+bump lib
+remove obsolete ' generateddensities ' .
+add core_additional_opts
+add sbteclipse - plugin and sbt - idea
+add architecture picture
+removed debug setting for fbosupported
+see 06 / 24 list
+introduced random nullpointerexception bug
+revert a comment
+added junit to ant build file .
+removed config from
+add sql to journal .
+deactivate media session when playback ended
+updated tomcat src distribution . .
+changed the default to deploy stage
+add asli to trunk .
+make spacewalk - monitoring - selinux buildable with tito .
+add call domain extra in imscallprofile . . .
+bump ebean - migration to 11 . 1 . 1 . 3
+disable doclint for java 8
+update compiler warnings ( <issue_id> )
+add files via upload
+add missing break for activity options .
+add file to ensure file .
+add todo in 416 truncated list .
+ignore maven target folder
+add proper nouns to spelling
+add module - subgraph images to main platform documentation .
+add mavencentral repo to build .
+updated library reference
+add sulong distribution dependency to sulong_test distribution
+define debug for test .
+add libprocessgroup dependency .
+restored transparency asset
+ignore target folder .
+add alias names
+ignore idea files
+make bamboo happy enforcing maven 3 . 3
+add openjdk7
+reset group to ondestory
+automated merge with https : / / flies . googlecode . com / hg /
+bump asm from 7 . 1 to 7 . 2 .
+specify timeout for contentobservers .
+added fritzbox binding to the build
+add plugin zip file
+added a webdrivererror if in the list frame .
+require sphinxcontrib - httpdomain > = 1 . 4 .
+remove useless border from edit button .
+reduce hw scheduler cpu to match others .
+remove obsolete . txt git .
+added files via upload
+modified unit test coverage to
+support a random delay in the sink for testing purposes
+add configuration file for jsdoc generation .
+dedicate pod - ui and api integration code
+add something in highlight mode to of .
+add regexp checks for non -
+raise the amount of memory set aside for omx buffer allocations in the test harness to accomodate the new requirements of some codecs . . . . . .
+set ubuntu dist to trusty ( <issue_id> )
+remove redundant space
+revert changes .
+remove wiki submodule
+apply config # isshownattop ( ) on start
+added logo
+add robolectric to test
+added python - hashlib .
+fixing the registration with eus channel to return receiving_updates in the query .
+added tag jdk9 - b40 for changeset b31dbb20135a
+add emerge unscathed
+add demo image
+enable ` devirtualizeprototypeproperties ` for es8_modules . .
+updated buildtools to 1 . 0 . 0
+add some animations .
+committing build
+updated android plugin
+add demo apk
+remove unused file
+restoring the invalid element selector to the .
+add asli to test
+added files via upload
+updated copyright in client .
+remove unnecessary variables .
+allow httpd_sys_script_t ( upload_results . cgi ) to node_bind node_t : udp_socket .
+remove unneeded @ targetapi ( ) from scenecompat . java
+make the exception print for headless servers if the downloader cant initalize .
+ignore mvn and idea files
+update mcd
+create todo
+add formatting
+updated image size
+add node notes
+add words suggested by users
+add original graffle file for multi - dc - setup so anyone can edit in the future .
+changed this test
+bump junit to 5 . 4 . 1 ( closes <issue_id> )
+added null check .
+bump common ref . . . .
+add a to documentation .
+removed unused imports , fixing flake8 issues
+add ` test case .
+update litecore submodule
+add a comment explaining the disabling of sni .
+automated import from / / branches / master / . . . . . @ 141410 , 141410
+removed unnecessary exception
+removed gradlew for subprojects
+print a message to the log when a file can ' t be opened on the client side .
+fix broken bluetooth .
+update gradle plugin to 3 . 1 . 0
+added bug with initializing field
+implement jws of the jose working group .
+add a nodeid hint to privatekey property
+bump unboundid - ldapsdk from 4 . 0 . 0 to 4 . 12 . . . . . . . . .
+adjusted fetchsize log
+removed white pixels
+updated progress
+updated syncthing to v0 . 9 . 10 .
+put watchdog back in .
+bump mockito - junit - jupiter from 3 . 0 . 0 to 3 . 1 . 0 . 0 . 0 . 0 . 1 . 0 . 0
+updated config from server
+add checkstyle rule to a
+add files via upload
+see 03 / 23 log
+remove unused import
+added new . . . . . .
+add exception
+add prop - types config file
+revert overwrite . . . . .
+bump fastjson to latest .
+updated coverage setup .
+reset interrupted status when catching interruptedexception .
+fix the definition of ` jarjartaskclassname ` issue .
+removing verbosity
+do not leak mindexbufferid .
+built vectorloglesspairhmm lib with icc with icc with gcc 4 . 4 . 7
+ignore broken test .
+add coverage image ( <issue_id> )
+add shiro to latest in test
+add respositories from repositories ( the )
+added tag jdk - 9 + 110 for changeset e621d014c14b
+updated travis - <issue_id> 3 .
+revert test test errors
+add todo list
+removed scanagent module
+add todo test command
+fix the build for board_uses_generic_audio option
+remove link to match
+remove freesignup list
+added screens pics
+update jacoco for build with java 11
