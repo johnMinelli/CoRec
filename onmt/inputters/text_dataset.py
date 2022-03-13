@@ -1,13 +1,11 @@
-from collections import Counter
-import torch, torchtext
-from itertools import chain
 import codecs
 from torch.utils.data import Dataset
 
-# local imports
-
 
 class TextDataset(Dataset):
+    """
+    Dataset class from data files. Wrap sources and targets.
+    """
     def __init__(self, src_path, target_path=None, src_max_len=None, target_max_len=None, transform=None, target_transform=None):
         super(TextDataset, self).__init__()
         self.transform = transform
@@ -37,6 +35,9 @@ class TextDataset(Dataset):
                len(self.src_texts[idx]), len(self.target_texts[idx]) if self.target_path is not None else 1
 
 class SemTextDataset(TextDataset):
+    """
+    Dataset class from data files. Wrap sources, targets and semantic matching samples.
+    """
     def __init__(self, src_path, target_path=None, sem_path=None, src_max_len=None, target_max_len=None, transform=None, target_transform=None):
         super(SemTextDataset, self).__init__(src_path, target_path, src_max_len, target_max_len, transform, target_transform)
         self.sort_index = 4

@@ -7,7 +7,6 @@ import os
 import configargparse
 import numpy as np
 import torch
-from statistics import mean
 
 from evaluate_res import get_bleu, evaluate_translations
 from onmt.helpers.report_manager import build_report_manager

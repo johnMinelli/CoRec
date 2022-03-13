@@ -3,11 +3,11 @@ from collections import Counter, OrderedDict
 
 from onmt.inputters.text_dataset import SemTextDataset
 
+
 PAD_WORD = '<blank>'
 UNK_WORD = '<unk>'
 BOS_WORD = '<s>'
 EOS_WORD = '</s>'
-
 
 def create_vocab(opt, *datasets):
     """
@@ -59,5 +59,4 @@ def get_indices(vocabulary, example):
     :param example: list of tokens
     :return: the list of indices
     """
-    """Returns the indices of an example (list of tokens)"""
     return vocabulary.lookup_indices(example)
