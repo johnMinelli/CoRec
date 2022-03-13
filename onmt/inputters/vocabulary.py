@@ -10,6 +10,14 @@ EOS_WORD = '</s>'
 POS_UNK = '<pos0>'
 
 
+# REDUCTION 1
+#   Simple reduction of the tgt using the attention for the generation... but rare words could be missing from
+#   src_raw and also attention could be badly scattered in src
+# REDUCTION 2
+#   - For both src and tgt remove COMMON rare words and add pos1-100
+#   - Generating the batches substitute in both src and tgt the missing tokens with incremental pos1-100
+#   - At translation time if you predict a pos watch in src_row the pos with maximum attention (alignment)
+
 def create_vocab(opt, *datasets):
     """
     Creates a torchtext vocabulary of source and target
@@ -61,12 +69,6 @@ def create_vocab(opt, *datasets):
 
     final_vocab_src.set_default_index(final_vocab_src[UNK_WORD])
     final_vocab_tgt.set_default_index(final_vocab_tgt[UNK_WORD])
-
-    # the previous method consisted in a simple reduction of the tgt using the attention for the generation but rare words could be missing from src_raw and also attention could be badly scattered in src
-
-    # for both src and tgt remove COMMON rare words and add pos1-100
-    # in batch substitute in both the missing with incremental pos1-100  
-    # at translation time if you predict a pos watch in src_row the pos with maximum attention (aligment)
 
     return final_vocab_src, final_vocab_tgt
 
