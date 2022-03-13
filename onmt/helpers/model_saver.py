@@ -3,8 +3,6 @@ import os
 import torch
 import torch.nn as nn
 
-import onmt.inputters
-
 from collections import deque
 from onmt.utils.logging import logger
 
