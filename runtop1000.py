@@ -4,12 +4,12 @@ import sys
 
 def controller(opt):
     if opt == "preprocess":
-        command = "python preprocess.py -train_src data/top1000/cleaned.train.diff \
-                        -train_tgt data/top1000/cleaned.train.msg \
-                        -valid_src data/top1000/cleaned.valid.diff \
-                        -valid_tgt data/top1000/cleaned.valid.msg \
-                        -test_src data/top1000/cleaned.test.diff \
-                        -test_tgt data/top1000/cleaned.test.msg \
+        command = "python preprocess.py -train_src data/top1000/cleaned_train.diff \
+                        -train_tgt data/top1000/cleaned_train.msg \
+                        -valid_src data/top1000/cleaned_valid.diff \
+                        -valid_tgt data/top1000/cleaned_valid.msg \
+                        -test_src data/top1000/cleaned_test.diff \
+                        -test_tgt data/top1000/cleaned_test.msg \
                         -save_data data/preprocessed/top1000_data \
                         -src_seq_length 1000 \
                         -lower \
@@ -45,9 +45,9 @@ def controller(opt):
     elif opt == "translate":
         print("Retrieve similar commits...")
         command = "python translate.py -model models/CoRec_1000_step_2400.pt \
-                                        -src data/top1000/cleaned.test.diff \
-                                        -train_diff data/top1000/cleaned.train.diff \
-                                        -train_msg data/top1000/cleaned.train.msg \
+                                        -src data/top1000/cleaned_test.diff \
+                                        -train_diff data/top1000/cleaned_train.diff \
+                                        -train_msg data/top1000/cleaned_train.msg \
                                         -sem_path data/top1000/sem/ \
                                         -src_vocab data/preprocessed/top1000_data.vocab.pt \
                                         -batch_size 32 \
@@ -58,10 +58,10 @@ def controller(opt):
         os.system(command)
         print("Begin translation...")
         command = "python translate.py -model models/CoRec_1000_step_2400.pt \
-                            -src data/top1000/cleaned.test.diff \
-                            -tgt data/top1000/cleaned.test.msg \
-                            -train_diff data/top1000/cleaned.train.diff \
-                            -train_msg data/top1000/cleaned.train.msg \
+                            -src data/top1000/cleaned_test.diff \
+                            -tgt data/top1000/cleaned_test.msg \
+                            -train_diff data/top1000/cleaned_train.diff \
+                            -train_msg data/top1000/cleaned_train.msg \
                             -sem_path data/top1000/sem/ \
                             -output data/output/1000test.out \
                             -src_vocab data/preprocessed/top1000_data.vocab.pt \
