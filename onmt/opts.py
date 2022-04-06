@@ -236,10 +236,10 @@ def preprocess_opts(parser):
 
     group.add('--valid_tgt', '-valid_tgt', required=True,
               help="Path to the validation target data")
-    group.add('--test_src', '-test_src', required=True,
+    group.add('--test_src', '-test_src', required=False,
               help="Path to the test source data")
 
-    group.add('--test_tgt', '-test_tgt', required=True,
+    group.add('--test_tgt', '-test_tgt', required=False,
               help="Path to the test target data")
     group.add('--src_dir', '-src_dir', default="",
               help="Source directory for image or audio files.")
