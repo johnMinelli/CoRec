@@ -7,6 +7,8 @@ The original code has been renewd and upgraded to the last libraries version the
 
 [Presentation of the project](docs/CoRec_project_discussion.pdf)
 
+A trained model of our Transformer's implementation can be found [here](https://drive.google.com/file/d/1Jc21sLDebH17SsfATDaG2l6203_JGpYa/view?usp=sharing)
+
 
 ### Environment Dependencies
 
